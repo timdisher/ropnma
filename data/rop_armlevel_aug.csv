@@ -1,0 +1,247 @@
+study.num,study,treatment,trt.group,outcome,actual.timepoint,timepoint.group,mean,std.dev,se,imputed.mean,mean.diff,se.mean.diff,mean.div.sd*2,sample.size,median,iqr.low,iqr.high,range.low,range.high,lower.ci,upper.ci,p.value,num.events,chi.suare.value,average.ga,average.pna,average.pma,imputed.pma,average.bw
+1,Boyle 2006,drops,drops,PIPP,start of exam,reactivity,15.3,1.9,,no,,,8.052631579,10,,,,,,,,,,,27,45,33.42857143,yes,1000
+1,Boyle 2006,sweet.drops,drops.sweet,PIPP,start of exam,reactivity,14.3,1.6,,no,,,8.9375,10,,,,,,,,,,,29,43,35.14285714,yes,1030
+1,Boyle 2006,NNS.drops,drops.phys,PIPP,start of exam,reactivity,12.3,2.9,,no,,,4.24137931,9,,,,,,,,,,,30,42,36,yes,1300
+1,Boyle 2006,sweet.nns.drops,drops.mult,PIPP,start of exam,reactivity,12.1,3.4,,no,,,3.558823529,11,,,,,,,,,,,29,43,35.14285714,yes,1210
+2,Cogen 2011,drops,drops,PIPP,DIO+dep,reactivity,10.4,5.512728573,0.945425151,no,,,1.886543091,22,,,,,,,,0.1,,,,,34,,924
+2,Cogen 2011,no.treatment,plac,PIPP,DIO+dep,reactivity,12,5.512728573,,no,,,2.176780489,17,,,,,,,,0.1,,,,,34,,924
+3,Costa 2013,sweet.drops,drops.sweet,NIPS,2 mins post,recovery,2.6,1.1,,no,,,2.363636364,70,,,,,,,,,,,30.5,34.9,35.48571429,yes,1287
+3,Costa 2013,drops,drops,NIPS,2 mins post,recovery,4.5,1.3,,no,,,3.461538462,54,,,,,,,,,,,29.9,34.3,34.8,yes,1227
+3,Costa 2013,sweet.drops,drops.sweet,PIPP,2 mins post,recovery,7.8,1.905255888,,no,,,4.093938272,70,,,,,,,,,,,30.5,34.9,35.48571429,yes,1287
+3,Costa 2013,drops,drops,PIPP,2 mins post,recovery,13.5,2.25166605,,no,,,5.995560488,54,,,,,,,,,,,29.9,34.3,34.8,yes,1227
+3,Costa 2013,sweet.drops,drops.sweet,NIPS >= 4,2 mins post,recovery,,,,,,,#DIV/0!,70,,,,,,,,,11,,30.5,34.9,35.48571429,yes,1287
+3,Costa 2013,drops,drops,NIPS >= 4,2 mins post,recovery,,,,,,,#DIV/0!,54,,,,,,,,,37,,29.9,34.3,34.8,yes,1227
+4,Dhaliwal 2010,WFDRI.drops,drops.WFDRI,PIPP,60 seconds,reactivity,15,2.1,,no,,,7.142857143,76,,,,,,,,0.47,,,28.6,,34.1,,1208
+4,Dhaliwal 2010,drops,drops,PIPP,60 seconds,reactivity,15.2,2.4,,no,,,6.333333333,76,,,,,,,,0.47,,,28.6,,34.1,,1208
+4,Dhaliwal 2010,WFDRI.drops,drops.WFDRI,min02,60 seconds,reactivity,88,10,,no,,,8.8,76,,,,,,,,,,,28.6,,34.1,,1208
+4,Dhaliwal 2010,drops,drops,min02,60 seconds,reactivity,87,12,,no,,,7.25,76,,,,,,,,,,,28.6,,34.1,,1208
+4,Dhaliwal 2010,WFDRI.drops,drops.WFDRI,maxHR,60 seconds,reactivity,172,17,,no,,,10.11764706,76,,,,,,,,,,,28.6,,34.1,,1208
+4,Dhaliwal 2010,drops,drops,maxHR,60 seconds,reactivity,168,18,,no,,,9.333333333,76,,,,,,,,,,,28.6,,34.1,,1208
+5,Dilli 2014,sweet.nns.drops,drops.mult,PIPP,During exam,reactivity,13.7,2.1,,no,,,6.523809524,32,,,,,,,,,,,28.2,,35.2,,1248
+5,Dilli 2014,NNS.drops,drops.phys,PIPP,During exam,reactivity,16.4,1.8,,no,,,9.111111111,32,,,,,,,,,,,28.8,,35.7,,1360
+5,Dilli 2014,sweet.nns.drops,drops.mult,02 desat <85%,During exam,reactivity,,,,,,,#DIV/0!,32,,,,,,,,,6,,28.2,,35.2,,1248
+5,Dilli 2014,NNS.drops,drops.phys,02 desat <85%,During exam,reactivity,,,,,,,#DIV/0!,32,,,,,,,,,7,,28.8,,35.7,,1360
+5,Dilli 2014,sweet.nns.drops,drops.mult,tachy >180bpm,During exam,reactivity,,,,,,,#DIV/0!,32,,,,,,,,,12,,28.2,,35.2,,1248
+5,Dilli 2014,NNS.drops,drops.phys,tachy >180bpm,During exam,reactivity,,,,,,,#DIV/0!,32,,,,,,,,,19,,28.8,,35.7,,1360
+5,Dilli 2014,sweet.nns.drops,drops.mult,brady < 100bpm,During exam,reactivity,,,,,,,#DIV/0!,32,,,,,,,,,6,,28.2,,35.2,,1248
+5,Dilli 2014,NNS.drops,drops.phys,brady < 100bpm,During exam,reactivity,,,,,,,#DIV/0!,32,,,,,,,,,7,,28.8,,35.7,,1360
+5,Dilli 2014,sweet.nns.drops,drops.mult,crying time,During exam,reactivity,58.7,16.6,,no,,,3.536144578,32,,,,,,,,,,,28.2,,35.2,,1248
+5,Dilli 2014,NNS.drops,drops.phys,crying time,During exam,reactivity,79.8,30.4,,no,,,2.625,32,,,,,,,,,,,28.8,,35.7,,1360
+5,Dilli 2014,sweet.nns.drops,drops.mult,any.ae,Brady during exam,reactivity,,,,,,,#DIV/0!,32,,,,,,,,,6,,28.2,,35.2,,1248
+5,Dilli 2014,NNS.drops,drops.phys,any.ae,Brady during exam,reactivity,,,,,,,#DIV/0!,32,,,,,,,,,7,,28.8,,35.7,,1360
+6,Gal 2005,sweet.drops,drops.sweet,PIPP,1 minute pre-exam,baseline,3.1,1.5,,no,,,2.066666667,23,,,,,,,,,,,26.4,47.3,33.15714286,yes,
+6,Gal 2005,drops,drops,PIPP,1 minute pre-exam,baseline,3,1.7,,no,,,1.764705882,23,,,,,,,,,,,26.4,48.8,33.37142857,yes,
+6,Gal 2005,sweet.drops,drops.sweet,PIPP,speculum insertion,reactivity,8.3,4.5,,no,,,1.844444444,23,,,,,,,,0.01*one sided,,,26.4,47.3,33.15714286,yes,
+6,Gal 2005,drops,drops,PIPP,speculum insertion,reactivity,10.5,4,,no,,,2.625,23,,,,,,,,0.01,,,26.4,48.8,33.37142857,yes,
+6,Gal 2005,sweet.drops,drops.sweet,PIPP,1 min post-exam,recovery,7.7,3.6,,no,,,2.138888889,23,,,,,,,,,,,26.4,47.3,33.15714286,yes,
+6,Gal 2005,drops,drops,PIPP,1 min post-exam,recovery,8.3,3.5,,no,,,2.371428571,23,,,,,,,,,,,26.4,48.8,33.37142857,yes,
+6,Gal 2005,sweet.drops,drops.sweet,02 desat > 10%,1 minute pre-exam,baseline,,,,,,,#DIV/0!,23,,,,,,,,,0,,26.4,47.3,33.15714286,yes,
+6,Gal 2005,drops,drops,02 desat > 10%,1 minute pre-exam,baseline,,,,,,,#DIV/0!,23,,,,,,,,,0,,26.4,48.8,33.37142857,yes,
+6,Gal 2005,sweet.drops,drops.sweet,02 desat > 10%,speculum insertion,reactivity,,,,,,,#DIV/0!,23,,,,,,,,,3,,26.4,47.3,33.15714286,yes,
+6,Gal 2005,drops,drops,02 desat > 10%,speculum insertion,reactivity,,,,,,,#DIV/0!,23,,,,,,,,,7,,26.4,48.8,33.37142857,yes,
+6,Gal 2005,sweet.drops,drops.sweet,02 desat > 10%,1 min post-exam,recovery,,,,,,,#DIV/0!,23,,,,,,,,,1,,26.4,47.3,33.15714286,yes,
+6,Gal 2005,drops,drops,02 desat > 10%,1 min post-exam,recovery,,,,,,,#DIV/0!,23,,,,,,,,,2,,26.4,48.8,33.37142857,yes,
+6,Gal 2005,sweet.drops,drops.sweet,any.ae,O2 desat during speculum insertion,reactivity,,,,,,,#DIV/0!,23,,,,,,,,,3,,26.4,48.8,33.37142857,yes,
+6,Gal 2005,drops,drops,any.ae,O2 desat during speculum insertion,reactivity,,,,,,,#DIV/0!,23,,,,,,,,,7,,26.4,48.8,33.37142857,yes,
+7,Grabska 2005,sweet.nns.drops,drops.mult,PIPP,baseline,baseline,4,2,,no,,,2,16,,,,,,,,,,,28,50.8,35.25714286,yes,1880
+7,Grabska 2005,NNS.drops,drops.phys,PIPP,baseline,baseline,4,2,,no,,,2,16,,,,,,,,,,,28,50.8,35.25714286,yes,1880
+7,Grabska 2005,sweet.nns.drops,drops.mult,PIPP,During exam,reactivity,14,3,,no,,,4.666666667,16,,,,,,,,,,,28,50.8,35.25714286,yes,1880
+7,Grabska 2005,NNS.drops,drops.phys,PIPP,During exam,reactivity,14,3,,no,,,4.666666667,16,,,,,,,,,,,28,50.8,35.25714286,yes,1880
+7,Grabska 2005,sweet.nns.drops,drops.mult,PIPP,2min post,recovery,4,2,,no,,,2,16,,,,,,,,,,,28,50.8,35.25714286,yes,1880
+7,Grabska 2005,NNS.drops,drops.phys,PIPP,2min post,recovery,5,2,,no,,,2.5,16,,,,,,,,,,,28,50.8,35.25714286,yes,1880
+7,Grabska 2005,sweet.nns.drops,drops.mult,RR,baseline,baseline,51,8,,no,,,6.375,16,,,,,,,,,,,28,50.8,35.25714286,yes,1880
+7,Grabska 2005,NNS.drops,drops.phys,RR,baseline,baseline,52,14,,no,,,3.714285714,16,,,,,,,,,,,28,50.8,35.25714286,yes,1880
+7,Grabska 2005,sweet.nns.drops,drops.mult,RR,During exam,reactivity,48,12,,no,,,4,16,,,,,,,,,,,28,50.8,35.25714286,yes,1880
+7,Grabska 2005,NNS.drops,drops.phys,RR,During exam,reactivity,46,8,,no,,,5.75,16,,,,,,,,,,,28,50.8,35.25714286,yes,1880
+7,Grabska 2005,sweet.nns.drops,drops.mult,RR,2min post,recovery,59,17,,no,,,3.470588235,16,,,,,,,,,,,28,50.8,35.25714286,yes,1880
+7,Grabska 2005,NNS.drops,drops.phys,RR,2min post,recovery,57,8,,no,,,7.125,16,,,,,,,,,,,28,50.8,35.25714286,yes,1880
+8,Kabatas 2016,paracetamol.drops,drops.tyl,PIPP,During exam,reactivity,12,2.962962963,,yes,,,4.05,58,12,9,13,,,,,,,,28,,32.3,no,1092
+8,Kabatas 2016,drops,drops,PIPP,During exam,reactivity,14,1.481481481,,yes,,,9.45,56,14,13,15,,,,,,,,28.3,,32.5,no,1170
+8,Kabatas 2016,paracetamol.drops,drops.tyl,tachy >180bpm,During exam,reactivity,,,,,,,#DIV/0!,58,,,,,,,,,17,,28,,32.3,no,1092
+8,Kabatas 2016,drops,drops,tachy >180bpm,During exam,reactivity,,,,,,,#DIV/0!,56,,,,,,,,,10,,28.3,,32.5,no,1170
+8,Kabatas 2016,paracetamol.drops,drops.tyl,brady and desat,During exam,reactivity,,,,,,,#DIV/0!,58,,,,,,,,,5,,28,,32.3,no,1092
+8,Kabatas 2016,drops,drops,brady and desat,During exam,reactivity,,,,,,,#DIV/0!,56,,,,,,,,,4,,28.3,,32.5,no,1170
+8,Kabatas 2016,paracetamol.drops,drops.tyl,crying time,During exam,reactivity,28.6,19.5,,no,,,1.466666667,58,,,,,,,,,,,28,,32.3,no,1092
+8,Kabatas 2016,drops,drops,crying time,During exam,reactivity,23.8,15.7,,no,,,1.515923567,56,,,,,,,,,,,28.3,,32.5,no,1170
+8,Kabatas 2016,paracetamol.drops,drops.tyl,any.ae,brady and desat during exam,reactivity,,,,,,,#DIV/0!,58,,,,,,,,,5,,28,,32.3,no,1092
+8,Kabatas 2016,drops,drops,any.ae,brady and desat during exam,reactivity,,,,,,,#DIV/0!,56,,,,,,,,,4,,28.3,,32.5,no,1170
+9,Kleberg 2008,NIDCAP,drops.mult,PIPP,During exam,reactivity,13,4,,yes,,,3.25,33,13,,,2,18,,,0.683*mann-whitney U,,,NA,NA,NA,NA,NA
+9,Kleberg 2008,drops,drops,PIPP,During exam,reactivity,13.5,4,,yes,,,3.375,35,13.5,,,0,16,,,0.683,,,NA,NA,NA,NA,NA
+9,Kleberg 2008,NIDCAP,drops.mult,02 sat,post-exam,recovery,95,3.25,,yes,,,29.23076923,33,95,,,85,98,,,,,,NA,NA,NA,NA,NA
+9,Kleberg 2008,drops,drops,02 sat,post-exam,recovery,95,3.5,,yes,,,27.14285714,35,95,,,86,100,,,,,,NA,NA,NA,NA,NA
+9,Kleberg 2008,NIDCAP,drops.mult,HR,30 min post,recovery,154,16.75,,yes,,,9.194029851,33,154,,,127,194,,,,,,NA,NA,NA,NA,NA
+9,Kleberg 2008,drops,drops,HR,30 min post,recovery,152,10.5,,yes,,,14.47619048,35,152,,,132,174,,,,,,NA,NA,NA,NA,NA
+10,Mandel 2012,NO.sweet.drops,drops.NO.sweet,PIPP,speculum insertion,reactivity,8.5,2.991336582,0.637755102,no,,,2.841539148,22,,,,,,7.3,9.8,,,,27.8,,35,no,1003.4
+10,Mandel 2012,sweet.drops,drops.sweet,PIPP,speculum insertion,reactivity,8.4,1.839920706,0.433673469,no,,,4.565414135,18,,,,,,7.6,9.3,,,,28.1,,35.4,no,1052.2
+10,Mandel 2012,NO.sweet.drops,drops.NO.sweet,Apnea in 24h,24h,recovery,1.27,1.69,,no,,,0.75147929,22,,,,,,,,,,,27.8,,35,no,1003.4
+10,Mandel 2012,sweet.drops,drops.sweet,Apnea in 24h,24h,recovery,1.55,1.95,,no,,,0.794871795,18,,,,,,,,,,,28.1,,35.4,no,1052.2
+10,Mandel 2012,NO.sweet.drops,drops.NO.sweet,02 < 88% in 24h,24h,recovery,12.6,8.7,,no,,,1.448275862,22,,,,,,,,,,,27.8,,35,no,1003.4
+10,Mandel 2012,sweet.drops,drops.sweet,02 < 88% in 24h,24h,recovery,9.9,10.4,,no,,,0.951923077,18,,,,,,,,,,,28.1,,35.4,no,1052.2
+11,Marsh 2005,drops,drops,PIPP,speculum insertion,reactivity,11,3.2,,no,,,3.4375,22,,,,,,,,0.001,,,27.4,39.2,33,yes,
+11,Marsh 2005,no.treatment,plac,PIPP,speculum insertion,reactivity,13.5,3.5,,no,,,3.857142857,22,,,,,,,,0.001,,,27.4,39.4,33.02857143,yes,
+11,Marsh 2005,drops,drops,PIPP,1 min post-exam,recovery,9.3,3.7,,no,,,2.513513514,22,,,,,,,,,,,27.4,39.2,33,yes,
+11,Marsh 2005,no.treatment,plac,PIPP,1 min post-exam,recovery,10.5,3.5,,no,,,3,22,,,,,,,,,,,27.4,39.4,33.02857143,yes,
+11,Marsh 2005,drops,drops,02 desat >10% on PIPP points,,reactivity,,,,,,,#DIV/0!,22,,,,,,,,,6,,27.4,39.2,33,yes,
+11,Marsh 2005,no.treatment,plac,02 desat >10% on PIPP points,,reactivity,,,,,,,#DIV/0!,22,,,,,,,,,13,,27.4,39.4,33.02857143,yes,
+11,Marsh 2005,drops,drops,02 desat >10% on PIPP points,,recovery,,,,,,,#DIV/0!,22,,,,,,,,,6,,27.4,39.2,33,yes,
+11,Marsh 2005,no.treatment,plac,02 desat >10% on PIPP points,,recovery,,,,,,,#DIV/0!,22,,,,,,,,,3,,27.4,39.4,33.02857143,yes,
+11,Marsh 2005,drops,drops,any.ae,02 desat >10% on PIPP points,reactivity,,,,,,,#DIV/0!,22,,,,,,,,,6,,27.4,39.2,33,yes,
+11,Marsh 2005,no.treatment,plac,any.ae,02 desat >10% on PIPP points,reactivity,,,,,,,#DIV/0!,22,,,,,,,,,13,,27.4,39.4,33.02857143,yes,
+12,Mehta 2010,NNS.drops,drops.phys,PIPP,1 min post-exam,recovery,10.375,3.715216244,0.587427267,no,,,2.792569616,40,,,,,,,,0.027,,,29,,"33.3 first, 35.3 second",no,
+12,Mehta 2010,nns,phys,PIPP,1 min post-exam,recovery,11.725,3.715216244,,no,,,3.15594012,40,,,,,,,,0.027,,,29,,"33.3 first, 35.3 second",no,
+12,Mehta 2010,NNS.drops,drops.phys,PIPP <7,1 min post-exam,recovery,,,,,,,#DIV/0!,40,,,,,,,,,6,,29,,"33.3 first, 35.3 second",no,
+12,Mehta 2010,nns,phys,PIPP <7,1 min post-exam,recovery,,,,,,,#DIV/0!,40,,,,,,,,,4,,29,,"33.3 first, 35.3 second",no,
+12,Mehta 2010,NNS.drops,drops.phys,PIPP 7-12,1 min post-exam,recovery,,,,,,,#DIV/0!,40,,,,,,,,,21,,29,,"33.3 first, 35.3 second",no,
+12,Mehta 2010,nns,phys,PIPP 7-12,1 min post-exam,recovery,,,,,,,#DIV/0!,40,,,,,,,,,16,,29,,"33.3 first, 35.3 second",no,
+12,Mehta 2010,NNS.drops,drops.phys,PIPP >= 12,1 min post-exam,recovery,,,,,,,#DIV/0!,40,,,,,,,,,13,,29,,"33.3 first, 35.3 second",no,
+12,Mehta 2010,nns,phys,PIPP >= 12,1 min post-exam,recovery,,,,,,,#DIV/0!,40,,,,,,,,,20,,29,,"33.3 first, 35.3 second",no,
+13,Mitchell 2004,sweet.nns.drops,drops.mult,PIPP,eye drops,Baseline,4.1,1.549193338,0.4,no,,,2.64653862,15,,,,,,,,,,,26.5,59.5,35,yes,970
+13,Mitchell 2004,NNS.drops,drops.phys,PIPP,eye drops,baseline,4.3,1.936491673,0.5,no,,,2.220510452,15,,,,,,,,,,,27.3,56,35.3,yes,982
+13,Mitchell 2004,sweet.nns.drops,drops.mult,PIPP,During exam left eye,reactivity,8.8,2.711088342,0.7,no,,,3.2459289,15,,,,,,,,,,,26.5,59.5,35,yes,970
+13,Mitchell 2004,NNS.drops,drops.phys,PIPP,During exam left eye,reactivity,11.4,2.323790008,0.6,no,,,4.905778905,15,,,,,,,,,,,27.3,56,35.3,yes,982
+13,Mitchell 2004,sweet.nns.drops,drops.mult,PIPP,Return to baseline 1,recovery,6.6,2.711088342,0.7,no,,,2.434446675,15,,,,,,,,,,,26.5,59.5,35,yes,970
+13,Mitchell 2004,NNS.drops,drops.phys,PIPP,Return to baseline 1,recovery,7.1,3.098386677,0.8,no,,,2.291515147,15,,,,,,,,,,,27.3,56,35.3,yes,982
+14,Nesargi 2015,sweet,sweet,PIPP,during,reactivity,14.2,1.8,,no,,,7.888888889,10,,,,,,,,,,,32.1,16.2,34.41428571,yes,1232
+14,Nesargi 2015,drops,drops,PIPP,during,reactivity,15.5,2,,no,,,7.75,10,,,,,,,,,,,31.7,16.8,34.1,yes,1102
+14,Nesargi 2015,sweet,sweet,PIPP,1 min post-exam,recovery,9,2.8,,no,,,3.214285714,10,,,,,,,,,,,32.1,16.2,34.41428571,yes,1232
+14,Nesargi 2015,drops,drops,PIPP,1 min post-exam,recovery,8.1,1.9,,no,,,4.263157895,10,,,,,,,,,,,31.7,16.8,34.1,yes,1102
+15,Olsson 2011,sweet.drops,drops.sweet,PIPP,during,reactivity,8,3.111111111,,yes,,,2.571428571,14,8,5,9.2,,,,,,,,28.9,NA,NA,no,1202
+15,Olsson 2011,drops,drops,PIPP,during,reactivity,6,3.851851852,,yes,,,1.557692308,15,6,4,9.2,,,,,,,,27.9,NA,NA,no,1051
+15,Olsson 2011,sweet.drops,drops.sweet,crying time,during,reactivity,6.8,8.1,,no,,,0.839506173,14,,,,,,,,,,,28.9,NA,NA,no,1202
+15,Olsson 2011,drops,drops,crying time,during,reactivity,5.7,7.3,,no,,,0.780821918,15,,,,,,,,,,,27.9,NA,NA,no,1051
+15,Olsson 2011,sweet.drops,drops.sweet,HR increase,during,reactivity,12.2,14,,no,,,0.871428571,14,,,,,,,,,,,28.9,NA,NA,no,1202
+15,Olsson 2011,drops,drops,HR increase,during,reactivity,11.9,31.3,,no,,,0.380191693,15,,,,,,,,,,,27.9,NA,NA,no,1051
+15,Olsson 2011,sweet.drops,drops.sweet,02 decrease,during,reactivity,4.4,7.6,,no,,,0.578947368,14,,,,,,,,,,,28.9,NA,NA,no,1202
+15,Olsson 2011,drops,drops,02 decrease,during,reactivity,0.8,3.2,,no,,,0.25,15,,,,,,,,,,,27.9,NA,NA,no,1051
+16,O'sullivan 2010,NNS.drops,drops.phys,PIPP,during,reactivity,16.8625,0.974679434,,yes,,,17.30055996,20,9.5,,,6,10,,,,,,29.5,,33.1,no,1140
+16,O'sullivan 2010,sweet.nns.drops,drops.mult,PIPP,during,reactivity,14.25,1.70568901,,yes,,,8.354395153,20,7.5,,,1,8,,,,,,29.8,,33,no,1139
+16,O'sullivan 2010,NNS.drops,drops.phys,N-PASS,during,reactivity,8.75,1,,yes,,,8.75,20,9.5,,,6,10,,,,,,29.5,,33.1,no,1140
+16,O'sullivan 2010,sweet.nns.drops,drops.mult,N-PASS,during,reactivity,6,1.75,,yes,,,3.428571429,20,7.5,,,1,8,,,,,,29.8,,33,no,1139
+16,O'sullivan 2010,sweet.nns.drops,drops.phys,brady < 100bpm,study,recovery,,,,,,,#DIV/0!,20,,,,,,,,,1,,29.5,,33.1,no,1140
+16,O'sullivan 2010,nns,drops.mult,brady < 100bpm,study,recovery,,,,,,,#DIV/0!,20,,,,,,,,,3,,29.8,,33,no,1139
+16,O'sullivan 2010,sweet.nns.drops,drops.phys,desat < 80%,study,recovery,,,,,,,#DIV/0!,20,,,,,,,,,1,,29.5,,33.1,no,1140
+16,O'sullivan 2010,nns,drops.mult,desat < 80%,study,recovery,,,,,,,#DIV/0!,20,,,,,,,,,3,,29.8,,33,no,1139
+16,O'sullivan 2010,sweet.nns.drops,drops.phys,adverse event (brady or desat),study,recovery,,,,,,,#DIV/0!,20,,,,,,,,,1,,29.5,,33.1,no,1140
+16,O'sullivan 2010,nns,drops.mult,adverse event (brady or desat),study,recovery,,,,,,,#DIV/0!,20,,,,,,,,,3,,29.8,,33,no,1139
+16,O'sullivan 2010,sweet.nns.drops,drops.phys,any.ae,brady < 100bpm,recovery,,,,,,,#DIV/0!,20,,,,,,,,,1,,29.5,,33.1,no,1140
+16,O'sullivan 2010,nns,drops.mult,any.ae,brady < 100bpm,recovery,,,,,,,#DIV/0!,20,,,,,,,,,3,,29.8,,33,no,1139
+17,Rosali 2015,EBM.drops,drops.mult,PIPP,during,reactivity,12.7,1.7,,no,,,7.470588235,20,,,,,,,,,,,31.5,23.4,34.84285714,yes,1426.7
+17,Rosali 2015,drops,drops,PIPP,during,reactivity,15.3,1.78,,no,,,8.595505618,20,,,,,,,,,,,30.3,27.8,34.27142857,yes,1285.2
+17,Rosali 2015,EBM.drops,drops.mult,PIPP,post-exam,recovery,6.2,1.98,,no,,,3.131313131,20,,,,,,,,,,,31.5,23.4,34.84285714,yes,1426.7
+17,Rosali 2015,drops,drops,PIPP,post-exam,recovery,12.4,2.54,,no,,,4.881889764,20,,,,,,,,,,,30.3,27.8,34.27142857,yes,1285.2
+18,Rush 2005,sweet.nns.drops,drops.mult,O2 sat,5 min pre,baseline,95.64,,0.949,no,,,#DIV/0!,14,,,,,,,,,,,29.57,NA,NA,no,1225.9
+18,Rush 2005,drops,drops,O2 sat,5 min pre,baseline,96.38,,0.89,no,,,#DIV/0!,16,,,,,,,,,,,28.88,NA,NA,no,1149.8
+18,Rush 2005,sweet.nns.drops,drops.mult,O2 sat,during,reactivity,93.29,,1.54,no,,,#DIV/0!,14,,,,,,,,,,,29.57,NA,NA,no,1225.9
+18,Rush 2005,drops,drops,O2 sat,during,reactivity,95,,1.44,no,,,#DIV/0!,16,,,,,,,,,,,28.88,NA,NA,no,1149.8
+18,Rush 2005,sweet.nns.drops,drops.mult,O2 sat,5 min post-exam,recovery,97,,1.15,no,,,#DIV/0!,14,,,,,,,,,,,29.57,NA,NA,no,1225.9
+18,Rush 2005,drops,drops,O2 sat,5 min post-exam,recovery,96.94,,1.07,no,,,#DIV/0!,16,,,,,,,,,,,28.88,NA,NA,no,1149.8
+18,Rush 2005,sweet.nns.drops,drops.mult,crying time,during,reactivity,78.6,,15.78,no,,,#DIV/0!,14,,,,,,,,,,,29.57,NA,NA,no,1225.9
+18,Rush 2005,drops,drops,crying time,during,reactivity,112.5,,14.75,no,,,#DIV/0!,16,,,,,,,,,,,28.88,NA,NA,no,1149.8
+19,Saunders 1993,no treatment,plac,cry factor,whole exam,reactivity,2.63,,,no,,,#DIV/0!,24,,,,,,,,,,2.59,NA,NA,36,no,1093
+19,Saunders 1993,drops,drops,cry factor,whole exam,reactivity,2.44,,,no,,,#DIV/0!,18,,,,,,,,,,2.59,NA,NA,36,no,1093
+20,Strube 2010,feed.1hr.drops,diet1hr,crying time,,reactivity,79.5,58,,no,,,1.370689655,25,,,,,,,,,,,28,NA,35.5,no,1062.3
+20,Strube 2010,feed.2hr.drops,diet2hr,crying time,,reactivity,88.3,47.2,,no,,,1.870762712,32,,,,,,,,,,,29.1,NA,36,no,1114.6
+21,Manjunatha 2009,morphine.drops,drops.morph,PIPP,5 min post,recovery,3.5,1.5,,no,,,2.333333333,6,,,,,,,,,,,NA,NA,NA,NA,NA
+21,Manjunatha 2009,paracetamol.drops,drops.tyl,PIPP,5 min post,recovery,4.6,1.5,,no,,,3.066666667,5,,,,,,,,,,,NA,NA,NA,NA,NA
+21,Manjunatha 2009,drops,drops,PIPP,5 min post,recovery,6.2,2.2,,no,,,2.818181818,6,,,,,,,,,,,NA,NA,NA,NA,NA
+22,Seifi 2013,sweet.drops,drops.sweet,PIPP,first 45 seconds,reactivity,9,2.1,,no,,,4.285714286,40,,,,,,,,,,,27.9,NA,NA,NA,1028.5
+22,Seifi 2013,paracetamol.drops,drops.tyl,PIPP,first 45 seconds,reactivity,12.9,2.4,,no,,,5.375,41,,,,,,,,,,,27.4,NA,NA,NA,921.5
+22,Seifi 2013,drops,drops,PIPP,first 45 seconds,reactivity,13.7,1.6,,no,,,8.5625,39,,,,,,,,,,,27.4,NA,NA,NA,1013.7
+22,Seifi 2013,sweet.drops,drops.sweet,PIPP,last 45 seconds,recovery,11.2,3,,no,,,3.733333333,40,,,,,,,,,,,27.9,NA,NA,NA,1028.5
+22,Seifi 2013,paracetamol.drops,drops.tyl,PIPP,last 45 seconds,recovery,12.3,2.4,,no,,,5.125,41,,,,,,,,,,,27.4,NA,NA,NA,921.5
+22,Seifi 2013,drops,drops,PIPP,last 45 seconds,recovery,12.1,2.6,,no,,,4.653846154,39,,,,,,,,,,,27.4,NA,NA,NA,1013.7
+23,Zeraati 2016,drops,drops,PIPP,,reactivity,10,1.7,,no,,,5.882352941,40,,,,,,,,,,,30.6,34.9,35.58571429,yes,1355.8
+23,Zeraati 2016,sensorial.sat,drops.mult,PIPP,,reactivity,6.4,1.7,,no,,,3.764705882,40,,,,,,,,,,,30.4,35.1,35.41428571,yes,1385.8
+23,Zeraati 2016,drops,drops,PIPP,,recovery,10.6,1.7,,no,,,6.235294118,40,,,,,,,,,,,30.6,34.9,35.58571429,yes,1355.8
+23,Zeraati 2016,sensorial.sat,drops.mult,PIPP,,recovery,7.1,1.8,,no,,,3.944444444,40,,,,,,,,,,,30.4,35.1,35.41428571,yes,1385.8
+24,ŞenerTaplak 2017,nns.drops,drops.nns,PIPP,during exam (first eye),reactivity,15.88,1.66,,,,,9.56626506,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.ebm.drops,ebm.mult,PIPP,during exam (first eye),reactivity,16.06,2.41,,,,,6.663900415,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.sweet.drops,sweet.mult,PIPP,during exam (first eye),reactivity,15.58,2.02,,,,,7.712871287,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.drops,drops.nns,PIPP,5 min post,recovery,5.9,1.61,,,,,3.664596273,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.ebm.drops,ebm.mult,PIPP,5 min post,recovery,3.2,1.36,,,,,2.352941176,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.sweet.drops,sweet.mult,PIPP,5 min post,recovery,3.65,1.78,,,,,2.050561798,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.drops,drops.nns,hr,during exam (first eye),reactivity,174.94,12.41,,,,,14.09669621,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.ebm.drops,ebm.mult,hr,during exam (first eye),reactivity,176.59,18.18,,,,,9.713421342,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.sweet.drops,sweet.mult,hr,during exam (first eye),reactivity,183.42,21.71,,,,,8.448641179,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.drops,drops.nns,hr,5 min post,recovery,160.5,9.4,,,,,17.07446809,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.ebm.drops,ebm.mult,hr,5 min post,recovery,159.7,12.86,,,,,12.41835148,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.sweet.drops,sweet.mult,hr,5 min post,recovery,165.7,9.99,,,,,16.58658659,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.drops,drops.nns,O2 sat,during exam (first eye),reactivity,90,5.07,,,,,17.75147929,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.ebm.drops,ebm.mult,O2 sat,during exam (first eye),reactivity,89.88,7.72,,,,,11.64248705,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.sweet.drops,sweet.mult,O2 sat,during exam (first eye),reactivity,88.93,6.57,,,,,13.53576865,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.drops,drops.nns,O2 sat,5 min post,recovery,9.25,5.81,,,,,1.592082616,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.ebm.drops,ebm.mult,O2 sat,5 min post,recovery,91.05,7.88,,,,,11.55456853,20,,,,,,,,,,,nd,nd,nd,no,nd
+24,ŞenerTaplak 2017,nns.sweet.drops,sweet.mult,O2 sat,5 min post,recovery,88.3,8.73,,,,,10.11454754,20,,,,,,,,,,,nd,nd,nd,no,nd
+25,Benzer 2015,plac,plac,PIPP,first eye 30 sec,reactivity,9.4,2.7,,,,,3.481481481,21,,,,,,,,,,,nd,nd,nd,no,nd
+25,Benzer 2015,sweet.rep,sweet.rep,PIPP,first eye 30 sec,reactivity,7,2.5,,,,,2.8,22,,,,,,,,,,,nd,nd,nd,no,nd
+25,Benzer 2015,sweet.sing,sweet.sing,PIPP,first eye 30 sec,reactivity,7.2,2.8,,,,,2.571428571,21,,,,,,,,,,,nd,nd,nd,no,nd
+26,Ilarslan 2012,nns.drops,drops.nns,PIPP,time of speculum insertion,reactivity,17.2,1.7,,,,,10.11764706,19,,,,,,,,,,,nd,nd,nd,no,nd
+26,Ilarslan 2012,nns.sweet.drops,drops.mult,PIPP,time of speculum insertion,reactivity,14.5,1.8,,,,,8.055555556,21,,,,,,,,,,,nd,nd,nd,no,nd
+26,Ilarslan 2012,nns.drops,drops.nns,02 desat,time of speculum insertion,reactivity,2.5,0.6,,,,,4.166666667,19,,,,,,,,0.001,,,nd,nd,nd,no,nd
+26,Ilarslan 2012,nns.sweet.drops,drops.mult,02 desat,time of speculum insertion,reactivity,1.7,0.8,,,,,2.125,21,,,,,,,,0.001,,,nd,nd,nd,no,nd
+26,Ilarslan 2012,nns.drops,drops.nns,crying time,procedure,recovery,96.3,24,,,,,4.0125,19,,,,,,,,,,,nd,nd,nd,no,nd
+26,Ilarslan 2012,nns.sweet.drops,drops.mult,crying time,procedure,recovery,58.8,12.1,,,,,4.859504132,21,,,,,,,,,,,nd,nd,nd,no,nd
+27,Mehta 2005,drops,drops,bp change,during screening,reactivity,,,,,,,#DIV/0!,15,9,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,bp change,during screening,reactivity,,,,,,,#DIV/0!,15,1,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,bp change,during screening,reactivity,,,,,,,#DIV/0!,15,10,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,bp change,immediately after screening,recovery,,,,,,,#DIV/0!,15,12,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,bp change,immediately after screening,recovery,,,,,,,#DIV/0!,15,-3,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,bp change,immediately after screening,recovery,,,,,,,#DIV/0!,15,12,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,hr change,during screening,reactivity,,,,,,,#DIV/0!,15,10.5,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,hr change,during screening,reactivity,,,,,,,#DIV/0!,15,7,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,hr change,during screening,reactivity,,,,,,,#DIV/0!,15,12,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,hr change,immediately after screening,recovery,,,,,,,#DIV/0!,15,7.5,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,hr change,immediately after screening,recovery,,,,,,,#DIV/0!,15,6,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,hr change,immediately after screening,recovery,,,,,,,#DIV/0!,15,11.5,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,02 sat change,during screening,reactivity,,,,,,,#DIV/0!,15,0,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,02 sat change,during screening,reactivity,,,,,,,#DIV/0!,15,-2,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,02 sat change,during screening,reactivity,,,,,,,#DIV/0!,15,-7,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,02 sat change,immediately after screening,recovery,,,,,,,#DIV/0!,15,-0.5,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,02 sat change,immediately after screening,recovery,,,,,,,#DIV/0!,15,-1,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,02 sat change,immediately after screening,recovery,,,,,,,#DIV/0!,15,-2,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,any brow bulge,during screening,reactivity,,,,,,,#DIV/0!,15,10,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,any brow bulge,during screening,reactivity,,,,,,,#DIV/0!,15,1,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,any brow bulge,during screening,reactivity,,,,,,,#DIV/0!,15,11,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,any brow bulge,immediately after screening,recovery,,,,,,,#DIV/0!,15,9,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,any brow bulge,immediately after screening,recovery,,,,,,,#DIV/0!,15,4,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,any brow bulge,immediately after screening,recovery,,,,,,,#DIV/0!,15,12,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,any eye squeeze,during screening,reactivity,,,,,,,#DIV/0!,15,10,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,any eye squeeze,during screening,reactivity,,,,,,,#DIV/0!,15,0,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,any eye squeeze,during screening,reactivity,,,,,,,#DIV/0!,15,11,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,any eye squeeze,immediately after screening,recovery,,,,,,,#DIV/0!,15,9,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,any eye squeeze,immediately after screening,recovery,,,,,,,#DIV/0!,15,4,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,any eye squeeze,immediately after screening,recovery,,,,,,,#DIV/0!,15,12,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,any nlf,during screening,reactivity,,,,,,,#DIV/0!,15,8,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,any nlf,during screening,reactivity,,,,,,,#DIV/0!,15,5,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,any nlf,during screening,reactivity,,,,,,,#DIV/0!,15,8,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,any nlf,immediately after screening,recovery,,,,,,,#DIV/0!,15,9,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,any nlf,immediately after screening,recovery,,,,,,,#DIV/0!,15,6,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,any nlf,immediately after screening,recovery,,,,,,,#DIV/0!,15,8,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,any mouth open,during screening,reactivity,,,,,,,#DIV/0!,15,9,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,any mouth open,during screening,reactivity,,,,,,,#DIV/0!,15,7,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,any mouth open,during screening,reactivity,,,,,,,#DIV/0!,15,9,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,any mouth open,immediately after screening,recovery,,,,,,,#DIV/0!,15,10,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,any mouth open,immediately after screening,recovery,,,,,,,#DIV/0!,15,6,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,any mouth open,immediately after screening,recovery,,,,,,,#DIV/0!,15,10,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,any cry,during screening,reactivity,,,,,,,#DIV/0!,15,3,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,any cry,during screening,reactivity,,,,,,,#DIV/0!,15,0,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,any cry,during screening,reactivity,,,,,,,#DIV/0!,15,1,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops,drops,any cry,immediately after screening,recovery,,,,,,,#DIV/0!,15,2,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.nospec,drops.nospec,any cry,immediately after screening,recovery,,,,,,,#DIV/0!,15,0,,,,,,,,,,28,nd,"33,35,36",no,nd
+27,Mehta 2005,drops.wfdri,drops.wfdri,any cry,immediately after screening,recovery,,,,,,,#DIV/0!,15,0,,,,,,,,,,28,nd,"33,35,36",no,nd
+28,Ucar 2014,nns.drops,drops.nns,PIPP,no time provided,reactivity,15.1,,,,,,#DIV/0!,27,,,,,,,,"sweet.nns.drops vs nns.drops - 0.021
+sweet.nns.drops vs drops.sweet 0.014",,,nd,nd,nd,nd,nd
+28,Ucar 2014,sweet.drops,drops.sweet,PIPP,no time provided,reactivity,16.7,,,,,,#DIV/0!,27,,,,,,,,,,,nd,nd,nd,nd,nd
+28,Ucar 2014,sweet.nns.drops,drops.mult,PIPP,no time provided,reactivity,11.4,,,,,,#DIV/0!,27,,,,,,,,,,,nd,nd,nd,nd,nd
+29,Xin 0016,drops,drops,PIPP,during procedure,reactivity,15.8,0.9,,,,,17.55555556,50,,,,,,,,,,,nd,nd,nd,nd,nd
+29,Xin 0016,drops.sweet,drops.sweet,PIPP,during procedure,reactivity,12.6,1,,,,,12.6,45,,,,,,,,,,,nd,nd,nd,nd,nd
+29,Xin 0016,drops,drops,hr,during procedure,reactivity,173.3,6.8,,,,,25.48529412,50,,,,,,,,,,,nd,nd,nd,nd,nd
+29,Xin 0016,drops.sweet,drops.sweet,hr,during procedure,reactivity,149.6,5,,,,,29.92,45,,,,,,,,,,,nd,nd,nd,nd,nd
+29,Xin 0016,drops,drops,02 Sat,during procedure,reactivity,90.1,1.2,,,,,75.08333333,50,,,,,,,,,,,nd,nd,nd,nd,nd
+29,Xin 0016,drops.sweet,drops.sweet,02 Sat,during procedure,reactivity,94.7,0.9,,,,,105.2222222,45,,,,,,,,,,,nd,nd,nd,nd,nd
+30,Zeraati 2015a,drops,drops,02 sat,during procedure,reactivity,90.1,2,,,,,45.05,40,,,,,,,,,,,30.6,34.9,35.58571429,yes,1355.8
+30,Zeraati 2015a,drops.ss,drops.mult,02 sat,during procedure,reactivity,92.6,3.5,,,,,26.45714286,40,,,,,,,,,,,30.4,35.1,35.41428571,yes,1385.8
+30,Zeraati 2015b,drops,drops,face status,during procedure,reactivity,sn,sn,,,,,#VALUE!,,,,,,,,,,,,30.6,34.9,35.58571429,yes,1355.8
+30,Zeraati 2015b,drops.ss,drops.mult,face status,during procedure,reactivity,sn,sn,,,,,#VALUE!,,,,,,,,,,,,30.4,35.1,35.41428571,yes,1385.8
+30,Zeraati 2015c,drops,drops,face status,during procedure,reactivity,sn,sn,,,,,#VALUE!,,,,,,,,,,,,30.6,34.9,35.58571429,yes,1355.8
+30,Zeraati 2015c,drops.ss,drops.mult,face status,during procedure,reactivity,sn,sn,,,,,#VALUE!,,,,,,,,,,,,30.4,35.1,35.41428571,yes,1385.8

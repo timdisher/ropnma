@@ -1,0 +1,78 @@
+name,description,sheet,type
+study_num,study number,study_level,dbl
+studlab,study name,study_level,factor
+n,total sample size,study_level,dbl
+design,type of study,study_level,factor
+pub_type,type of publication,study_level,factor
+protocol_registry_cited,was a protocol or registry cited?,study_level,factor
+protocol_registry_found,was a protocol of registry found?,study_level,factor
+connected,Is this study connected to another study?,study_level,factor
+which_studies,Which studies is it connected to?,study_level,character
+control,What was the control treatment,study_level,factor
+trt1,what was the first comparator treatment,study_level,factor
+trt2,second comparator,study_level,factor
+trt3,third comparator,study_level,factor
+ctrl_group,what class of intervention in control,study_level,factor
+trt1_group,what class of intervention in treatment 1,study_level,factor
+trt2_group,what class of intervention in treatment 2,study_level,factor
+trt3_group,what class of intervention in treatment 3,study_level,factor
+method,what was the method of eye assessment,study_level,factor
+speculum,was a speculum used?,study_level,factor
+scleral_dep,was scleral depression used?,study_level,factor
+dose_timing,when was the treatment given,study_level,factor
+exam_number,what number of eye exam was allowed,study_level,factor
+avg_ga,average gestational age,study_level,dbl
+avg_pma,average pma at procedure,study_level,dbl
+avg_bw,average birthweight,study_level,dbl
+con_swad,was baby contained or swaddled?,study_level,factor
+oa_rob_ob,overall risk of bias for objective outcomes,study_level,factor
+oa_rob_ev_ob,rationale for overall rob subjective,study_level,factor
+oa_rob_sub,overall risk of bias for subjective outcomes,study_level,factor
+oa_rob_ev_sub,rationale for overall rob subjective,study_level,factor
+rob_sg,sequence generation,study_level,factor
+rob_ev_sg,evidence for seq gen rob,study_level,character
+rob_ac,allocation concealment,study_level,factor
+rob_ev_ac,evidence for allocation concealmeant rob,study_level,character
+rob_bp,blinding of personnel,study_level,factor
+rob_ev_bp,evidence for blinding of personnel,study_level,character
+rob_bo_ob,blinding of outcome assessors objective,study_level,factor
+rob_ev_bo_ob,evidence for outcome assessors objective rob judgement,study_level,character
+rob_bo_sub,blinding of outcome assessors subbjective,study_level,factor
+rob_ev_bo_sub,evidence of blinding of outcome assessors for sub outcomes,study_level,character
+rob_io,incomplete outcome reporting,study_level,factor
+rob_ev_io,evidence for incomplete outcome reporting,study_level,character
+rob_sr,selective reporting,study_level,factor
+rob_ev_sr,evidence for selective reporting,study_level,character
+rob_other,other risk of bias,study_level,factor
+rob_ev_other,evidence for other risk of bias,study_level,character
+notes,any additional notes,study_level,character
+study_num,number of study,arm_level,factor
+studlab,study auhor and year,arm_level,factor
+treatment,treatment name,arm_level,factor
+trt_group,treatment class,arm_level,factor
+outcome,type of outcome,arm_level,factor
+actual_timepoint,timepoint assessed,arm_level,factor
+timepoint_group,group for timepoint assessed,arm_level,factor
+mean,mean,arm_level,dbl
+std_dev,standard deviation,arm_level,dbl
+se,standard error,arm_level,dbl
+imputed_mean,was the mean imputed?,arm_level,factor
+mean_diff,mean difference if reported,arm_level,dbl
+se_mean_diff,standard error of the mean difference,arm_level,dbl
+sample_size,n per arm,arm_level,dbl
+median,median,arm_level,dbl
+iqr_low,low iqr,arm_level,dbl
+iqr_high,high of iqr,arm_level,dbl
+range_low,low range,arm_level,dbl
+range_high,high range,arm_level,dbl
+lower_ci,lower 95% confidence interval,arm_level,dbl
+upper_ci,upper 95% confidence interval,arm_level,dbl
+p_value,p value,arm_level,dbl
+num_events,number of events,arm_level,dbl
+chi_suare_value,chisquare value,arm_level,dbl
+average_ga,average gestational age,arm_level,dbl
+average_pna,average postnatal age at time of procedure,arm_level,dbl
+average_pma,average pma at procedure,arm_level,dbl
+imputed_pma,was pma imputed from the data?,arm_level,factor
+average_bw,average birthweight,arm_level,dbl
+notes,anynotes,arm_level,character

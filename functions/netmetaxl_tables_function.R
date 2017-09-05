@@ -282,4 +282,33 @@ treat_reorg = function(){
 }
 
 
+#-----------------------------------------------------------------------------------------------------
+# This function formats data type according to a data dictionary
+#-----------------------------------------------------------------------------------------------------
+# codes = subset(factor_codes,sheet = "study")
+# test = data_study_orig
+
+lookup_type = function(data,codes,name,date_format = "%m/%d/%Y"){
+  
+  for(i in seq_along(data)){
+    if(is.na(codes[match(colnames(data[i]),codes[[1]]),4])){
+      paste(colnames(data[i]),"is missing from the coding diary")} else
+        
+        if(codes[match(colnames(data[i]),codes[[1]]),4] == "factor"){
+          data[[i]] = as.factor(data[[i]])
+        } else
+          
+          if(codes[match(colnames(data[i]),codes[[1]]),4] == "dbl"){
+            data[[i]] = as.numeric(data[[i]])
+          } else
+            
+            if(codes[match(colnames(data[i]),codes[[1]]),4] == "date"){
+              data[[i]] = as.Date(data[[i]], paste(date_format))
+            } else              
+              
+              data[[i]] = data[[i]]
+            
+  }
+  data
+}
 

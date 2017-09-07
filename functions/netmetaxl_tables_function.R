@@ -35,17 +35,17 @@ netmeta_xl_chars = function(data,outcome,ref,treat = "treatment",location = getw
 
 dir.create(location,recursive = TRUE)
   
-contrast = pairwise(data = data,treat = data[[treat]], n= sample.size, mean = mean,sd = std.dev,studlab = study)
+contrast = pairwise(data = data,treat = data[[treat]], n= sample_size, mean = mean,sd = std_dev,studlab = studlab)
 
-studies = (data %>% select(study) %>% distinct() %>% count())[[1]] ## count the number of studies
+studies = (data %>% select(studlab) %>% distinct() %>% count())[[1]] ## count the number of studies
 trts = (data %>% select(treat) %>% distinct() %>% count())[[1]] ## count the number of treatments
-totn = data %>% select(sample.size) %>% sum() # count the number of patients
+totn = data %>% select(sample_size) %>% sum() # count the number of patients
 poss_pw = choose(trts,2) # total possible pairwise comparisons
 
 
 #-- Create a numbered list of treatments with ref as #1--#
 data[[treat]] = fct_relevel(data[[treat]], ref)
-names= as.character((data %>% select(treat) %>% distinct() %>% arrange_("trt.group"))[[treat]])
+names= as.character((data %>% select(treat) %>% distinct() %>% arrange_("trt_group"))[[treat]])
 
 names = tibble("Treatment Number" = seq(1:trts),
                "Treatment Description" = names)
@@ -118,7 +118,7 @@ stargazer(net_char, summary = FALSE,title = "Network Characteristics",
 #-----------------------------------,
 style = "asq"
 int_nums = data %>% group_by_(treat) %>% summarise("Number of Comparisons" = n(),
-                                                   "Number of Patients" = sum(sample.size)) %>% rename_(Treatment = treat)
+                                                   "Number of Patients" = sum(sample_size)) %>% rename_(Treatment = treat)
 
 
 int_char <- tibble("Treatment" = names[[2]]) %>% left_join(int_nums)
@@ -154,8 +154,19 @@ print(direct_comp_char)
 # momlinc netgraph
 #-----------------------------------------------------------------------------------------------------------------------------
 # Takes a netmeta object and the int_char output from above to create a netgraph
+# netmeta is a netmeta object e.g. pa_reac = netmeta(TE,seTE,treat1,treat2,studlab,data = some output from pairwise, sm = "MD")
+# int_char is the table output from netmeta_xl_chars function
+# outcome is a string that will be used for making names of files
+# pointsize is the default pointsize for the graph
+# location is a string specifying where results should be saved
 #
-#
+# Example:
+# pa_reac_contrast = pairwise(data = pa_reac,treat = trt.group, n= sample.size, mean = mean,sd = std.dev,studlab = study) 
+# pa_reac_netconnect = netconnection(treat1,treat2,data = pa_reac_contrast)
+# pa_reac_int = netmeta(TE,seTE,treat1,treat2,studlab,data = pa_reac_contrast, sm = "MD") ###required to drawn netgraph
+# momlinc_netgraph(pa_reac_int,pa_reac_int_char,"pa_reac",2,location = "./figs/primary outcome/pain scales reactivity")
+
+
 momlinc_netgraph = function(netmeta, int_char,outcome,pointsize,location = getwd()){ ##outcome is a string
   
   dir.create(location,recursive = TRUE)
@@ -211,8 +222,8 @@ pa_reac_int = netmeta(TE,seTE,treat1,treat2,studlab,data = pa_reac_contrast, sm 
 #outcome = mean_imp
 
 
-plac_resp_graph = function(data,x = "study",y = "mean_imp",ref,outcome = "outcome",fill = "actual.timepoint",facet = FALSE,fv = "speculum",
-                         ylab = "PIPP (mean or median)", type = "bar", size = 10, filter = "trt.group",
+plac_resp_graph = function(data,x = "studlab",y = "mean",ref,outcome = "outcome",fill = "actual_timepoint",facet = FALSE,fv = "speculum",
+                         ylab = "PIPP (mean or median)", type = "bar", size = 10, filter = "trt_group",
                          location = getwd(),
                          width = 7,
                          height  = 7,
@@ -310,5 +321,97 @@ lookup_type = function(data,codes,name,date_format = "%m/%d/%Y"){
             
   }
   data
+}
+
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# 
+# This function converts numbers to words, and can be used for manuscript writing
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#https://github.com/ateucher/useful_code/blob/master/R/numbers2words.r
+numbers2words <- function(x){
+  ## Function by John Fox found here: 
+  ## http://tolstoy.newcastle.edu.au/R/help/05/04/2715.html
+  ## Tweaks by AJH to add commas and "and"
+  helper <- function(x){
+    
+    digits <- rev(strsplit(as.character(x), "")[[1]])
+    nDigits <- length(digits)
+    if (nDigits == 1) as.vector(ones[digits])
+    else if (nDigits == 2)
+      if (x <= 19) as.vector(teens[digits[1]])
+    else trim(paste(tens[digits[2]],
+                    Recall(as.numeric(digits[1]))))
+    else if (nDigits == 3) trim(paste(ones[digits[3]], "hundred and", 
+                                      Recall(makeNumber(digits[2:1]))))
+    else {
+      nSuffix <- ((nDigits + 2) %/% 3) - 1
+      if (nSuffix > length(suffixes)) stop(paste(x, "is too large!"))
+      trim(paste(Recall(makeNumber(digits[
+        nDigits:(3*nSuffix + 1)])),
+        suffixes[nSuffix],"," ,
+        Recall(makeNumber(digits[(3*nSuffix):1]))))
+    }
+  }
+  trim <- function(text){
+    #Tidy leading/trailing whitespace, space before comma
+    text=gsub("^\ ", "", gsub("\ *$", "", gsub("\ ,",",",text)))
+    #Clear any trailing " and"
+    text=gsub(" and$","",text)
+    #Clear any trailing comma
+    gsub("\ *,$","",text)
+  }  
+  makeNumber <- function(...) as.numeric(paste(..., collapse=""))     
+  #Disable scientific notation
+  opts <- options(scipen=100) 
+  on.exit(options(opts)) 
+  ones <- c("", "one", "two", "three", "four", "five", "six", "seven",
+            "eight", "nine") 
+  names(ones) <- 0:9 
+  teens <- c("ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
+             "sixteen", " seventeen", "eighteen", "nineteen")
+  names(teens) <- 0:9 
+  tens <- c("twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty",
+            "ninety") 
+  names(tens) <- 2:9 
+  x <- round(x)
+  suffixes <- c("thousand", "million", "billion", "trillion")     
+  if (length(x) > 1) return(trim(sapply(x, helper)))
+  helper(x)
+}
+
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# 
+# This function runs all pairwise meta analysis for an outcome
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# direct_comp_char = table output from net_metaxl tables
+# data = contrast data output from the netmeta pairwise function
+# list = a NULL list that will be populated with results
+# outcome = string for titles and file names
+# location = where it should be saved
+
+# Example
+# all_pairwise(pa_reac_direct_comp_chat,pa_reac_contrast,pa_reac_pairwise, outcome = "PIPP reactivity",location = getwd())
+
+all_pairwise = function(direct_comp_char,data,location = getwd(),outcome){
+  dir.create(location,recursive = TRUE)
+comps_data = direct_comp_char %>% filter(`# Studies`>1)
+list = NULL
+comp_matrix = str_split_fixed(comps_data$Treatment, " vs ",2)
+
+for(i in seq_along(comps_data$Treatment)){
+  temp_data = data %>% filter(treat1 == comp_matrix[[i,1]] & treat2 == comp_matrix[i,2])
+  list[[i]] = metacont(n2,mean2,sd2,n1,mean1,sd1, sm = "MD", data = temp_data,studlab = studlab)
+  names(list)[i] = comps_data$Treatment[i]
+}
+for(i in seq_along(list)){
+  pdf(paste(location,"/",outcome,"_",names(list[i]),"_pw_ma.pdf",sep=""),width = 12, height = 6)
+  forest(list[[i]], lab.e = comp_matrix[i,2], lab.c = comp_matrix[i,1])
+  grid.text(paste(outcome,names(list[i]),sep = " "), .5, .8, gp=gpar(cex=2))
+  dev.off()
+}
+
+list
 }
 

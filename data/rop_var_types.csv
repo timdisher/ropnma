@@ -12,10 +12,6 @@ control,What was the control treatment,study_level,factor
 trt1,what was the first comparator treatment,study_level,factor
 trt2,second comparator,study_level,factor
 trt3,third comparator,study_level,factor
-ctrl_group,what class of intervention in control,study_level,factor
-trt1_group,what class of intervention in treatment 1,study_level,factor
-trt2_group,what class of intervention in treatment 2,study_level,factor
-trt3_group,what class of intervention in treatment 3,study_level,factor
 method,what was the method of eye assessment,study_level,factor
 speculum,was a speculum used?,study_level,factor
 scleral_dep,was scleral depression used?,study_level,factor
@@ -76,3 +72,4 @@ average_pma,average pma at procedure,arm_level,dbl
 imputed_pma,was pma imputed from the data?,arm_level,factor
 average_bw,average birthweight,arm_level,dbl
 notes,anynotes,arm_level,character
+scaled_score,was the score scaled?,arm_level,factor

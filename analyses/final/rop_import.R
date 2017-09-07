@@ -7,6 +7,8 @@ source("./functions/netmetaxl_tables_function.R")
 
 (codebook = read_csv("./data/rop_var_types.csv"))
 
+(int_codes = read_csv("./data/rop_intcodes.csv"))
+
 
 ###As this is the final data analysis, we replace all NDs and SNs with NAs.
 
@@ -14,6 +16,9 @@ rop_data_study = replace(rop_data_study,rop_data_study == "ND" | rop_data_study 
 
 rop_data_arm = replace(rop_data_arm,rop_data_arm == "ND" | rop_data_arm == "SN", NA)
 
+
+###Recode int classes 
+(rop_data_arm$trt_group = int_codes[match(rop_data_arm$treatment,int_codes[["intervention_name"]]),2][[1]])
 
 ###Use codebook to transform variables to correct type
 
@@ -26,3 +31,4 @@ codebook_arm = codebook %>% filter(sheet == "arm_level")
 
 (rop_data_arm = lookup_type(rop_data_arm,codebook_arm))
 
+write.csv(pa_reac_direct_comp_char,"direct_comp_char.csv")

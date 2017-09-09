@@ -24,11 +24,11 @@ rop_data_arm = replace(rop_data_arm,rop_data_arm == "ND" | rop_data_arm == "SN",
 
 codebook_study = codebook %>% filter(sheet == "study_level")
 
-(rop_data_study = lookup_type(rop_data_study,codebook_study))
+rop_data_study = lookup_type(rop_data_study,codebook_study)
 
 
 codebook_arm = codebook %>% filter(sheet == "arm_level")
 
-(rop_data_arm = lookup_type(rop_data_arm,codebook_arm))
+rop_data_arm = lookup_type(rop_data_arm,codebook_arm)
 
-write.csv(pa_reac_direct_comp_char,"direct_comp_char.csv")
+

@@ -20,49 +20,106 @@ library(netmeta)
 library(stargazer)
 library(reshape2)
 library(forcats)
+library(scales)
 
+source("./analyses/final/rop_explore_pipp.R")
+
+source("./functions/nma_cont.R")
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # Load data in WInBugs Format
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-source("./analyses/final/rop_explore_pipp.R")
+
 
 pa_reac$trt_group = fct_infreq(pa_reac$trt_group) #reorders factor from most to least common
 
-pa_reac = droplevels(pa_reac)
+pa_reac = droplevels(pa_reac) # Drops factor levels that don't exist (otherwise they are carried over)
+
 #Convert to long format and ensure treatment order is maintained
-
-(pa_reac_input = pa_reac %>% select(studlab,trt_group,mean,std_dev,sample_size) %>% 
-  rename(y = mean,
-         n = sample_size) %>%  
-    arrange(studlab,trt_group) %>% 
-    group_by(studlab) %>%
-    mutate(arm = row_number(),
-           t = as.numeric(trt_group),
-           na = n())
-          )
-
-treatments = pa_reac_input %>% ungroup() %>% select(trt_group,t) %>% distinct() %>% arrange(t) %>%
-  rename(description = trt_group)
-
-(pa_reac_wide= pa_reac_input %>% select(-trt_group) %>%
-  recast(studlab ~ variable + arm, id.var = c("studlab","arm")) %>% select(studlab:na_1) %>% rename(na = na_1)
-  )
-
-(pa_reac_wide = pa_reac_wide %>% mutate(y_2 = y_2 - y_1,
-                        y_3 = y_3 - y_1,
-                        y_4 = y_4 - y_1,
-                        se_2 = sqrt((std_dev_1^2*(n_1-1) + std_dev_2^2*(n_2-1))/(n_1+n_2-2))*sqrt(1/n_1+1/n_2),
-                        se_3 = sqrt((std_dev_1^2*(n_1-1) + std_dev_3^2*(n_3-1))/(n_1+n_3-2))*sqrt(1/n_1+1/n_3),
-                        se_4 = sqrt((std_dev_1^2*(n_1-1) + std_dev_4^2*(n_4-1))/(n_1+n_4-2))*sqrt(1/n_1+1/n_4),
-                        V = (std_dev_1/sqrt(n_1))^2) %>% arrange(na))
-
-(pa_reac_wb = pa_reac_wide %>% select(t_1:t_4,y_2:y_4,se_2:se_4,V,na))
+pa_reac_wb = long_wb(data = pa_reac)
 
 
+#Correct standard errors for crossovers
+pa_reac_wb$wb_xo = pa_reac_wb$wide %>% left_join(rop_data_study %>% select(studlab,design), by = "studlab") %>% left_join(rop_data_arm %>% select(studlab,p_value) %>% distinct() %>% filter(!is.na(p_value)),by = "studlab") %>% 
+  mutate(se_2 = ifelse(design == "Crossover",se_paired(y_2,p_value,n_1),se_2)) %>% select(t_1:t_4,y_2:y_4,se_2:se_4,V,na)
+
+
+#Load models
+model = normal_models()
+
+
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+# Primary Analysis ----
+# --------- Include crossovers
+# --------- Mean difference outcome
+# --------- Include imputed means
+# --------- Include residual deviance >2
+# --------- Vague priors on sigma
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+params.fe = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better")
+params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
+
+fe.model = nma_cont(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.fe, model = model$fe)
+
+re.model = nma_cont(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.re, model = model$re)
+
+
+
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+# Inconsistency analysis - requires a little extra work in function
+#
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# 
+# fe.model.inc = nma_cont_fe(pa_reac_wb$wb_xo, pa_reac_wb$treatments,model = model$fe_inc)
+# 
+# re.model.inc = nma_cont_fe(pa_reac_wb$wb_xo, pa_reac_wb$treatments,FE = FALSE,model = model$re_inc)
+# 
+# fe.model.inc
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+# Sensitivity 1 ----
+# --------- **Exclude crossovers**
+# --------- Mean difference outcome
+# --------- Include imputed means
+# --------- Include residual deviance >2
+# --------- Vague priors on sigma
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
 
-fe.model = nma_cont_fe(pa_reac_wb,treatments)
+
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+# Sensitivity 2 ----
+# --------- Include crossovers
+# --------- Mean difference outcome
+# --------- **Exclude imputed means**
+# --------- Include residual deviance >2
+# --------- Vague priors on sigma
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
+
+
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+# Sensitivity 3 ----
+# --------- Include crossovers
+# --------- Mean difference outcome
+# --------- Include imputed means
+# --------- **Exclude residual deviance >2**
+# --------- Vague priors on sigma
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+# Sensitivity 4 ----
+# --------- Include crossovers
+# --------- **Standardized mean difference**
+# --------- Include imputed means (as SMD)
+# --------- Include residual deviance >2
+# --------- **Informative priors on sigma**
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

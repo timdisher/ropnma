@@ -123,3 +123,5 @@ re.model = nma_cont(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.re, 
 # --------- Include residual deviance >2
 # --------- **Informative priors on sigma**
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+test

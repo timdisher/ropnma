@@ -514,14 +514,11 @@ data
 #
 #============================================================================================
 
-nma_cont_fe = function(data,treatments, FE = TRUE, n.iter = 40000, n.burnin = 20000, model){
+nma_cont = function(data,treatments,n.iter = 40000, n.burnin = 20000, model, params){
 
   data = nma_winbugs_datalist(data,treatments)
   
-  params.fe = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better")
-  params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
-  
-  model = bugs(data, NULL, params.fe, model.file= model,
+  model = bugs(data, NULL, params, model.file= model,
                n.chains = 3, n.iter = n.iter, n.burnin = n.burnin, n.thin=1, 
                bugs.directory = "c:/Users/TheTimbot/Desktop/WinBUGS14", debug=F)
   
@@ -597,15 +594,12 @@ probs <- model$mean$prob; rownames(probs) <- treatments$description; colnames(pr
 
 dat <- melt(cbind(probs)); colnames(dat) <- c('Treatments', 'Rankings', 'Probability of Best Treatment')
 
-if(FE == TRUE){
+
 rankogram = ggplot(dat,aes(x = Rankings, y = `Probability of Best Treatment`,fill = Treatments)) + 
   geom_bar(position = "fill",stat = "identity") + 
-  scale_y_continuous(labels = percent_format())  +  ggtitle("Fixed Effects Rankogram") +scale_x_continuous(breaks=seq(1,data$nt))
+  scale_y_continuous(labels = percent_format()) + scale_x_continuous(breaks=seq(1,data$nt))
 
 
-} else rankogram = ggplot(dat,aes(x = Rankings, y = `Probability of Best Treatment`,fill = Treatments)) + 
-  geom_bar(position = "fill",stat = "identity") + 
-  scale_y_continuous(labels = percent_format())  +  ggtitle("Random Effects Rankogram") +scale_x_continuous(breaks=seq(1,data$nt))
 
 
 
@@ -622,4 +616,16 @@ results = list(model = model,comp = comp,rr = rr,rankogram = rankogram)
   
   
 results
+}
+
+
+nma_cont_inc = function(data,treatments, n.iter = 40000, m.burnin = 20000,model){
+  data = nma_winbugs_datalist(data,treatments)
+  
+  params.fe = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better")
+  params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
+  
+  model = bugs(data, NULL, params, model.file= model,
+               n.chains = 3, n.iter = n.iter, n.burnin = n.burnin, n.thin=1, 
+               bugs.directory = "c:/Users/TheTimbot/Desktop/WinBUGS14", debug=F)
 }

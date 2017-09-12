@@ -59,7 +59,8 @@ model_jags = normal_models_jags()
 params.fe = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better")
 params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
 
-fe.model = nma_cont(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.fe, model = model$fe)
+fe.model = nma_cont(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.fe, model = model$fe,
+                    bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14")
 
 re.model = nma_cont(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.re, model = model$re)
 

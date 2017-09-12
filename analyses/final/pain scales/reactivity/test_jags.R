@@ -46,7 +46,7 @@ pa_reac_wb$wb_xo = pa_reac_wb$wide %>% left_join(rop_data_study %>% select(studl
 #Load models
 model = normal_models()
 
-model_jags = normal_models_jags()
+
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
 # Primary Analysis ----
@@ -62,6 +62,7 @@ params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'p
 fe.model = nma_cont(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.fe, model = model$fe)
 
 re.model = nma_cont(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.re, model = model$re)
+
 
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

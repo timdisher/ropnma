@@ -3,8 +3,8 @@ title: 'Pain relieving interventions for retinopathy of prematurity: Systematic 
   and network meta-analysis'
 author: "Disher, T.^a^, Cameron, C.^b^, Cathcart, K.^a^, Campbell-Yeo, M.^a,c^"
 output:
-  html_notebook: default
   html_document: default
+  html_notebook: default
   word_document:
     reference_docx: apa_style.docx
 bibliography: library.bib
@@ -112,7 +112,7 @@ Studies assessing easily blindable interventions (e.g. sweet taste, oral acetami
 We intended to use funnel plots to investigate signs of publication bias, although no comparisons had sufficient studies12. We identified several trial registries indicating trials that are or should realistically be complete without an identifiable publication of results in abstract or manuscript form41–46. One of these was a trial assessing efficacy of acetaminophen which was stopped early because the intervention showed no effect43. None of the contacts listed responded to e-mails.
 
 ```{r echo = FALSE}
-# source("./analyses/final/pain scales/rop_explore_pipp.R")
+# source("./analyses/final/rop_explore_pipp.R")
 # source("./analyses/final/pain scales/rop_model_pipp.R")
 ```
 

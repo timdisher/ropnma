@@ -24,7 +24,7 @@ library(scales)
 
 source("./analyses/final/rop_explore_pipp.R")
 
-source("./functions/nma_cont.R")
+source("./functions/jags_nma_functions.R")
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # Load data in WInBugs Format
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -59,10 +59,9 @@ model_jags = normal_models_jags()
 params.fe = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better")
 params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
 
-fe.model = nma_cont(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.fe, model = model$fe)
+fe.model = nma_cont_jags(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.fe, model = model_jags$fe)
 
-re.model = nma_cont(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.re, model = model$re)
-
+re.model = nma_cont_jags(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.re, model = model_jags$re)
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #

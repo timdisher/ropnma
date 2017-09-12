@@ -112,7 +112,7 @@ fe_normal_gaus <- function()
   #LOOP THROUGH 3-ARM STUDIES								
   for(i in (ns2+1):(ns2+ns3)) {								
     for (k in 1:(na[i]-1)) { # set variance-covariance matrix								
-      for (j in 1:(na[i]-1)) { Sigma[i,j,k] <- V[i]*(1-equals(j,k)) + var[i,k+1]*equals(j,k) }       # TSD 2 - pg 37, distribution of Y_i,xxx 				
+      for (j in 1:(na[i]-1)) { Sigma[i,j,k] <- V[i]*(1-equals(j,k)) + vari[i,k+1]*equals(j,k) }       # TSD 2 - pg 37, distribution of Y_i,xxx 				
     }								
     Omega[i,1:(na[i]-1),1:(na[i]-1)] <- inverse(Sigma[i,,]) #Precision matrix								
     
@@ -122,15 +122,15 @@ fe_normal_gaus <- function()
     #Deviance contribution for trial i								
     for (k in 1:(na[i]-1)){ # multiply vector & matrix								
       ydiff[i,k]<- y[i,(k+1)] - delta[i,(k+1)]								
-      z[i,k]<- inprod2(Omega[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])								
+      z[i,k]<- inprod(Omega[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])								
     }								
-    resdev[i]<- inprod2(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])	#TSD2 - pg 20, table							
+    resdev[i]<- inprod(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])	#TSD2 - pg 20, table							
   }
   
   #LOOP THROUGH 4-ARM STUDIES								
   for(i in (ns2+ns3+1):(ns2+ns3+ns4)) {								
     for (k in 1:(na[i]-1)) { # set variance-covariance matrix								
-      for (j in 1:(na[i]-1)) { Sigma2[i,j,k] <- V[i]*(1-equals(j,k)) + var[i,k+1]*equals(j,k) }								
+      for (j in 1:(na[i]-1)) { Sigma2[i,j,k] <- V[i]*(1-equals(j,k)) + vari[i,k+1]*equals(j,k) }								
     }								
     Omega2[i,1:(na[i]-1),1:(na[i]-1)] <- inverse(Sigma2[i,,]) #Precision matrix								
     
@@ -140,16 +140,16 @@ fe_normal_gaus <- function()
     #Deviance contribution for trial i								
     for (k in 1:(na[i]-1)){ # multiply vector & matrix								
       ydiff[i,k]<- y[i,(k+1)] - delta[i,(k+1)]								
-      z[i,k]<- inprod2(Omega2[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])								
+      z[i,k]<- inprod(Omega2[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])								
     }								
-    resdev[i]<- inprod2(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])								
+    resdev[i]<- inprod(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])								
   }	
   
   #LOOP THROUGH ALL STUDIES								
   for(i in 1:(ns2+ns3+ns4)){								
     for (k in 2:na[i]) { # LOOP THROUGH ARMS								
-      var[i,k] <- pow(se[i,k],2) # calculate variances								
-      prec[i,k] <- 1/var[i,k] # set precisions								
+      vari[i,k] <- pow(se[i,k],2) # calculate variances								
+      prec[i,k] <- 1/vari[i,k] # set precisions								
       delta[i,k] <- d[t[i,k]] - d[t[i,1]]								
       dev[i,k] <- (y[i,k]-delta[i,k])*(y[i,k]-delta[i,k])*prec[i,k]								
     }								
@@ -172,15 +172,15 @@ fe_normal_gaus <- function()
   }								
   
   # ranking calculations								
-  for (k in 1:nt){								
-    rk[k] <- rank(d[],k) # assumes differences < 0 favor the comparator				
+  rk = rank(d[])# assumes differences < 0 favor the comparator				
     
     # Prob Best
-    best[k] <- equals(rk[k],1) #calculate probability that treat k is best  			
+  for(k in 1:nt){
+    best[k] <- equals(rk[k],1) #calculate probability that treat k is best  }			
     for(h in 1:nt) {								
       prob[k,h]<- equals(rk[k],h)								
     }								
-  }	
+  }
   
   for(k in 1:nt) {								
     for(h in 1:nt) {								
@@ -207,7 +207,7 @@ fe_normal_gaus_inc <- function(){
   for(i in (ns2+1):(ns2+ns3)) {        # LOOP THROUGH THREE-ARM STUDIES
     for (k in 1:(na[i]-1)) {    # set variance-covariance matrix
       for (j in 1:(na[i]-1)) {
-        Sigma[i,j,k] <- V[i]*(1-equals(j,k)) + var[i,k+1]*equals(j,k)
+        Sigma[i,j,k] <- V[i]*(1-equals(j,k)) + vari[i,k+1]*equals(j,k)
       }
     }
     Omega[i,1:(na[i]-1),1:(na[i]-1)] <- inverse(Sigma[i,,])  #Precision matrix
@@ -216,15 +216,15 @@ fe_normal_gaus_inc <- function(){
     #Deviance contribution for trial i
     for (k in 1:(na[i]-1)){  # multiply vector & matrix
       ydiff[i,k]<- y[i,(k+1)] - delta[i,(k+1)]
-      z[i,k]<- inprod2(Omega[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])
+      z[i,k]<- inprod(Omega[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])
     }
-    resdev[i]<- inprod2(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])
+    resdev[i]<- inprod(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])
   }
   
   #LOOP THROUGH 4-ARM STUDIES								
   for(i in (ns2+ns3+1):(ns2+ns3+ns4)) {								
     for (k in 1:(na[i]-1)) { # set variance-covariance matrix								
-      for (j in 1:(na[i]-1)) { Sigma2[i,j,k] <- V[i]*(1-equals(j,k)) + var[i,k+1]*equals(j,k) }								
+      for (j in 1:(na[i]-1)) { Sigma2[i,j,k] <- V[i]*(1-equals(j,k)) + vari[i,k+1]*equals(j,k) }								
     }								
     Omega2[i,1:(na[i]-1),1:(na[i]-1)] <- inverse(Sigma2[i,,]) #Precision matrix								
     
@@ -234,15 +234,15 @@ fe_normal_gaus_inc <- function(){
     #Deviance contribution for trial i								
     for (k in 1:(na[i]-1)){ # multiply vector & matrix								
       ydiff[i,k]<- y[i,(k+1)] - delta[i,(k+1)]								
-      z[i,k]<- inprod2(Omega2[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])								
+      z[i,k]<- inprod(Omega2[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])								
     }								
-    resdev[i]<- inprod2(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])								
+    resdev[i]<- inprod(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])								
   }	
   
   for(i in 1:(ns2+ns3+ns4)){                      #   LOOP THROUGH ALL STUDIES
     for (k in 2:na[i]) {             #  LOOP THROUGH ARMS
-      var[i,k] <- pow(se[i,k],2)   # calculate variances
-      prec[i,k] <- 1/var[i,k]      # set precisions
+      vari[i,k] <- pow(se[i,k],2)   # calculate variances
+      prec[i,k] <- 1/vari[i,k]      # set precisions
       # trial-specific LOR distributions
       delta[i,k] <- d[t[i,1],t[i,k]]
       dev[i,k] <- (y[i,k]-delta[i,k])*(y[i,k]-delta[i,k])*prec[i,k]
@@ -276,7 +276,7 @@ re_normal_gaus <- function()	                             # this code for this m
   }								
   for(i in (ns2+1):(ns2+ns3)) { # LOOP THROUGH 3-ARM STUDIES								
     for (k in 1:(na[i]-1)) { # set variance-covariance matrix								
-      for (j in 1:(na[i]-1)) { Sigma[i,j,k] <- V[i]*(1-equals(j,k)) + var[i,k+1]*equals(j,k) }								
+      for (j in 1:(na[i]-1)) { Sigma[i,j,k] <- V[i]*(1-equals(j,k)) + vari[i,k+1]*equals(j,k) }								
     }								
     Omega[i,1:(na[i]-1),1:(na[i]-1)] <- inverse(Sigma[i,,]) #Precision matrix								
     # multivariate normal likelihood for 3-arm trials								
@@ -284,14 +284,14 @@ re_normal_gaus <- function()	                             # this code for this m
     #Deviance contribution for trial i								
     for (k in 1:(na[i]-1)){ # multiply vector & matrix								
       ydiff[i,k]<- y[i,(k+1)] - delta[i,(k+1)]								
-      z[i,k]<- inprod2(Omega[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])								
+      z[i,k]<- inprod(Omega[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])								
     }								
-    resdev[i]<- inprod2(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])								
+    resdev[i]<- inprod(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])								
   }		
   
   for(i in (ns2+ns3+1):(ns2+ns3+ns4)) { # LOOP THROUGH 4-ARM STUDIES								
     for (k in 1:(na[i]-1)) { # set variance-covariance matrix								
-      for (j in 1:(na[i]-1)) { Sigma2[i,j,k] <- V[i]*(1-equals(j,k)) + var[i,k+1]*equals(j,k) }								
+      for (j in 1:(na[i]-1)) { Sigma2[i,j,k] <- V[i]*(1-equals(j,k)) + vari[i,k+1]*equals(j,k) }								
     }								
     Omega2[i,1:(na[i]-1),1:(na[i]-1)] <- inverse(Sigma2[i,,]) #Precision matrix								
     # multivariate normal likelihood for 4-arm trials								
@@ -299,9 +299,9 @@ re_normal_gaus <- function()	                             # this code for this m
     #Deviance contribution for trial i								
     for (k in 1:(na[i]-1)){ # multiply vector & matrix								
       ydiff[i,k]<- y[i,(k+1)] - delta[i,(k+1)]								
-      z[i,k]<- inprod2(Omega2[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])								
+      z[i,k]<- inprod(Omega2[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])								
     }								
-    resdev[i]<- inprod2(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])								
+    resdev[i]<- inprod(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])								
   }
   
   
@@ -310,8 +310,8 @@ re_normal_gaus <- function()	                             # this code for this m
     w[i,1] <- 0 # adjustment for multi-arm trials is zero for control arm								
     delta[i,1] <- 0 # treatment effect is zero for control arm								
     for (k in 2:na[i]) { # LOOP THROUGH ARMS								
-      var[i,k] <- pow(se[i,k],2) # calculate variances								
-      prec[i,k] <- 1/var[i,k] # set precisions								
+      vari[i,k] <- pow(se[i,k],2) # calculate variances								
+      prec[i,k] <- 1/vari[i,k] # set precisions								
       dev[i,k] <- (y[i,k]-delta[i,k])*(y[i,k]-delta[i,k])*prec[i,k]								
     }								
     #resdev[i] <- sum(dev[i,2:na[i]]) # summed residual deviance contribution for this trial								
@@ -320,7 +320,7 @@ re_normal_gaus <- function()	                             # this code for this m
       md[i,k] <- d[t[i,k]] - d[t[i,1]] + sw[i,k] # mean of treat effects distributions (with multi-arm trial correction)								
       taud[i,k] <- tau *2*(k-1)/k # precision of treat effects distributions (with multi-arm trial correction)								
       w[i,k] <- (delta[i,k] - d[t[i,k]] + d[t[i,1]]) # adjustment for multi-arm RCTs								
-      sw[i,k] <- sum(w[i,1:k-1])/(k-1) # cumulative adjustment for multi-arm trials								
+      sw[i,k] <- sum(w[i,1:(k-1)])/(k-1) # cumulative adjustment for multi-arm trials								
     }								
   }								
   totresdev <- sum(resdev[]) #Total Residual Deviance								
@@ -342,17 +342,16 @@ re_normal_gaus <- function()	                             # this code for this m
     }								
   }								
   # ranking calculations								
-  for (k in 1:nt) {
-    # assumes differences<0 favor the comparator   ===> number of elements in d[] that are less than or equal to d[k] 					
-    rk[k] <- rank(d[],k) 			
-    
-    #calculate probability that treat k is best		===> k is the best treatment if rk[k] = 1
-    best[k] <- equals(rk[k],1)
-    
+  rk = rank(d[])# assumes differences < 0 favor the comparator				
+  
+  # Prob Best
+  for(k in 1:nt){
+    best[k] <- equals(rk[k],1) #calculate probability that treat k is best  }			
     for(h in 1:nt) {								
-      prob[k,h]<- equals(rk[k],h) 				
+      prob[k,h]<- equals(rk[k],h)								
     }								
-  }								
+  }
+  
   for(k in 1:nt) {								
     for(h in 1:nt) {								
       cumeffectiveness[k,h]<- sum(prob[k,1:h])								
@@ -378,7 +377,7 @@ re_normal_gaus_inc <- function(){
   for(i in (ns2+1):(ns2+ns3)) {        # LOOP THROUGH THREE-ARM STUDIES								
     for (k in 1:(na[i]-1)) {    # set variance-covariance matrix								
       for (j in 1:(na[i]-1)) {								
-        Sigma[i,j,k] <- V[i]*(1-equals(j,k)) + var[i,k+1]*equals(j,k)								
+        Sigma[i,j,k] <- V[i]*(1-equals(j,k)) + vari[i,k+1]*equals(j,k)								
       }								
     }								
     Omega[i,1:(na[i]-1),1:(na[i]-1)] <- inverse(Sigma[i,,])  #Precision matrix								
@@ -387,14 +386,14 @@ re_normal_gaus_inc <- function(){
     #Deviance contribution for trial i								
     for (k in 1:(na[i]-1)){  # multiply vector & matrix								
       ydiff[i,k]<- y[i,(k+1)] - delta[i,(k+1)]								
-      z[i,k]<- inprod2(Omega[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])								
+      z[i,k]<- inprod(Omega[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])								
     }						
-    resdev[i]<- inprod2(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])								
+    resdev[i]<- inprod(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])								
   }
   
   for(i in (ns2+ns3+1):(ns2+ns3+ns4)) { # LOOP THROUGH 4-ARM STUDIES								
     for (k in 1:(na[i]-1)) { # set variance-covariance matrix								
-      for (j in 1:(na[i]-1)) { Sigma2[i,j,k] <- V[i]*(1-equals(j,k)) + var[i,k+1]*equals(j,k) }								
+      for (j in 1:(na[i]-1)) { Sigma2[i,j,k] <- V[i]*(1-equals(j,k)) + vari[i,k+1]*equals(j,k) }								
     }								
     Omega2[i,1:(na[i]-1),1:(na[i]-1)] <- inverse(Sigma2[i,,]) #Precision matrix								
     # multivariate normal likelihood for 4-arm trials								
@@ -402,15 +401,15 @@ re_normal_gaus_inc <- function(){
     #Deviance contribution for trial i								
     for (k in 1:(na[i]-1)){ # multiply vector & matrix								
       ydiff[i,k]<- y[i,(k+1)] - delta[i,(k+1)]								
-      z[i,k]<- inprod2(Omega2[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])								
+      z[i,k]<- inprod(Omega2[i,k,1:(na[i]-1)], ydiff[i,1:(na[i]-1)])								
     }								
-    resdev[i]<- inprod2(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])								
+    resdev[i]<- inprod(ydiff[i,1:(na[i]-1)], z[i,1:(na[i]-1)])								
   }
   
   for(i in 1:(ns2+ns3+ns4)){                      #   LOOP THROUGH ALL STUDIES								
     for (k in 2:na[i]) {             #  LOOP THROUGH ARMS								
-      var[i,k] <- pow(se[i,k],2)   # calculate variances								
-      prec[i,k] <- 1/var[i,k]      # set precisions								
+      vari[i,k] <- pow(se[i,k],2)   # calculate variances								
+      prec[i,k] <- 1/vari[i,k]      # set precisions								
       # trial-specific LOR distributions								
       delta[i,k] ~ dnorm(d[t[i,1],t[i,k]] ,tau)
       dev[i,k] <- (y[i,k]-delta[i,k])*(y[i,k]-delta[i,k])*prec[i,k]								
@@ -431,16 +430,16 @@ re_normal_gaus_inc <- function(){
 #==============================
 # Write model files
 #==============================
-normal_models = function(fe = fe_normal_gaus, re = re_normal_gaus, fe_inc = fe_normal_gaus_inc, re_inc = re_normal_gaus_inc){
+normal_models_jags = function(fe = fe_normal_gaus, re = re_normal_gaus, fe_inc = fe_normal_gaus_inc, re_inc = re_normal_gaus_inc){
   
-write.model(fe, "fe-normal-gaus.txt")
-MODELFILE.fe <- c("fe-normal-gaus.txt")
+write.model(fe, "./models/fe-normal-gaus_jags.txt")
+MODELFILE.fe <- c("./models/fe-normal-gaus_jags.txt")
 
-write.model(re, "re-normal-gaus.txt")
-MODELFILE.re <- c("re-normal-gaus.txt")
+write.model(re, "./models/re-normal-gaus_jags.txt")
+MODELFILE.re <- c("./models/re-normal-gaus_jags.txt")
 
-write.model(fe, "fe-normal-gaus-inc.txt")
-MODELFILE.fe_inc <- c("fe-normal-gaus-inc.txt")
+write.model(fe, "./models/fe-normal-gaus-inc_jags.txt")
+MODELFILE.fe_inc <- c("./models/fe-normal-gaus-inc_jags.txt")
 
 
 write.model(re, "re-normal-gaus-inc.txt")
@@ -514,13 +513,12 @@ data
 #
 #============================================================================================
 
-nma_cont = function(data,treatments,n.iter = 40000, n.burnin = 20000, model, params, FE = TRUE){
+nma_cont_jags = function(data,treatments,n.iter = 40000, n.burnin = 20000, model, params, FE = TRUE){
 
   data = nma_winbugs_datalist(data,treatments)
   
-  model = bugs(data, NULL, params, model.file= model,
-               n.chains = 3, n.iter = n.iter, n.burnin = n.burnin, n.thin=1, 
-               bugs.directory = "c:/Users/TheTimbot/Desktop/WinBUGS14", debug=F)
+  model = jags.parallel(data, NULL, params, model.file= model,
+               n.chains = 3, n.iter = n.iter, n.burnin = n.burnin, n.thin=1)
   
 
 
@@ -534,10 +532,10 @@ nma_cont = function(data,treatments,n.iter = 40000, n.burnin = 20000, model, par
 #======================================
   
 # summarize mean differences - mean, 2.5%, median, 97.5%
-  md = (as.matrix(model$summary[grep("meandif", rownames(model$summary), fixed=F), c(1,3,5,7)]))
+  md = (as.matrix(model$BUGSoutput$summary[grep("meandif", rownames(model$BUGSoutput$summary), fixed=F), c(1,3,5,7)]))
   
 # summarize the probability better - mean, 2.5%, median, 97.5%
-  better = (as.matrix(model$summary[grep("better", rownames(model$summary), fixed=F), c(1,2)]))
+  better = (as.matrix(model$BUGSoutput$summary[grep("better", rownames(model$BUGSoutput$summary), fixed=F), c(1,2)]))
   
   
 # conver comparison columns into a matrix
@@ -568,13 +566,13 @@ nma_cont = function(data,treatments,n.iter = 40000, n.burnin = 20000, model, par
 
   
 # sucra summary
-sucra = model$summary[grep("SUCRA", rownames(model$summary), fixed=F),] #mean SUCRA, remove ",1" to get median values
+sucra = model$BUGSoutput$summary[grep("SUCRA", rownames(model$BUGSoutput$summary), fixed=F),] #mean SUCRA, remove ",1" to get median values
 
 # ranks summary
-ranks = model$summary[grep("rk", rownames(model$summary), fixed=F),] #mean rank, remove ",1" to get median values
+ranks = model$BUGSoutput$summary[grep("rk", rownames(model$BUGSoutput$summary), fixed=F),] #mean rank, remove ",1" to get median values
 
 # prob best summary
-probs = model$summary[grep("best", rownames(model$summary), fixed=F),] #mean probability best, remove ",1" to get median values
+probs = model$BUGSoutput$summary[grep("best", rownames(model$BUGSoutput$summary), fixed=F),] #mean probability best, remove ",1" to get median values
 
 # mean of ranks (2.5% of rank to 97.5% of rank)
 rk_mean_ci = paste(round(ranks[,"50%"],2) , paste("(", paste(round(ranks[,'2.5%'],2), round(ranks[,'97.5%'],2), sep =" to "), ")", sep=""))
@@ -590,7 +588,9 @@ rr = rankings
 
 
 #Probability summary
-probs <- model$mean$prob; rownames(probs) <- treatments$description; colnames(probs) <- seq(1,data$nt)
+probs <- model$BUGSoutput$mean$prob; rownames(probs) <- treatments$description; colnames(probs) <- seq(1,data$nt)
+
+
 
 dat <- melt(cbind(probs)); colnames(dat) <- c('Treatments', 'Rankings', 'Probability of Best Treatment')
 
@@ -610,7 +610,7 @@ rankogram = ggplot(dat,aes(x = Rankings, y = `Probability of Best Treatment`,fil
 if(FE == TRUE){  
 results = list(model = model,comp = comp,rr = rr,rankogram = rankogram)
 
-}else {sd = model$summary[grep("^sd$",row.names(model$summary),fixed = F),]
+}else {sd = model$BUGSoutput$summary[grep("^sd$",row.names(model$BUGSoutput$summary),fixed = F),]
 
   results = list(model = model,sd = sd,comp = comp,rr = rr,rankogram = rankogram)}
   
@@ -618,7 +618,7 @@ results = list(model = model,comp = comp,rr = rr,rankogram = rankogram)
 results
 }
 
-
+###
 nma_cont_inc = function(data,treatments, n.iter = 40000, m.burnin = 20000,model){
   data = nma_winbugs_datalist(data,treatments)
   

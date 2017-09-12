@@ -1,0 +1,92 @@
+model
+{
+    for (i in 1:ns2) {
+        y[i, 2] ~ dnorm(delta[i, 2], prec[i, 2])
+        resdev[i] <- (y[i, 2] - delta[i, 2]) * (y[i, 2] - delta[i, 
+            2]) * prec[i, 2]
+    }
+    for (i in (ns2 + 1):(ns2 + ns3)) {
+        for (k in 1:(na[i] - 1)) {
+            for (j in 1:(na[i] - 1)) {
+                Sigma[i, j, k] <- V[i] * (1 - equals(j, k)) + 
+                  vari[i, k + 1] * equals(j, k)
+            }
+        }
+        Omega[i, 1:(na[i] - 1), 1:(na[i] - 1)] <- inverse(Sigma[i, 
+            , ])
+        y[i, 2:na[i]] ~ dmnorm(delta[i, 2:na[i]], Omega[i, 1:(na[i] - 
+            1), 1:(na[i] - 1)])
+        for (k in 1:(na[i] - 1)) {
+            ydiff[i, k] <- y[i, (k + 1)] - delta[i, (k + 1)]
+            z[i, k] <- inprod(Omega[i, k, 1:(na[i] - 1)], ydiff[i, 
+                1:(na[i] - 1)])
+        }
+        resdev[i] <- inprod(ydiff[i, 1:(na[i] - 1)], z[i, 1:(na[i] - 
+            1)])
+    }
+    for (i in (ns2 + ns3 + 1):(ns2 + ns3 + ns4)) {
+        for (k in 1:(na[i] - 1)) {
+            for (j in 1:(na[i] - 1)) {
+                Sigma2[i, j, k] <- V[i] * (1 - equals(j, k)) + 
+                  vari[i, k + 1] * equals(j, k)
+            }
+        }
+        Omega2[i, 1:(na[i] - 1), 1:(na[i] - 1)] <- inverse(Sigma2[i, 
+            , ])
+        y[i, 2:na[i]] ~ dmnorm(delta[i, 2:na[i]], Omega2[i, 1:(na[i] - 
+            1), 1:(na[i] - 1)])
+        for (k in 1:(na[i] - 1)) {
+            ydiff[i, k] <- y[i, (k + 1)] - delta[i, (k + 1)]
+            z[i, k] <- inprod(Omega2[i, k, 1:(na[i] - 1)], ydiff[i, 
+                1:(na[i] - 1)])
+        }
+        resdev[i] <- inprod(ydiff[i, 1:(na[i] - 1)], z[i, 1:(na[i] - 
+            1)])
+    }
+    for (i in 1:(ns2 + ns3 + ns4)) {
+        w[i, 1] <- 0.00000E+00
+        delta[i, 1] <- 0.00000E+00
+        for (k in 2:na[i]) {
+            vari[i, k] <- pow(se[i, k], 2)
+            prec[i, k] <- 1/vari[i, k]
+            dev[i, k] <- (y[i, k] - delta[i, k]) * (y[i, k] - 
+                delta[i, k]) * prec[i, k]
+        }
+        for (k in 2:na[i]) {
+            delta[i, k] ~ dnorm(md[i, k], taud[i, k])
+            md[i, k] <- d[t[i, k]] - d[t[i, 1]] + sw[i, k]
+            taud[i, k] <- tau * 2 * (k - 1)/k
+            w[i, k] <- (delta[i, k] - d[t[i, k]] + d[t[i, 1]])
+            sw[i, k] <- sum(w[i, 1:(k - 1)])/(k - 1)
+        }
+    }
+    totresdev <- sum(resdev[])
+    d[1] <- 0.00000E+00
+    for (k in 2:nt) {
+        d[k] ~ dnorm(0.00000E+00, 1.00000E-04)
+    }
+    sd ~ dunif(0.00000E+00, 5)
+    tau <- pow(sd, -2)
+    for (c in 1:(nt - 1)) {
+        for (k in (c + 1):nt) {
+            meandif[c, k] <- (d[k] - d[c])
+            better[c, k] <- 1 - step(d[k] - d[c])
+        }
+    }
+    rk = rank(d[])
+    for (k in 1:nt) {
+        best[k] <- equals(rk[k], 1)
+        for (h in 1:nt) {
+            prob[k, h] <- equals(rk[k], h)
+        }
+    }
+    for (k in 1:nt) {
+        for (h in 1:nt) {
+            cumeffectiveness[k, h] <- sum(prob[k, 1:h])
+        }
+    }
+    for (i in 1:nt) {
+        SUCRA[i] <- sum(cumeffectiveness[i, 1:(nt - 1)])/(nt - 
+            1)
+    }
+}

@@ -514,13 +514,13 @@ data
 #
 #============================================================================================
 
-nma_cont = function(data,treatments,n.iter = 40000, n.burnin = 20000, model, params){
+nma_cont = function(data,treatments,n.iter = 40000, n.burnin = 20000, model, params, FE = TRUE, bugsdir = "c:/Users/TheTimbot/Desktop/WinBUGS14" ){
 
   data = nma_winbugs_datalist(data,treatments)
   
   model = bugs(data, NULL, params, model.file= model,
                n.chains = 3, n.iter = n.iter, n.burnin = n.burnin, n.thin=1, 
-               bugs.directory = "c:/Users/TheTimbot/Desktop/WinBUGS14", debug=F)
+               bugs.directory = bugsdir, debug=F)
   
 
 
@@ -618,6 +618,9 @@ results = list(model = model,comp = comp,rr = rr,rankogram = rankogram)
 results
 }
 
+#====================================
+# Inconsistency Model
+#====================================
 
 nma_cont_inc = function(data,treatments, n.iter = 40000, m.burnin = 20000,model){
   data = nma_winbugs_datalist(data,treatments)
@@ -629,3 +632,6 @@ nma_cont_inc = function(data,treatments, n.iter = 40000, m.burnin = 20000,model)
                n.chains = 3, n.iter = n.iter, n.burnin = n.burnin, n.thin=1, 
                bugs.directory = "c:/Users/TheTimbot/Desktop/WinBUGS14", debug=F)
 }
+
+
+

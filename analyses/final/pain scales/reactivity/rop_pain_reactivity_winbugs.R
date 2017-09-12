@@ -46,7 +46,6 @@ pa_reac_wb$wb_xo = pa_reac_wb$wide %>% left_join(rop_data_study %>% select(studl
 #Load models
 model = normal_models()
 
-model_jags = normal_models_jags()
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
 # Primary Analysis ----
@@ -56,13 +55,13 @@ model_jags = normal_models_jags()
 # --------- Include residual deviance >2
 # --------- Vague priors on sigma
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-params.fe = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better")
 params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
 
-fe.model = nma_cont(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.fe, model = model$fe,
+re.model = nma_cont(pa_reac_wb$wb, pa_reac_wb$treatments,params = params.re, model = model$re,
                     bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14")
-
-re.model = nma_cont(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.re, model = model$re)
+options(max.print = 1000000)
+re.model$model
+#chain 1 list
 
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -123,5 +122,12 @@ re.model = nma_cont(pa_reac_wb$wb_xo, pa_reac_wb$treatments,params = params.re, 
 # --------- Include residual deviance >2
 # --------- **Informative priors on sigma**
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# 
+pa_reac_wb$smd = long_wb_smd(data = pa_reac)
 
-test
+write.csv(pa_reac_wb$smd,"ropnma.csv")
+re.model$smd = nma_cont(pa_reac_wb$smd, pa_reac_wb$treatments,params = params.re, model = model$re, bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14")
+
+pa_reac_wb$wb
+
+

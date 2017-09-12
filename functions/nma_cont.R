@@ -28,6 +28,36 @@ se_paired = function(y_2,p_value,n_1){
  se}
 
 
+#============================================================================================
+#
+#
+#             ---- Calculate standardized mean difference  -----
+# Source: https://cran.r-project.org/web/packages/compute.es/compute.es.pdf
+#
+#============================================================================================
+
+smd = function(yE,yC,sdE,sdC,nE,nC){
+  n = nE+nC
+  
+  
+  sd = sqrt(((nE-1)*(sdE^2)+(nC-1)*(sdC^2))/(n-2))
+  
+  md = yE-yC
+  
+  (md/sd) * (1 - (3/(4*n-9)))
+ 
+}
+
+se_smd = function(yE,yC,sdE,sdC,nE,nC){
+  n = nE+nC
+  
+  g = smd(yE,yC,sdE,sdC,nE,nC)
+  
+  var = n/(nE*nC) + (g^2/(2*(n-3.94)))
+  
+  sqrt(var)
+}
+
 
 #============================================================================================
 #
@@ -75,6 +105,46 @@ long_wb = function(data = pa_reac,studlab = "studlab", trt = "trt_group",mean = 
   
   out = list(input = input,treatments = treatments,wide = wide,wb = winbugs_ready)
 }
+
+
+long_wb_smd= function(data = pa_reac,studlab = "studlab", trt = "trt_group",mean = "mean",sd = "std_dev",sample_size = "samplesize"){
+  
+  (input = data %>% select(studlab,trt_group,mean,std_dev,sample_size) %>% 
+     rename(y = mean,
+            n = sample_size,
+            sd = std_dev) %>%  
+     arrange(studlab,trt_group) %>% ##Arranges treatments by factor level
+     group_by(studlab) %>%
+     mutate(arm = row_number(),
+            t = as.numeric(trt_group),
+            na = n())
+  )
+  
+  treatments = input %>% ungroup() %>% select(trt_group,t) %>% distinct() %>% arrange(t) %>%
+    rename(description = trt_group)
+  
+  (wide= input %>% select(-trt_group) %>%
+      recast(studlab ~ variable + arm, id.var = c(studlab,"arm")) %>% select(studlab:na_1) %>% rename(na = na_1)
+  )
+  
+  (wide = wide %>% mutate(y_2 = smd(y_1,y_2,sd_1,sd_2,n_1,n_2),
+                          y_3 = smd(y_1,y_3,sd_1,sd_3,n_1,n_3),
+                          y_4 = smd(y_1,y_4,sd_1,sd_4,n_1,n_4),
+                          se_2 = se_smd(y_1,y_2,sd_1,sd_2,n_1,n_2),
+                          se_3 = se_smd(y_1,y_3,sd_1,sd_3,n_1,n_3),
+                          se_4 = se_smd(y_1,y_4,sd_1,sd_4,n_1,n_4),
+                          V = (sd_1/sqrt(n_1))^2) %>% arrange(na)) #arrange by number of arms (see WiBUGS code for why)
+  
+  wide %>% select(t_1:t_4,y_2:y_4,se_2:se_4,V,na)
+  
+
+}
+
+
+
+
+
+
 #===================================================================================================
 
 
@@ -514,11 +584,8 @@ data
 #
 #============================================================================================
 
-<<<<<<< HEAD
-nma_cont = function(data,treatments,n.iter = 40000, n.burnin = 20000, model, params, FE = TRUE){
-=======
+
 nma_cont = function(data,treatments,n.iter = 40000, n.burnin = 20000, model, params, FE = TRUE, bugsdir = "c:/Users/TheTimbot/Desktop/WinBUGS14" ){
->>>>>>> 33e20990e1893b28669ff60cede6424d908c722c
 
   data = nma_winbugs_datalist(data,treatments)
   

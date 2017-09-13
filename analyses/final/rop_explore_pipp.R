@@ -23,12 +23,13 @@ library(grid)
 pa_reac = rop_data_arm %>% filter(outcome == "PIPP" | outcome == "NIPS", timepoint_group == "reactivity") #O'sullivan only study with N-PASS score scaled to PIPP
 
 ### converts data to correct format to allow for assessment of connectivity
-pa_reac_contrast = pairwise(data = pa_reac,treat = trt_group, n= sample_size, mean = mean,sd = std_dev,studlab = studlab) 
+pa_reac_contrast = pairwise(data = pa_reac,treat = trt_group, n= sample_size, 
+                            mean = mean,sd = std_dev,studlab = studlab) 
 
 pa_reac = pa_reac %>% filter(studlab != "Ucar 2014")
 #- Assess whether network is connected -#
 pa_reac_netconnect = netconnection(treat1,treat2,data = pa_reac_contrast)
-pa_reac_int = netmeta(TE,seTE,treat1,treat2,studlab,data = pa_reac_contrast, sm = "MD") ###required to drawn netgraph
+pa_reac_int = netmeta(TE,seTE,treat1,treat2,studlab,data = pa_reac_contrast, sm = "MD", comb.random = TRUE) ###required to drawn netgraph
 
 #Generate characteristics tables
 netmeta_xl_chars(pa_reac,"pa_reac",ref = "drops",treat = "trt_group",location = "./tables/final/char_tables/pain scales reactivity") ##create table of characteristics

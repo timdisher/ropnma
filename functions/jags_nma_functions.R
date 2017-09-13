@@ -442,8 +442,8 @@ write.model(fe, "./models/fe-normal-gaus-inc_jags.txt")
 MODELFILE.fe_inc <- c("./models/fe-normal-gaus-inc_jags.txt")
 
 
-write.model(re, "re-normal-gaus-inc.txt")
-MODELFILE.re_inc <- c("re-normal-gaus-inc.txt")
+write.model(re, "./models/re-normal-gaus-inc_jags.txt")
+MODELFILE.re_inc <- c("./models/re-normal-gaus-inc_jags.txt")
 
 list = list(fe = MODELFILE.fe, fe_inc= MODELFILE.fe_inc,re = MODELFILE.re, re_inc = MODELFILE.re_inc)
 

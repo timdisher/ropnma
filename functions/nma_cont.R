@@ -59,6 +59,10 @@ se_smd = function(yE,yC,sdE,sdC,nE,nC){
 }
 
 
+sd_smd = function(yE,yC,sdE,sdC,nE,nC){
+  sqrt(((nE-1)*(sdE^2)+(nC-1)*(sdC^2))/(n-2))
+}
+
 #============================================================================================
 #
 #
@@ -94,8 +98,8 @@ long_wb = function(data = pa_reac,studlab = "studlab", trt = "trt_group",mean = 
   (wide = wide %>% mutate(y_2 = y_2 - y_1,
                                           y_3 = y_3 - y_1,
                                           y_4 = y_4 - y_1,
-                                          se_2 = se_md(sd_1,sd_2,n_1,n_2),
-                                          se_3 = se_md(sd_1,sd_3,n_1,n_3),
+                                          se_2 = se_md(sd_2,sd_1,n_2,n_1),
+                                          se_3 = se_md(sd_2,sd_3,n_1,n_3),
                                           se_4 = se_md(sd_1,sd_4,n_1,n_4),
                                           V = (sd_1/sqrt(n_1))^2) %>% arrange(na)) #arrange by number of arms (see WiBUGS code for why)
   
@@ -106,6 +110,9 @@ long_wb = function(data = pa_reac,studlab = "studlab", trt = "trt_group",mean = 
   out = list(input = input,treatments = treatments,wide = wide,wb = winbugs_ready)
 }
 
+
+#####Long to wb for smd data. V is calculated differently here. This iteration was found
+# http://methods.cochrane.org/sites/methods.cochrane.org.cmi/files/public/uploads/S8-L%20Problems%20introduced%20by%20multi-arm%20trials%20-%20full%20network%20meta-analysis.pdf
 
 long_wb_smd= function(data = pa_reac,studlab = "studlab", trt = "trt_group",mean = "mean",sd = "std_dev",sample_size = "samplesize"){
   
@@ -127,13 +134,13 @@ long_wb_smd= function(data = pa_reac,studlab = "studlab", trt = "trt_group",mean
       recast(studlab ~ variable + arm, id.var = c(studlab,"arm")) %>% select(studlab:na_1) %>% rename(na = na_1)
   )
   
-  (wide = wide %>% mutate(y_2 = smd(y_1,y_2,sd_1,sd_2,n_1,n_2),
-                          y_3 = smd(y_1,y_3,sd_1,sd_3,n_1,n_3),
-                          y_4 = smd(y_1,y_4,sd_1,sd_4,n_1,n_4),
-                          se_2 = se_smd(y_1,y_2,sd_1,sd_2,n_1,n_2),
-                          se_3 = se_smd(y_1,y_3,sd_1,sd_3,n_1,n_3),
-                          se_4 = se_smd(y_1,y_4,sd_1,sd_4,n_1,n_4),
-                          V = (sd_1/sqrt(n_1))^2) %>% arrange(na)) #arrange by number of arms (see WiBUGS code for why)
+  (wide = wide %>% mutate(y_2 = smd(y_2,y_1,sd_2,sd_1,n_2,n_1),
+                          y_3 = smd(y_3,y_1,sd_3,sd_1,n_3,n_1),
+                          y_4 = smd(y_4,y_1,sd_4,sd_1,n_4,n_1),
+                          se_2 = se_smd(y_2,y_1,sd_2,sd_1,n_2,n_1),
+                          se_3 = se_smd(y_3,y_1,sd_3,sd_1,n_3,n_1),
+                          se_4 = se_smd(y_4,y_1,sd_4,sd_1,n_4,n_1),
+                          V = ifelse(na > 2,1/n_1,NA)) %>% arrange(na)) #arrange by number of arms (see WiBUGS code for why)
   
   wide %>% select(t_1:t_4,y_2:y_4,se_2:se_4,V,na)
   
@@ -182,7 +189,7 @@ fe_normal_gaus <- function()
   #LOOP THROUGH 3-ARM STUDIES								
   for(i in (ns2+1):(ns2+ns3)) {								
     for (k in 1:(na[i]-1)) { # set variance-covariance matrix								
-      for (j in 1:(na[i]-1)) { Sigma[i,j,k] <- V[i]*(1-equals(j,k)) + var[i,k+1]*equals(j,k) }       # TSD 2 - pg 37, distribution of Y_i,xxx 				
+      for (j in 1:(na[i]-1)) { Sigma[i,j,k] <- V[i]*(1-equals(j,k)) + var[i,(k+1)]*equals(j,k) }       # TSD 2 - pg 37, distribution of Y_i,xxx 				
     }								
     Omega[i,1:(na[i]-1),1:(na[i]-1)] <- inverse(Sigma[i,,]) #Precision matrix								
     
@@ -200,7 +207,7 @@ fe_normal_gaus <- function()
   #LOOP THROUGH 4-ARM STUDIES								
   for(i in (ns2+ns3+1):(ns2+ns3+ns4)) {								
     for (k in 1:(na[i]-1)) { # set variance-covariance matrix								
-      for (j in 1:(na[i]-1)) { Sigma2[i,j,k] <- V[i]*(1-equals(j,k)) + var[i,k+1]*equals(j,k) }								
+      for (j in 1:(na[i]-1)) { Sigma2[i,j,k] <- V[i]*(1-equals(j,k)) + var[i,(k+1)]*equals(j,k) }								
     }								
     Omega2[i,1:(na[i]-1),1:(na[i]-1)] <- inverse(Sigma2[i,,]) #Precision matrix								
     

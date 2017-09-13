@@ -9,7 +9,7 @@ model
         for (k in 1:(na[i] - 1)) {
             for (j in 1:(na[i] - 1)) {
                 Sigma[i, j, k] <- V[i] * (1 - equals(j, k)) + 
-                  var[i, k + 1] * equals(j, k)
+                  var[i, (k + 1)] * equals(j, k)
             }
         }
         Omega[i, 1:(na[i] - 1), 1:(na[i] - 1)] <- inverse(Sigma[i, 
@@ -28,7 +28,7 @@ model
         for (k in 1:(na[i] - 1)) {
             for (j in 1:(na[i] - 1)) {
                 Sigma2[i, j, k] <- V[i] * (1 - equals(j, k)) + 
-                  var[i, k + 1] * equals(j, k)
+                  var[i, (k + 1)] * equals(j, k)
             }
         }
         Omega2[i, 1:(na[i] - 1), 1:(na[i] - 1)] <- inverse(Sigma2[i, 

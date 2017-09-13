@@ -57,10 +57,7 @@ model = normal_models()
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
 
-re.model = nma_cont(pa_reac_wb$wb, pa_reac_wb$treatments,params = params.re, model = model$re,
-                    bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14")
-options(max.print = 1000000)
-re.model$model
+re.model = nma_cont(pa_reac_wb$wb, pa_reac_wb$treatments,params = params.re, model = model$re)
 #chain 1 list
 
 
@@ -125,9 +122,8 @@ re.model$model
 # 
 pa_reac_wb$smd = long_wb_smd(data = pa_reac)
 
-write.csv(pa_reac_wb$smd,"ropnma.csv")
-re.model$smd = nma_cont(pa_reac_wb$smd, pa_reac_wb$treatments,params = params.re, model = model$re, bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14")
-
-pa_reac_wb$wb
+re.model$smd = nma_cont(pa_reac_wb$smd, pa_reac_wb$treatments,params = params.re, model = model$re)
 
 
+
+re.model$smd$model

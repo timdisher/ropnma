@@ -9,7 +9,7 @@ model
         for (k in 1:(na[i] - 1)) {
             for (j in 1:(na[i] - 1)) {
                 Sigma[i, j, k] <- V[i] * (1 - equals(j, k)) + 
-                  var[i, (k + 1)] * equals(j, k)
+                  var[i, k + 1] * equals(j, k)
             }
         }
         Omega[i, 1:(na[i] - 1), 1:(na[i] - 1)] <- inverse(Sigma[i, 
@@ -28,7 +28,7 @@ model
         for (k in 1:(na[i] - 1)) {
             for (j in 1:(na[i] - 1)) {
                 Sigma2[i, j, k] <- V[i] * (1 - equals(j, k)) + 
-                  var[i, (k + 1)] * equals(j, k)
+                  var[i, k + 1] * equals(j, k)
             }
         }
         Omega2[i, 1:(na[i] - 1), 1:(na[i] - 1)] <- inverse(Sigma2[i, 
@@ -47,36 +47,19 @@ model
         for (k in 2:na[i]) {
             var[i, k] <- pow(se[i, k], 2)
             prec[i, k] <- 1/var[i, k]
-            delta[i, k] <- d[t[i, k]] - d[t[i, 1]]
+            delta[i, k] <- d[t[i, 1], t[i, k]]
             dev[i, k] <- (y[i, k] - delta[i, k]) * (y[i, k] - 
                 delta[i, k]) * prec[i, k]
         }
     }
     totresdev <- sum(resdev[])
-    d[1] <- 0.00000E+00
-    for (k in 2:nt) {
-        d[k] ~ dnorm(0.00000E+00, 1.00000E-04)
+    for (k in 1:nt) {
+        d[k, k] <- 0.00000E+00
     }
     for (c in 1:(nt - 1)) {
         for (k in (c + 1):nt) {
-            meandif[c, k] <- (d[k] - d[c])
-            better[c, k] <- 1 - step(d[k] - d[c])
+            d[c, k] ~ dnorm(0.00000E+00, 0.001)
+            hr[c, k] <- exp(d[c, k])
         }
-    }
-    for (k in 1:nt) {
-        rk[k] <- rank(d[], k)
-        best[k] <- equals(rk[k], 1)
-        for (h in 1:nt) {
-            prob[k, h] <- equals(rk[k], h)
-        }
-    }
-    for (k in 1:nt) {
-        for (h in 1:nt) {
-            cumeffectiveness[k, h] <- sum(prob[k, 1:h])
-        }
-    }
-    for (i in 1:nt) {
-        SUCRA[i] <- sum(cumeffectiveness[i, 1:(nt - 1)])/(nt - 
-            1)
     }
 }

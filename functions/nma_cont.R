@@ -152,6 +152,8 @@ long_wb_smd= function(data = pa_reac,studlab = "studlab", trt = "trt_group",mean
       recast(studlab ~ variable + arm, id.var = c(studlab,"arm")) %>% select(studlab:na_1) %>% rename(na = na_1)
   )
   
+  if("y_4" %in% colnames(wide)){
+  
   (wide = wide %>% mutate(y_2 = smd(y_2,y_1,sd_2,sd_1,n_2,n_1),
                           y_3 = smd(y_3,y_1,sd_3,sd_1,n_3,n_1),
                           y_4 = smd(y_4,y_1,sd_4,sd_1,n_4,n_1)))
@@ -159,10 +161,25 @@ long_wb_smd= function(data = pa_reac,studlab = "studlab", trt = "trt_group",mean
   (wide = wide %>%  mutate(se_2 = se_smd(y_2,sd_2,sd_1,n_2,n_1),
                           se_3 = se_smd(y_3,sd_3,sd_1,n_3,n_1),
                           se_4 = se_smd(y_4,sd_4,sd_1,n_4,n_1),
-                          V = ifelse(na > 2,1/n_1,NA)) %>% arrange(na)) 
+                          V = ifelse(na > 2,1/n_1,NA)) %>% arrange(na)) } else if("y_3" %in% colnames(wide)){
+                            
+                            
+                            (wide = wide %>% mutate(y_2 = smd(y_2,y_1,sd_2,sd_1,n_2,n_1),
+                                                    y_3 = smd(y_3,y_1,sd_3,sd_1,n_3,n_1)))
+                            
+                            (wide = wide %>%  mutate(se_2 = se_smd(y_2,sd_2,sd_1,n_2,n_1),
+                                                     se_3 = se_smd(y_3,sd_3,sd_1,n_3,n_1),
+                                                     V = ifelse(na > 2,1/n_1,NA)) %>% arrange(na)) } else {
+                                                       
+  
+                                                       (wide = wide %>% mutate(y_2 = smd(y_2,y_1,sd_2,sd_1,n_2,n_1)))
+                                                        
+                                                        (wide = wide %>%  mutate(se_2 = se_smd(y_2,sd_2,sd_1,n_2,n_1) %>% arrange(na)))}
+
+    
      #arrange by number of arms (see WiBUGS code for why)
   
-  wide %>% select(studlab,t_1:t_4,y_2:y_4,se_2:se_4,V,na)
+  wide %>% select(studlab,matches("t_"),matches("y_"),matches("se_"),V,na) %>% select(-y_1)
   
 
 }
@@ -222,7 +239,9 @@ nma_winbugs_datalist = function(data,treatments){
   ns3 = length(subset(na, na==3))
   ns4 = length(subset(na, na==4))
   
-  data = list(nt=nt, ns2=ns2, ns3=ns3, ns4=ns4,t=t, y=y, se=se, na=na, V=V)
+  if(ns4 >0)  data = list(nt=nt, ns2=ns2, ns3=ns3, ns4=ns4,t=t, y=y, se=se, na=na, V=V) else data = list(nt=nt, ns2=ns2, ns3=ns3,t=t, y=y, se=se, na=na, V=V)
+  
+ 
   
 data
   
@@ -241,15 +260,24 @@ data
 #============================================================================================
 
 
-nma_cont = function(data,treatments,n.iter = 40000, n.burnin = 20000, model, params, 
-                    FE = TRUE, bugsdir = "c:/Users/TheTimbot/Desktop/WinBUGS14", n.thin = 1){
+nma_cont = function(names,data,treatments,n.iter = 40000, n.burnin = 20000, model, params,params.inc = c("d","dev","totresdev"), 
+                    FE = TRUE,inc = FALSE, bugsdir = "c:/Users/TheTimbot/Desktop/WinBUGS14", n.thin = 1){
 
   data = nma_winbugs_datalist(data,treatments)
   
-  model = bugs(data, NULL, params, model.file= model,
+  model_con = model[[1]]
+  
+  
+  model.con = bugs(data, NULL, params, model.file= model_con,
                n.chains = 3, n.iter = n.iter, n.burnin = n.burnin, n.thin= n.thin, 
                bugs.directory = bugsdir, debug=F)
   
+  if(inc == TRUE){
+    model_inc = model[[2]]
+    params_inc = c("sd","resdev","dev","totresdev","d")
+  model.inc = bugs(data, NULL, params_inc, model.file= model_inc,
+                   n.chains = 3, n.iter = n.iter, n.burnin = n.burnin, n.thin= n.thin, 
+                   bugs.directory = bugsdir, debug=F) }
 
 
 
@@ -262,10 +290,10 @@ nma_cont = function(data,treatments,n.iter = 40000, n.burnin = 20000, model, par
 #======================================
   
 # summarize mean differences - mean, 2.5%, median, 97.5%
-  md = (as.matrix(model$summary[grep("meandif", rownames(model$summary), fixed=F), c(1,3,5,7)]))
+  md = (as.matrix(model.con$summary[grep("meandif", rownames(model.con$summary), fixed=F), c(1,3,5,7)]))
   
 # summarize the probability better - mean, 2.5%, median, 97.5%
-  better = (as.matrix(model$summary[grep("better", rownames(model$summary), fixed=F), c(1,2)]))
+  better = (as.matrix(model.con$summary[grep("better", rownames(model.con$summary), fixed=F), c(1,2)]))
   
   
 # conver comparison columns into a matrix
@@ -296,13 +324,13 @@ nma_cont = function(data,treatments,n.iter = 40000, n.burnin = 20000, model, par
 
   
 # sucra summary
-sucra = model$summary[grep("SUCRA", rownames(model$summary), fixed=F),] #mean SUCRA, remove ",1" to get median values
+sucra = model.con$summary[grep("SUCRA", rownames(model.con$summary), fixed=F),] #mean SUCRA, remove ",1" to get median values
 
 # ranks summary
-ranks = model$summary[grep("rk", rownames(model$summary), fixed=F),] #mean rank, remove ",1" to get median values
+ranks = model.con$summary[grep("rk", rownames(model.con$summary), fixed=F),] #mean rank, remove ",1" to get median values
 
 # prob best summary
-probs = model$summary[grep("best", rownames(model$summary), fixed=F),] #mean probability best, remove ",1" to get median values
+probs = model.con$summary[grep("best", rownames(model.con$summary), fixed=F),] #mean probability best, remove ",1" to get median values
 
 # mean of ranks (2.5% of rank to 97.5% of rank)
 rk_mean_ci = paste(round(ranks[,"50%"],2) , paste("(", paste(round(ranks[,'2.5%'],2), round(ranks[,'97.5%'],2), sep =" to "), ")", sep=""))
@@ -318,7 +346,7 @@ rr = rankings
 
 
 #Probability summary
-probs <- model$mean$prob; rownames(probs) <- treatments$description; colnames(probs) <- seq(1,data$nt)
+probs <- model.con$mean$prob; rownames(probs) <- treatments$description; colnames(probs) <- seq(1,data$nt)
 
 dat <- melt(cbind(probs)); colnames(dat) <- c('Treatments', 'Rankings', 'Probability of Best Treatment')
 
@@ -330,36 +358,96 @@ rankogram = ggplot(dat,aes(x = Rankings, y = `Probability of Best Treatment`,fil
 
 
 
+#=====================================================
+# Inconsistency results
+#=====================================================
+if(inc == TRUE){
+  
+  inc <- model.inc$summary[grep("d[", rownames(model.inc$summary), fixed=T), c(1,3,5,7)]
+
+  inc <- cbind(inc, md,comp)
+
+  d<-inc[!(as.numeric(inc[,4])>60),]
+
+  inc_ci = paste(round(as.numeric(d[,3]),2), paste("(", paste(round(as.numeric(d[,2]),2), round(as.numeric(d[,4]),2), sep =" to "), ")", sep=""))
+  con_ci = paste(round(as.numeric(d[,7]),2), paste("(", paste(round(as.numeric(d[,6]),2), round(as.numeric(d[,8]),2), sep =" to "), ")", sep=""))
+
+  inc.con = cbind(con_ci, inc_ci)
+  inc.con = rbind(inc.con, c(paste('DIC=', round(model.con$DIC,2), ' totresdev=', round(model.con$summary['totresdev',1],2)), 
+                             paste('DIC=', round(model.inc$DIC,2), ' totresdev=', round(model.inc$summary['totresdev',1],2))))
+  rownames(inc.con) = c(d[,9], 'Model Fit Statistics')
+  colnames(inc.con) = c('FE Consistency NMA', 'FE Inconsistency NMA')
+
+
+
+
+  x = model.con$summary[grep("^dev[[]", rownames(model.con$summary), fixed=F),1];
 
   
-#======================================
-# All results
-#======================================
-if(FE == TRUE){  
-results = list(model = model,comp = comp,rr = rr,rankogram = rankogram)
+  
+  y = model.inc$summary[grep("^dev[[]", rownames(model.inc$summary), fixed=F),1]
+  
+  names$V1 = c(1:length(names$studlab))
+  
+  treats = names %>% select(studlab,t_2,t_3,t_4)   
+  
+  treats["t_2"] = treatments[match(treats[["t_2"]], treatments[["t"]]),1]
+  treats["t_3"] = treatments[match(treats[["t_3"]], treatments[["t"]]),1]
+  treats["t_4"] = treatments[match(treats[["t_4"]], treatments[["t"]]),1]
+  
+  dict = treats %>% rename('2' = t_2,
+                           '3' = t_3,
+                           '4' = t_4) %>%gather(arm,treat,2:4) %>% mutate(arm = as.numeric(arm)) %>% rename(V2 = arm)
+  
 
-}else {sd = model$summary[grep("^sd$",row.names(model$summary),fixed = F),]
+  ric = as.data.frame(cbind(x,y)) %>% rownames_to_column("Arm") %>% rename('Consistency NMA' = x,
+                                                                           'Inconsistency NMA' = y) %>%
+ bind_cols(as.data.frame(str_extract_all(ric$Arm, regex('(?<=\\[|,)[0-9]+(?=\\]|-?)'),simplify = TRUE))) %>% 
+    mutate(V1 = as.integer(as.character(V1)),V2 = as.integer(as.character(V2))) %>%
+    left_join(names %>% select(studlab, V1), by = c("V1")) %>% left_join(dict, by = c("studlab","V2")) %>%
+    unite(label,studlab,treat,sep = ", ")
 
+
+
+
+
+  p <- ggplot(as.data.frame(ric), aes(`Consistency NMA`, `Inconsistency NMA`), label= label)
+
+
+
+  #Scatterplot for RE Model
+
+  dev_plot = p + geom_point() + scale_y_continuous(limits=c(0, 5)) + scale_x_continuous(limits=c(0, 5)) +  geom_abline(intercept = 0, colour='gray56', lty=2) +
+    ggtitle("Deviance Plot") +  theme(plot.title = element_text(hjust = 0.5)) +
+    geom_text(aes(label=ifelse(`Consistency NMA`>1.25|`Consistency NMA`<0.25,as.character(label),'')),hjust=0, nudge_x = 0.05, angle=0, size=2.5)
+  
+  
+  if(FE == TRUE){  
+    results = list(model = model,comp = comp,rr = rr,rankogram = rankogram)
+    
+  }else {sd = model$summary[grep("^sd$",row.names(model$summary),fixed = F),]
+  
+  results = list(model = model,sd = sd,comp = comp,rr = rr,rankogram = rankogram, inc_table = inc.con,
+                 devplot = dev_plot)}
+  
+  
+  results
+} else if(FE == TRUE){  
+    results = list(model = model,comp = comp,rr = rr,rankogram = rankogram)
+    
+  }else {sd = model$summary[grep("^sd$",row.names(model$summary),fixed = F),]
+  
   results = list(model = model,sd = sd,comp = comp,rr = rr,rankogram = rankogram)}
-  
-  
+
+
 results
 }
 
-#====================================
-# Inconsistency Model
-#====================================
+  
 
-nma_cont_inc = function(data,treatments, n.iter = 40000, m.burnin = 20000,model,n.thin = 1){
-  data = nma_winbugs_datalist(data,treatments)
-  
-  params.fe = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better")
-  params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
-  
-  model = bugs(data, NULL, params, model.file= model,
-               n.chains = 3, n.iter = n.iter, n.burnin = n.burnin, n.thin= n.thin, 
-               bugs.directory = "c:/Users/TheTimbot/Desktop/WinBUGS14", debug=F)
-}
+
+
+
 
 
 #=====================================================================================
@@ -1183,7 +1271,7 @@ re_normal_gaus_inc <- function(){
   for (c in 1:(nt-1)) {  # priors for all mean treatment effects								
     for (k in (c+1):nt)  { 
       d[c,k] ~ dnorm(0,.001) 
-      hr[c,k] <- exp(d[c,k])
+   
     } 								
   }  								
   sd ~ dunif(0,5)     # vague prior for between-trial SD								
@@ -1204,26 +1292,26 @@ normal_models = function(fe = fe_normal_gaus, re = re_normal_gaus, re_inf = re_n
   write.model(re, "re-normal-gaus.txt")
   MODELFILE.re <- c("re-normal-gaus.txt")
   
-  write.model(fe, "fe-normal-gaus-inc.txt")
+  write.model(fe_inc, "fe-normal-gaus-inc.txt")
   MODELFILE.fe_inc <- c("fe-normal-gaus-inc.txt")
   
   
-  write.model(re, "re-normal-gaus-inc.txt")
+  write.model(re_inc, "re-normal-gaus-inc.txt")
   MODELFILE.re_inc <- c("re-normal-gaus-inc.txt")
   
   
   write.model(re_inf, "re-normal-gaus-inf.txt")
   MODELFILE.re_inf <- c("re-normal-gaus-inf.txt")
   
-  write.model(re3, "re_normal_gaus_3arm")
+  write.model(re3, "re_normal_gaus_3arm.txt")
   MODELFILE.re3 <- c("re_normal_gaus_3arm.txt")
   
   
-  write.model(re3_inc, "re_normal_gaus_3arm_inc")
+  write.model(re3_inc, "re_normal_gaus_3arm_inc.txt")
   MODELFILE.re3_inc <- c("re_normal_gaus_3arm_inc.txt")
   
   
-  list = list(fe = MODELFILE.fe, fe_inc= MODELFILE.fe_inc,re = MODELFILE.re, re_inf = MODELFILE.re_inf ,re_inc = MODELFILE.re_inc)
+  list = list(fe = MODELFILE.fe, fe_inc= MODELFILE.fe_inc,re = MODELFILE.re, re_inf = MODELFILE.re_inf ,re_inc = MODELFILE.re_inc,re3 = MODELFILE.re3,re3_inc = MODELFILE.re3_inc)
   
   list
 }

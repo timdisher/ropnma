@@ -21,6 +21,7 @@ library(stargazer)
 library(reshape2)
 library(forcats)
 library(scales)
+library(gridExtra)
 
 source("./analyses/final/rop_explore_pipp.R")
 
@@ -38,52 +39,7 @@ if(smd == TRUE) long_wb_smd(data) else long_wb(data = data)
 
 }
 
-pa_reac_data = NULL
-
-
-pa_reac_data$pa = prep_wb(pa_reac)
-#Convert to long format and ensure treatment order is maintained
-
-
-
-#Correct standard errors for crossovers
-pa_reac_data$pa$wb_xo = pa_reac_data$pa$wide %>% left_join(rop_data_study %>% select(studlab,design), by = "studlab") %>% left_join(rop_data_arm %>% select(studlab,p_value) %>% distinct() %>% filter(!is.na(p_value)),by = "studlab") %>% 
-  mutate(se_2 = ifelse(design == "Crossover",se_paired(y_2,p_value,n_1),se_2)) %>% select(t_1:t_4,y_2:y_4,se_2:se_4,V,na)
-
-
-#Load models
-model = normal_models()
-
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-#
-# Primary Analysis ----
-# --------- Include crossovers
-# --------- Mean difference outcome
-# --------- Include imputed means
-# --------- include scaled scores
-# --------- Vague priors on sigma
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
-
-bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
-
-
-
-pa_reac_data$pa$re = nma_cont(pa_reac_data$pa$wb_xo, pa_reac_data$pa$treatments,params = params.re, model = model$re,
-                        bugsdir = bugsdir,n.iter = 100000, n.burnin = 40000,n.thin = 16, FE = FALSE) 
-
-
-
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-#
-# Sensitivity 1 ----
-# --------- **Exclude crossovers**
-# --------- Mean difference outcome
-# --------- Include imputed means
-# --------- include scaled scores
-# --------- Vague priors on sigma
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-sens_analysis = function(data,variable,drop,SA = FALSE){
+nma = function(data,variable,drop,SA = FALSE, inc = FALSE, models = model){
   data = data %>% left_join(rop_data_study[c("studlab","design")],by = "studlab")
   
   if(SA == TRUE){
@@ -95,20 +51,85 @@ sens_analysis = function(data,variable,drop,SA = FALSE){
     
     if(nc$n.subnets > 1) return("This sensitivity analysis disconnects the network") else( data = prep_wb(data))
     
-    data$xo = data$wide %>% left_join(rop_data_study %>% select(studlab,design), by = "studlab") %>% left_join(rop_data_arm %>% select(studlab,p_value) %>% distinct() %>% filter(!is.na(p_value)),by = "studlab") %>% 
-      mutate(se_2 = ifelse(design == "Crossover",se_paired(y_2,p_value,n_1),se_2)) %>% select(t_1:t_4,y_2:y_4,se_2:se_4,V,na)
-    nma = nma_cont(data$xo, data$treatments,params = params.re, model = model$re,bugsdir = bugsdir,n.iter = 100000, n.burnin = 40000,n.thin = 16, FE = FALSE) 
+    data$xo = data$wide %>% left_join(rop_data_study %>% select(studlab,design), by = "studlab") %>%
+      
+      left_join(rop_data_arm %>% select(studlab,p_value) %>% distinct() %>% filter(!is.na(p_value)),by = "studlab") %>%
+      
+      mutate(se_2 = ifelse(design == "Crossover",se_paired(y_2,p_value,n_1),se_2)) %>%
+      
+      select(matches("t_"),matches("y_"),matches("se_"),V,na) %>% select(-y_1)
     
-    list(data,nma)
+    
+    if("y_4" %in% colnames(data$xo))  model = list(models$re,models$re_inc) else model = list(models$re3,models$re3_inc)
+    
+    if(inc == FALSE){
+    nma = nma_cont(data, data$xo, data$treatments,params = params.re, model = model[[1]],bugsdir = bugsdir,n.iter = 100000, n.burnin = 40000,n.thin = 10, FE = FALSE, inc = inc)
+    
+    } else nma = nma_cont(data$wide, data$xo, data$treatments,params = params.re, model = model,bugsdir = bugsdir,n.iter = 100000, n.burnin = 40000,n.thin = 10, FE = FALSE, inc = inc)
+    list(data = data,nma = nma)
 }
 
 
-pa_reac_data$sa1 = sens_analysis(pa_reac,"design","Crossover") 
+treatments = data$treatments
+names = data$wide
+data = data$xo
+params = params.re
+model = model
+bugsdir = bugsdir
+n.iter = 100000
+n.burnin = 40000
+n.thin = 10
+FE = FALSE
+inc = FALSE
+
+#Function testing
+
+
+
+
+# #========================================================================================
+# 
+# 
+# Outcome: Pain Reactivity-----
+# 
+# #========================================================================================
+
+
 
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
-# Sensitivity 2 ----
+# Primary Analysis
+# --------- Include crossovers
+# --------- Mean difference outcome
+# --------- Include imputed means
+# --------- include scaled scores
+# --------- Vague priors on sigma
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
+model = normal_models()
+bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
+
+pa_reac_data = NULL
+
+pa_reac_data$pa = nma(pa_reac)
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+# Sensitivity 1 
+# --------- **Exclude crossovers**
+# --------- Mean difference outcome
+# --------- Include imputed means
+# --------- include scaled scores
+# --------- Vague priors on sigma
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+pa_reac_data$sa1 = nma(pa_reac,"design","Crossover",SA = TRUE) 
+
+
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+# Sensitivity 2
 # --------- Include crossovers
 # --------- Mean difference outcome
 # --------- **Exclude imputed means**
@@ -116,7 +137,7 @@ pa_reac_data$sa1 = sens_analysis(pa_reac,"design","Crossover")
 # --------- Vague priors on sigma
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-pa_reac_data$sa2 = sens_analysis(pa_reac,"imputed_mean","yes")
+pa_reac_data$sa2 = nma(pa_reac,"imputed_mean","yes", SA = TRUE)
 
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -125,11 +146,11 @@ pa_reac_data$sa2 = sens_analysis(pa_reac,"imputed_mean","yes")
 # --------- Include crossovers
 # --------- Mean difference
 # --------- Include imputed means (as SMD)
-# --------- include scaled scores
+# --------- *Exclude scaled scores*
 # --------- Vague priors
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-pa_reac_data$sa3 = sens_analysis(pa_reac,"scaled_score","yes")
+pa_reac_data$sa3 = nma(pa_reac,"scaled_score","yes")
 
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -142,26 +163,18 @@ pa_reac_data$sa3 = sens_analysis(pa_reac,"scaled_score","yes")
 # --------- **Informative priors on sigma**
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # 
-pa_reac_data$sa4 = prep_wb(data = pa_reac,smd = TRUE)
+pa_reac_data$sa4= prep_wb(data = pa_reac,smd = TRUE)
 
 
 
-pa_reac_data$sa4$re = nma_cont(pa_reac_data$sa4, pa_reac_data$pa$treatments,params = params.re, model = model$re_inf,
-                                  bugsdir = bugsdir, n.iter = 100000, n.burnin = 40000,n.thin = 16, FE = FALSE)
+pa_reac_data$sa4 = nma_cont(pa_reac_data$sa4, pa_reac_data$pa$data$treatments,params = params.re, model = model$re_inf,
+                                  bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 16, FE = FALSE)
 
-
-data = pa_reac_data$sa4
-treatments = pa_reac_data$pa$treatments
-params = params.re
-model = model$re_inf
-bugsdir = bugsdir
-
-
-
+pa_reac_data
 # #========================================================================================
 # 
 # 
-# Outcome: Pain Reactivity
+# Outcome: Pain Reactivity-----
 # 
 # #========================================================================================
 
@@ -181,11 +194,8 @@ bugsdir = bugsdir
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 pa_recov_data = NULL
 
-pa_recov_data$pa$model = sens_analysis(pa_recov)
+pa_recov_data$pa = nma(pa_recov)
 
-data = pa_recov
-variable = NULL
-drop = NULL
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
@@ -198,10 +208,9 @@ drop = NULL
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
-pa_recov_data$sa1 = sens_analysis(pa_recov,"design","Crossover") 
+pa_recov_data$sa1 = nma(pa_recov,"design","Crossover", SA = TRUE) 
 
-variable = "design"
-drop = "Crossover"
+
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
 # Sensitivity 2 ----
@@ -212,7 +221,7 @@ drop = "Crossover"
 # --------- Vague priors on sigma
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-pa_recov_data$sa2 = sens_analysis(pa_recov,"imputed_mean","yes")
+pa_recov_data$sa2 = nma(pa_recov,"imputed_mean","yes")
 
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -225,7 +234,7 @@ pa_recov_data$sa2 = sens_analysis(pa_recov,"imputed_mean","yes")
 # --------- Vague priors
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-pa_recov_data$sa3 = sens_analysis(pa_recov,"scaled_score","yes")
+pa_recov_data$sa3 = nma(pa_recov,"scaled_score","yes")
 
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -245,9 +254,3 @@ pa_recov_data$sa4 = prep_wb(data = pa_recov,smd = TRUE)
 pa_recov_data$sa4$re = nma_cont(pa_recov_data$sa4, pa_recov_data$pa$treatments,params = params.re, model = model$re_inf,
                                bugsdir = bugsdir, n.iter = 100000, n.burnin = 40000,n.thin = 16, FE = FALSE)
 
-
-data = pa_recov_data$sa4
-treatments = pa_recov_data$pa$treatments
-params = params.re
-model = model$re_inf
-bugsdir = bugsdir

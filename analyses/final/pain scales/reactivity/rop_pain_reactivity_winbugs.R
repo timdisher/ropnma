@@ -21,7 +21,7 @@ library(stargazer)
 library(reshape2)
 library(forcats)
 library(scales)
-library(gridExtra)
+
 
 source("./analyses/final/rop_explore_pipp.R")
 
@@ -30,13 +30,15 @@ source("./functions/nma_cont.R")
 # Load data in WInBugs Format
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-prep_wb = function(data, smd = FALSE){
+prep_wb = function(data, smd = FALSE,convert_contrast = TRUE){
 data$trt_group = fct_infreq(data$trt_group) %>% droplevels(data)#reorders factor from most to least common
 
 data = droplevels(data) # Drops factor levels that don't exist (otherwise they are carried over)
 
-if(smd == TRUE) long_wb_smd(data) else long_wb(data = data)
 
+if(convert_contrast == TRUE){
+if(smd == TRUE) long_wb_smd(data) else long_wb(data = data)}else long_arm_wb(data = data)
+  
 }
 
 nma = function(data,variable,drop,SA = FALSE, inc = FALSE, models = model){
@@ -69,22 +71,8 @@ nma = function(data,variable,drop,SA = FALSE, inc = FALSE, models = model){
     list(data = data,nma = nma)
 }
 
-
 treatments = data$treatments
-names = data$wide
 data = data$xo
-params = params.re
-model = model
-bugsdir = bugsdir
-n.iter = 100000
-n.burnin = 40000
-n.thin = 10
-FE = FALSE
-inc = FALSE
-
-#Function testing
-
-
 
 
 # #========================================================================================
@@ -112,7 +100,7 @@ bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
 
 pa_reac_data = NULL
 
-pa_reac_data$pa = nma(pa_reac)
+pa_reac_data$pa = nma(pa_reac, inc = TRUE)
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
 # Sensitivity 1 
@@ -170,7 +158,77 @@ pa_reac_data$sa4= prep_wb(data = pa_reac,smd = TRUE)
 pa_reac_data$sa4 = nma_cont(pa_reac_data$sa4, pa_reac_data$pa$data$treatments,params = params.re, model = model$re_inf,
                                   bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 16, FE = FALSE)
 
-pa_reac_data
+pa_reac_data$sa4
+
+
+
+
+
+#=========================================
+# Sensitivity 5 - Meta-regression on sample size
+#=========================================
+wf_test = prep_wb(pa_reac)
+
+wf_test$meta = as.data.frame(wf_test$wide %>% rowwise() %>% mutate(x = sum(n_1,n_2,n_3,n_4, na.rm = TRUE)) %>% left_join(rop_data_study %>% select(studlab,design), by = "studlab") %>%
+                               
+                               left_join(rop_data_arm %>% select(studlab,p_value) %>% distinct() %>% filter(!is.na(p_value)),by = "studlab") %>%
+                               
+                               mutate(se_2 = ifelse(design == "Crossover",se_paired(y_2,p_value,n_1),se_2)) %>%
+                               
+                               select(matches("t_"),matches("y_"),matches("se_"),V,na,x) %>% select(-y_1))
+
+
+test = nma_winbugs_datalist(wf_test$meta,wf_test$treatments)
+test$x = as.vector(wf_test$meta$x)
+test$mx = mean(wf_test$meta$x)
+
+params_mr  = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd", "B")
+
+metaregtest = bugs(test,NULL,params_mr,model.file = MODELFILE.re_meta,
+                   n.chains = 3, n.iter = 100000, n.burnin = 40000, n.thin = 10,
+                   bugs.directory = bugsdir, debug = F)
+
+wf_test$meta %>% filter(t_1 == 1) %>% gather(diff,value,y_2:y_4) %>% gather(trt,num, t_2:t_4) %>%
+  select(diff,value,num,x) %>% na.omit %>% left_join(test$treatments, by = c("num" = "t")) %>% ggplot(aes(x = x, y = value)) + 
+  geom_point() + facet_wrap(~description) + geom_smooth(method = "lm",se = FALSE, colour = "black")
+
+nma_outputs(model = metaregtest,wf_test$treatments)
+
+#=========================================
+# Sensitivity 6 - Meta-regression on control arm risk
+#=========================================
+
+reac_br_meta = prep_wb(pa_reac)
+pa_reac_data$control_risk_data = reac_br_meta$arm_wide %>% mutate(
+  se_1 = sd_1/sqrt(n_1),
+  se_2 = sd_2/sqrt(n_2),
+  se_3 = sd_3/sqrt(n_3),
+  se_4 = sd_4/sqrt(n_4)) %>% select(matches("t_"),matches("y_"),matches("se_"),na) %>% arrange(na)
+
+(wb_br_meta = nma_winbugs_datalist(test$ready,test$treatments,contrast = FALSE))
+
+wb_br_meta$mx = as.vector(pa_reac_data$control_risk_data %>% filter(t_1 == 1) %>% summarise(mx = mean(y_1)))[[1]]
+
+
+metaregtest_armwise = bugs(wb_br_meta,NULL,params_mr,model.file = model$re_arm_meta,
+                           n.chains = 3, n.iter = 100000, n.burnin = 40000, n.thin = 10,
+                           bugs.directory = bugsdir, debug = F)
+
+
+
+regress_results = nma_outputs(model = metaregtest_armwise,reac_br_meta$treatments)
+
+test$ready %>% filter(t_1 == 1) %>% mutate(y2_diff = y_2 - y_1,
+                                           y3_diff = y_3 - y_1,
+                                           y4_diff = y_4 - y_1) %>% gather(diff,value,y2_diff:y4_diff) %>% gather(trt,num, t_2:t_4) %>%
+  select(y_1,value,num) %>% na.omit %>% left_join(test$treatments, by = c("num" = "t")) %>%
+  ggplot(aes(y = value, x = y_1)) + geom_point() + geom_smooth(method = "lm", se = FALSE,colour = "black") + facet_wrap(~description)
+
+
+
+
+
+
 # #========================================================================================
 # 
 # 
@@ -194,7 +252,7 @@ pa_reac_data
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 pa_recov_data = NULL
 
-pa_recov_data$pa = nma(pa_recov)
+pa_recov_data$pa = nma(pa_recov, inc = FALSE)
 
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

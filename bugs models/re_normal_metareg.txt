@@ -55,7 +55,7 @@ model
         for (k in 2:na[i]) {
             delta[i, k] ~ dnorm(md[i, k], taud[i, k])
             md[i, k] <- d[t[i, k]] - d[t[i, 1]] + (beta[t[i, 
-                k]] - beta[t[i, 1]]) * (x[i]) + sw[i, k]
+                k]] - beta[t[i, 1]]) * (x[i] - mx) + sw[i, k]
             taud[i, k] <- tau * 2 * (k - 1)/k
             w[i, k] <- (delta[i, k] - d[t[i, k]] + d[t[i, 1]])
             sw[i, k] <- sum(w[i, 1:k - 1])/(k - 1)

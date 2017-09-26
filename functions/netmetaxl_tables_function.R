@@ -31,11 +31,15 @@
 ##requires tidyverse and netmeta
 #-----------------------------------------------------------------------------------------------------------------------------
 
-netmeta_xl_chars = function(data,outcome,ref,treat = "treatment",location = getwd()){
+netmeta_xl_chars = function(data,outcome,ref,treat = "treatment",location = getwd,cont = TRUE,event = NULL){
 
-dir.create(location,recursive = TRUE)
+if(cont == TRUE){  
+contrast = pairwise(data = data,treat = data[[treat]], n= sample_size, mean = mean,sd = std_dev,studlab = studlab)} else{
   
-contrast = pairwise(data = data,treat = data[[treat]], n= sample_size, mean = mean,sd = std_dev,studlab = studlab)
+contrast = pairwise(data = data,treat = data[[treat]], n= sample_size, event = data[[event]],studlab = studlab)
+}
+
+  
 
 studies = (data %>% select(studlab) %>% distinct() %>% count())[[1]] ## count the number of studies
 trts = (data %>% select(treat) %>% distinct() %>% count())[[1]] ## count the number of treatments
@@ -58,7 +62,6 @@ contrast = names %>% rename(treat1_asnum = `Treatment Number`,
                             treat1 = `Treatment Description`) %>% right_join(contrast, by = "treat1")
 
 
-assign(paste(outcome,"_data_nma",sep=""), contrast,envir=globalenv())
                
 
 #- Counts number of comparisons with direct evidence -#
@@ -109,10 +112,7 @@ net_char <- tibble("Characteristic" = c("Number of Interventions",
                     multarm
        ))
 
-assign(paste(outcome,"_net_char",sep=""), net_char,envir=globalenv())
-stargazer(net_char, summary = FALSE,title = "Network Characteristics",
-          out = paste(location,"/",outcome,"_net_char.html",sep=""),
-          rownames = FALSE)
+
 #-----------------------------------
 # Intervention characteristics table
 #-----------------------------------,
@@ -123,10 +123,7 @@ int_nums = data %>% group_by_(treat) %>% summarise("Number of Comparisons" = n()
 
 int_char <- tibble("Treatment" = names[[2]]) %>% left_join(int_nums)
   
-assign(paste(outcome,"_int_char",sep=""), int_char,envir=globalenv())
-stargazer(int_char, summary = FALSE,title = "Intervention Characteristics",
-          out = paste(location,"/",outcome,"_int_char.html",sep=""),
-          rownames = FALSE)
+
 
 #-----------------------------------
 # Direct comparison characteristics table
@@ -138,15 +135,12 @@ left_join(names, by = c("trt2" = "Treatment Number")) %>% rename(treatment_1 = `
   select(Treatment,nstud,ntot) %>% rename("# Studies" = nstud,
                                           "# Patients" = ntot)
 
-assign(paste(outcome,"_direct_comp_char",sep=""), direct_comp_char,envir=globalenv())
-stargazer(direct_comp_char, summary = FALSE,title = "Direct Comparison Characteristics",
-          out = paste(location,"/",outcome,"_direct_comp_char.html",sep=""),
-          rownames = FALSE)
+direct = direct %>% left_join(names, by = c("trt1" = "Treatment Number")) %>%
+  left_join(names, by = c("trt2" = "Treatment Number"))
 
+out = list(net_char = net_char, int_char = int_char, direct = direct_comp_char,nma_data = contrast,direct_zeros = direct)
 
-print(net_char)
-print(int_char)
-print(direct_comp_char)
+out
 }
 
 
@@ -167,29 +161,21 @@ print(direct_comp_char)
 # momlinc_netgraph(pa_reac_int,pa_reac_int_char,"pa_reac",2,location = "./figs/primary outcome/pain scales reactivity")
 
 
-momlinc_netgraph = function(netmeta, int_char,outcome,pointsize,location = getwd()){ ##outcome is a string
-  
-  dir.create(location,recursive = TRUE)
+momlinc_netgraph = function(netmeta, int_char,pointsize){ ##outcome is a string
   
   
 trt_details = tibble(Treatment = names(netmeta$TE.fixed[,1])) %>% left_join(int_char,by = "Treatment") %>% 
   mutate(w = `Number of Patients`/sum(`Number of Patients`)) ### normalizes weights based on sample size in treatment node
 
-temp_graph = netgraph(netmeta, col = rgb(116,104,170,maxColorValue = 225),
+
+ netgraph(netmeta, col = rgb(116,104,170,maxColorValue = 225),
          points=TRUE, col.points = "aquamarine4", col.multiarm = "pink",cex.points=pointsize+trt_details$w*25,  ###weights point size by baseline + weight
          number.of.studies = FALSE, plastic = FALSE, thickness = "number.of.studies" ,
          multiarm = FALSE,
          lwd.max = 12,
          offset = 0.0575)
 
-pdf(paste(location,"/",outcome,"_netgraph.pdf",sep=""),width = 10)
-netgraph(netmeta, col = rgb(116,104,170,maxColorValue = 225),
-         points=TRUE, col.points = "aquamarine4", col.multiarm = "pink",cex.points=pointsize+trt_details$w*25,  ###weights point size by baseline + weight
-         number.of.studies = FALSE, plastic = FALSE, thickness = "number.of.studies" ,
-         multiarm = FALSE,
-         lwd.max = 12,
-         offset = 0.0575)
-dev.off()
+
 }
 
 #-----------------------------------------------------------------------------------------------------------------------------
@@ -224,13 +210,10 @@ pa_reac_int = netmeta(TE,seTE,treat1,treat2,studlab,data = pa_reac_contrast, sm 
 
 plac_resp_graph = function(data,x = "studlab",y = "mean",ref,outcome = "outcome",fill = "actual_timepoint",facet = FALSE,fv = "speculum",
                          ylab = "PIPP (mean or median)", type = "bar", size = 10, filter = "trt_group",
-                         location = getwd(),
-                         width = 7,
-                         height  = 7,
                          nrow = 2){
 
   if(type== "bar"){
-  dir.create(location,recursive = TRUE)
+
   temp = data %>% filter(data[[filter]] == ref) %>% ggplot(aes_string(x = x, y = y,fill = fill)) + 
     geom_col() +
     theme_minimal() +
@@ -243,19 +226,17 @@ plac_resp_graph = function(data,x = "studlab",y = "mean",ref,outcome = "outcome"
     scale_fill_discrete(name = "Actual Timepoint")
   
   if(facet == FALSE){
-    print(temp)
-    ggsave(paste(location,"/",outcome,"_plac_resp_bar.pdf",sep=""),device = "pdf", height = height, width = width)}
+   return(temp)}
   
   if(facet == TRUE){
-    print(temp + facet_wrap(as.formula(paste("~",fv,sep="")), nrow = nrow) + labs(subtitle = paste("Faceted by",fv)))
+    return(temp + facet_wrap(as.formula(paste("~",fv,sep="")), nrow = nrow) + labs(subtitle = paste("Faceted by",fv)))
     
-    ggsave(paste(location,"/",outcome,"_plac_resp_scat_facet_",fv,".pdf",sep=""),device = "pdf",height = height, width = width)
   }
   }
   
   
   if(type == "scat"){
-    dir.create(location,recursive = TRUE)
+
     temp = data %>% filter(data[[filter]] == ref) %>% ggplot(aes_string(x = x, y = y,colour = fill,size = size)) + 
       geom_point() +
       theme_minimal() +
@@ -268,13 +249,13 @@ plac_resp_graph = function(data,x = "studlab",y = "mean",ref,outcome = "outcome"
       scale_fill_discrete(name = "Actual Timepoint") + geom_text(aes(label = studlab, size = 20),hjust =-0.15, vjust = 0)
     
     if(facet == FALSE){
-      print(temp)
-      ggsave(paste(location,"/",outcome,"_plac_resp_scat.pdf",sep=""),device = "pdf", height = height, width = width)}
+return(temp)
+}
     
     if(facet == TRUE){
-      print(temp + facet_wrap(as.formula(paste("~",fv,sep="")), nrow = nrow) + labs(subtitle = paste("Faceted by",fv)))
+return(temp + facet_wrap(as.formula(paste("~",fv,sep="")), nrow = nrow) + labs(subtitle = paste("Faceted by",fv)))
       
-      ggsave(paste(location,"/",outcome,"_plac_resp_scat_facet_",fv,".pdf",sep=""),device = "pdf",height = height, width = width)
+
     }
   }
 }
@@ -394,17 +375,30 @@ numbers2words <- function(x){
 # Example
 # all_pairwise(pa_reac_direct_comp_chat,pa_reac_contrast,pa_reac_pairwise, outcome = "PIPP reactivity",location = getwd())
 
-all_pairwise = function(direct_comp_char,data,location = getwd(),outcome){
-  dir.create(location,recursive = TRUE)
+all_pairwise = function(direct_comp_char,data,location = getwd(),outcome,sm, cont = TRUE){
+
 comps_data = direct_comp_char %>% filter(`# Studies`>1)
 list = NULL
 comp_matrix = str_split_fixed(comps_data$Treatment, " vs ",2)
 
+if(cont == TRUE){
 for(i in seq_along(comps_data$Treatment)){
   temp_data = data %>% filter(treat1 == comp_matrix[[i,1]] & treat2 == comp_matrix[i,2])
-  list[[i]] = metacont(n2,mean2,sd2,n1,mean1,sd1, sm = "MD", data = temp_data,studlab = studlab)
+  list[[i]] = metacont(n2,mean2,sd2,n1,mean1,sd1, sm = sm, data = temp_data,studlab = studlab)
   names(list)[i] = comps_data$Treatment[i]
 }
+  } else{
+  
+  for(i in seq_along(comps_data$Treatment)){
+    temp_data = data %>% filter(treat1 == comp_matrix[[i,1]] & treat2 == comp_matrix[i,2])
+    list[[i]] = metabin(n2,event2,sd2,n1,event1,sd1, sm = sm, data = temp_data,studlab = studlab)
+    names(list)[i] = comps_data$Treatment[i] 
+  
+  
+}
+}
+
+
 for(i in seq_along(list)){
   pdf(paste(location,"/",outcome,"_",names(list[i]),"_pw_ma.pdf",sep=""),width = 12, height = 6)
   forest(list[[i]], lab.e = comp_matrix[i,2], lab.c = comp_matrix[i,1])

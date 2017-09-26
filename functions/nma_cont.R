@@ -1,65 +1,42 @@
-#Functions for NMA
-
-
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-#
-#
-#             ---- Calculate the standard error of a mean difference -----
-#
-#
-# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-se_md = function(sd1,sd2,n1,n2){
+prep_wb = function(data, smd = FALSE,convert_contrast = TRUE){
+  data$trt_group = fct_infreq(data$trt_group) %>% droplevels(data)#reorders factor from most to least common
   
-  se = sqrt((sd1^2*(n1-1) + sd2^2*(n2-1))/(n1+n2-2))*sqrt(1/n1+1/n2)
+  data = droplevels(data) # Drops factor levels that don't exist (otherwise they are carried over)
+  
+  
+  if(convert_contrast == TRUE){
+    if(smd == TRUE) long_wb_smd(data, hedge = TRUE) else long_wb(data = data)}else long_arm_wb(data = data)
+  
 }
 
-
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-#
-#
-#             ---- Calculate standard error from a paired t-test -----
-#
-#
-# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-se_paired = function(y_2,p_value,n_1){
- se = abs(y_2/qt((p_value/2),n_1-1))
- se}
-
-
-#============================================================================================
-#
-#
-#             ---- Calculate standardized mean difference  -----
-# Source: https://cran.r-project.org/web/packages/compute.es/compute.es.pdf
-#
-#============================================================================================
-
-smd = function(yE,yC,sdE,sdC,nE,nC){
-  n = nE+nC
+nma = function(data,variable,drop,SA = FALSE, inc = FALSE, models = model){
+  data = data %>% left_join(rop_data_study[c("studlab","design")],by = "studlab")
   
-  
-  sd = sqrt(((nE-1)*(sdE^2)+(nC-1)*(sdC^2))/(n-2))
-  
-  md = yE-yC
-  
-  (md/sd) * (1 - (3/(4*n-9)))
- 
-}
-
-se_smd = function(g,sdE,sdC,nE,nC){
-  n = nE+nC
-
-  
-  var = n/(nE*nC) + (g^2/(2*(n-3.94)))
-  
-  sqrt(var)
-}
-
-
-sd_smd = function(yE,yC,sdE,sdC,nE,nC){
-  sqrt(((nE-1)*(sdE^2)+(nC-1)*(sdC^2))/(n-2))
+  if(SA == TRUE){
+    data = data %>% filter(data[variable] != drop)} else data = data
+    
+    pw = pairwise(data = data,treat = trt_group, n = sample_size,mean = mean, sd = std_dev, studlab = studlab, sm = "MD")
+    
+    nc = netconnection(data = pw, treat1,treat2)
+    
+    if(nc$n.subnets > 1) return("This sensitivity analysis disconnects the network") else( data = prep_wb(data))
+    
+    data$xo = data$wide %>% left_join(rop_data_study %>% select(studlab,design), by = "studlab") %>%
+      
+      left_join(rop_data_arm %>% select(studlab,p_value) %>% distinct() %>% filter(!is.na(p_value)),by = "studlab") %>%
+      
+      mutate(se_2 = ifelse(design == "Crossover",se_paired(y_2,p_value,n_1),se_2)) %>%
+      
+      select(matches("t_"),matches("y_"),matches("se_"),V,na) %>% select(-y_1)
+    
+    
+    if("y_4" %in% colnames(data$xo))  model = list(models$re,models$re_inc) else model = list(models$re3,models$re3_inc)
+    
+    if(inc == FALSE){
+      nma = nma_cont(data, data$xo, data$treatments,params = params.re, model = model[[1]],bugsdir = bugsdir,n.iter = 100000, n.burnin = 40000,n.thin = 10, FE = FALSE, inc = inc)
+      
+    } else nma = nma_cont(data$wide, data$xo, data$treatments,params = params.re, model = model,bugsdir = bugsdir,n.iter = 100000, n.burnin = 40000,n.thin = 10, FE = FALSE, inc = inc)
+    list(data = data,nma = nma)
 }
 
 #============================================================================================
@@ -132,7 +109,7 @@ long_wb = function(data = pa_reac,studlab = "studlab", trt = "trt_group",mean = 
 #####Long to wb for smd data. V is calculated differently here. This iteration was found
 # http://methods.cochrane.org/sites/methods.cochrane.org.cmi/files/public/uploads/S8-L%20Problems%20introduced%20by%20multi-arm%20trials%20-%20full%20network%20meta-analysis.pdf
 
-long_wb_smd= function(data = pa_reac,studlab = "studlab", trt = "trt_group",mean = "mean",sd = "std_dev",sample_size = "samplesize"){
+long_wb_smd= function(data = pa_reac,studlab = "studlab", trt = "trt_group",mean = "mean",sd = "std_dev",sample_size = "samplesize", hedge = FALSE){
   
   (input = data %>% select(studlab,trt_group,mean,std_dev,sample_size) %>% 
      rename(y = mean,
@@ -174,15 +151,25 @@ long_wb_smd= function(data = pa_reac,studlab = "studlab", trt = "trt_group",mean
   
                                                        (wide = wide %>% mutate(y_2 = smd(y_2,y_1,sd_2,sd_1,n_2,n_1)))
                                                         
-                                                        (wide = wide %>%  mutate(se_2 = se_smd(y_2,sd_2,sd_1,n_2,n_1) %>% arrange(na)))}
+                                                        (wide = wide %>%  mutate(se_2 = se_smd(y_2,sd_2,sd_1,n_2,n_1),
+                                                                                 V = ifelse(na > 2,1/n_1,NA)) %>% arrange(na))}
 
     
      #arrange by number of arms (see WiBUGS code for why)
-  
+  if(hedge == FALSE){
+
   wide %>% select(studlab,matches("t_"),matches("y_"),matches("se_"),V,na) %>% select(-y_1)
+  } else{
+    
+        
+       out =  wide %>% select(studlab,matches("t_"),matches("y_"),matches("se_"),V,na) %>% select(-y_1)
+       list(wblist = out, treatments = treatments)
+      
+  }
+}
   
 
-}
+
 
 
 
@@ -242,7 +229,7 @@ nma_winbugs_datalist = function(data,treatments,contrast = TRUE){
   ns3 = length(subset(na, na==3))
   ns4 = length(subset(na, na==4))
 
-  if(ns4 >0)  data = list(nt=nt, ns2=ns2, ns3=ns3, ns4=ns4,t=t, y=y, se=se, na=na, V=V) else data = list(nt=nt, ns2=ns2, ns3=ns3,t=t, y=y, se=se, na=na, V=V)
+  if(ns4 >0)  data = list(nt=nt, ns2=ns2, ns3=ns3, ns4=ns4,t=t, y=y, se=se, na=na, V=V) else if(ns3 >0) data = list(nt=nt, ns2=ns2, ns3=ns3,t=t, y=y, se=se, na=na, V=V) else data = list(nt=nt, ns2=ns2,t=t, y=y, se=se, na=na)
   
  
   
@@ -280,7 +267,7 @@ data = list(nt=nt,t=t, y=y, se=se, na=na, ns = ns)
 
 
 nma_cont = function(names,data,treatments,n.iter = 40000, n.burnin = 20000, model, params, 
-                    FE = TRUE,inc = FALSE, bugsdir = "c:/Users/TheTimbot/Desktop/WinBUGS14", n.thin = 1){
+                    FE = TRUE,inc = FALSE, bugsdir = "c:/Users/TheTimbot/Desktop/WinBUGS14", n.thin = 1, debug = F){
 
   data = nma_winbugs_datalist(data,treatments)
   
@@ -289,7 +276,7 @@ nma_cont = function(names,data,treatments,n.iter = 40000, n.burnin = 20000, mode
   
   model.con = bugs(data, NULL, params, model.file= model_con,
                n.chains = 3, n.iter = n.iter, n.burnin = n.burnin, n.thin= n.thin, 
-               bugs.directory = bugsdir, debug=F)
+               bugs.directory = bugsdir, debug= debug)
   
   if(inc == TRUE){
     model_inc = model[[2]]
@@ -465,11 +452,11 @@ if(inc == TRUE){
   
   results
 } else if(FE == TRUE){  
-    results = list(model = model,comp = comp,rr = rr,rankogram = rankogram)
+    results = list(model = model,comp = comp,rr = rr,rankogram = rankogram,bugs = model.con$summary,dic = model.con$DIC)
     
   }else {sd = model.con$summary[grep("^sd$",row.names(model.con$summary),fixed = F),]
   
-  results = list(model = model,sd = sd,comp = comp,rr = rr,rankogram = rankogram)}
+  results = list(model = model,sd = sd,comp = comp,rr = rr,rankogram = rankogram,bugs = model.con$summary, dic = model.con$DIC)}
 
 
 results
@@ -477,9 +464,195 @@ results
 
   
 
+#=====================================================================================
+
+
+#                                     -Models - 2 arms----
+
+
+#=====================================================================================
+
+#=====================================================
+# Normal likelihood, gaussian link 
+# Random effects model for multi-arm trials 2 arm
+#=====================================================
+
+
+re_normal_gaus_2arm <- function()	                             # this code for this model was adapted from WinBUGS code from the multi-parameter Evidence Synthesis Research Group at the University of Bristol:  Website: www.bris.ac.uk/cobm/research/mpes					
+{								
+  for(i in 1:ns2) { # LOOP THROUGH 2-ARM STUDIES								
+    y[i,2] ~ dnorm(delta[i,2],prec[i,2]) # normal likelihood for 2-arm trials								
+    resdev[i] <- (y[i,2]-delta[i,2])*(y[i,2]-delta[i,2])*prec[i,2] #Deviance contribution for trial i								
+  }								
+  
+  
+  for(i in 1:(ns2)){ # LOOP THROUGH ALL STUDIES								
+    w[i,1] <- 0 # adjustment for multi-arm trials is zero for control arm								
+    delta[i,1] <- 0 # treatment effect is zero for control arm								
+    for (k in 2:na[i]) { # LOOP THROUGH ARMS								
+      var[i,k] <- pow(se[i,k],2) # calculate variances								
+      prec[i,k] <- 1/var[i,k] # set precisions								
+      dev[i,k] <- (y[i,k]-delta[i,k])*(y[i,k]-delta[i,k])*prec[i,k]								
+    }								
+    #resdev[i] <- sum(dev[i,2:na[i]]) # summed residual deviance contribution for this trial								
+    for (k in 2:na[i]) { # LOOP THROUGH ARMS								
+      delta[i,k] ~ dnorm(md[i,k],taud[i,k]) # trial-specific treat effects distributions								
+      md[i,k] <- d[t[i,k]] - d[t[i,1]] + sw[i,k] # mean of treat effects distributions (with multi-arm trial correction)								
+      taud[i,k] <- tau *2*(k-1)/k # precision of treat effects distributions (with multi-arm trial correction)								
+      w[i,k] <- (delta[i,k] - d[t[i,k]] + d[t[i,1]]) # adjustment for multi-arm RCTs								
+      sw[i,k] <- sum(w[i,1:k-1])/(k-1) # cumulative adjustment for multi-arm trials								
+    }								
+  }								
+  totresdev <- sum(resdev[]) #Total Residual Deviance								
+  d[1]<-0 # treatment effect is zero for reference treatment								
+  for (k in 2:nt){ d[k] ~ dnorm(0,.0001) } # vague priors for treatment effects								
+  sd ~ dunif(0,5) # vague prior for between-trial SD								
+  tau <- pow(sd,-2) # between-trial precision = (1/between-trial variance)								
+  #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$								
+  # Extra code for all mean differences, rankings								
+  #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$								
+  
+  # pairwise mean differences for all possible pair-wise comparisons, if nt>2								
+  for (c in 1:(nt-1)) {								
+    for (k in (c+1):nt) {								
+      meandif[c,k] <- (d[k] - d[c])
+      # pairwise comparison between all treatments
+      better[c,k]  <- 1 - step(d[k] - d[c])
+      
+    }								
+  }								
+  # ranking calculations								
+  for (k in 1:nt) {
+    # assumes differences<0 favor the comparator   ===> number of elements in d[] that are less than or equal to d[k] 					
+    rk[k] <- rank(d[],k) 			
+    
+    #calculate probability that treat k is best		===> k is the best treatment if rk[k] = 1
+    best[k] <- equals(rk[k],1)
+    
+    for(h in 1:nt) {								
+      prob[k,h]<- equals(rk[k],h) 				
+    }								
+  }								
+  for(k in 1:nt) {								
+    for(h in 1:nt) {								
+      cumeffectiveness[k,h]<- sum(prob[k,1:h])								
+    }								
+  }								
+  #SUCRAS#								
+  for(i in 1:nt) {								
+    SUCRA[i]<- sum(cumeffectiveness[i,1:(nt-1)]) /(nt-1)								
+  }
+}	                                                        # END Program							
 
 
 
+#====================================
+# Normal likelihood, gaussian link 2 arm
+# Random effects model for multi-arm trials inconsistency
+#====================================
+re_normal_gaus_2arm_inc <- function(){
+  
+  for(i in 1:ns2) {                    # LOOP THROUGH 2-ARM STUDIES								
+    y[i,2] ~ dnorm(delta[i,2],prec[i,2]) # normal likelihood for 2-arm trials								
+    #Deviance contribution for trial i								
+    resdev[i] <- (y[i,2]-delta[i,2])*(y[i,2]-delta[i,2])*prec[i,2]								
+  }								
+  
+
+  for(i in 1:ns2){                      #   LOOP THROUGH ALL STUDIES								
+    for (k in 2:na[i]) {             #  LOOP THROUGH ARMS								
+      var[i,k] <- pow(se[i,k],2)   # calculate variances								
+      prec[i,k] <- 1/var[i,k]      # set precisions								
+      # trial-specific LOR distributions								
+      delta[i,k] ~ dnorm(d[t[i,1],t[i,k]] ,tau)
+      dev[i,k] <- (y[i,k]-delta[i,k])*(y[i,k]-delta[i,k])*prec[i,k]								
+    }								
+  }   								
+  totresdev <- sum(resdev[])            #Total Residual Deviance								
+  for (k in 1:nt) { d[k,k] <- 0 }								
+  for (c in 1:(nt-1)) {  # priors for all mean treatment effects								
+    for (k in (c+1):nt)  { 
+      d[c,k] ~ dnorm(0,.001) 
+      hr[c,k] <- exp(d[c,k])
+    } 								
+  }  								
+  sd ~ dunif(0,5)     # vague prior for between-trial SD								
+  tau <- pow(sd,-2)   # between-trial precision = (1/between-trial variance)								
+}                                     # *** PROGRAM ENDS
+
+#=====================================================
+# Normal likelihood, gaussian link 
+# Random effects model for multi-arm trials using informative priors on SMD
+#=====================================================
+
+
+re_normal_gaus_2arm_inform <- function()	                             # this code for this model was adapted from WinBUGS code from the multi-parameter Evidence Synthesis Research Group at the University of Bristol:  Website: www.bris.ac.uk/cobm/research/mpes					
+{								
+  for(i in 1:ns2) { # LOOP THROUGH 2-ARM STUDIES								
+    y[i,2] ~ dnorm(delta[i,2],prec[i,2]) # normal likelihood for 2-arm trials								
+    resdev[i] <- (y[i,2]-delta[i,2])*(y[i,2]-delta[i,2])*prec[i,2] #Deviance contribution for trial i								
+  }								
+ 
+  
+  for(i in 1:(ns2)){ # LOOP THROUGH ALL STUDIES								
+    w[i,1] <- 0 # adjustment for multi-arm trials is zero for control arm								
+    delta[i,1] <- 0 # treatment effect is zero for control arm								
+    for (k in 2:na[i]) { # LOOP THROUGH ARMS								
+      var[i,k] <- pow(se[i,k],2) # calculate variances								
+      prec[i,k] <- 1/var[i,k] # set precisions								
+      dev[i,k] <- (y[i,k]-delta[i,k])*(y[i,k]-delta[i,k])*prec[i,k]								
+    }								
+    #resdev[i] <- sum(dev[i,2:na[i]]) # summed residual deviance contribution for this trial								
+    for (k in 2:na[i]) { # LOOP THROUGH ARMS								
+      delta[i,k] ~ dnorm(md[i,k],taud[i,k]) # trial-specific treat effects distributions								
+      md[i,k] <- d[t[i,k]] - d[t[i,1]] # mean of treat effects distributions (with multi-arm trial correction)								
+      taud[i,k] <- tau *2*(k-1)/k # precision of treat effects distributions (with multi-arm trial correction)								
+       # adjustment for multi-arm RCTs								
+       # cumulative adjustment for multi-arm trials								
+    }								
+  }								
+  totresdev <- sum(resdev[]) #Total Residual Deviance								
+  d[1]<-0 # treatment effect is zero for reference treatment								
+  for (k in 2:nt){ d[k] ~ dnorm(0,.0001) } # vague priors for treatment effects
+  prior.prec <- 1/(2.41*2.41)
+  sd ~ dt(-4.52, prior.prec,5) # vague prior for between-trial SD	
+  tausq <- exp(sd)
+  tau <- pow(tausq,-1)# between-trial precision = (1/between-trial variance)								
+  #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$								
+  # Extra code for all mean differences, rankings								
+  #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$								
+  
+  # pairwise mean differences for all possible pair-wise comparisons, if nt>2								
+  for (c in 1:(nt-1)) {								
+    for (k in (c+1):nt) {								
+      meandif[c,k] <- (d[k] - d[c])
+      # pairwise comparison between all treatments
+      better[c,k]  <- 1 - step(d[k] - d[c])
+      
+    }								
+  }								
+  # ranking calculations								
+  for (k in 1:nt) {
+    # assumes differences<0 favor the comparator   ===> number of elements in d[] that are less than or equal to d[k] 					
+    rk[k] <- rank(d[],k) 			
+    
+    #calculate probability that treat k is best		===> k is the best treatment if rk[k] = 1
+    best[k] <- equals(rk[k],1)
+    
+    for(h in 1:nt) {								
+      prob[k,h]<- equals(rk[k],h) 				
+    }								
+  }								
+  for(k in 1:nt) {								
+    for(h in 1:nt) {								
+      cumeffectiveness[k,h]<- sum(prob[k,1:h])								
+    }								
+  }								
+  #SUCRAS#								
+  for(i in 1:nt) {								
+    SUCRA[i]<- sum(cumeffectiveness[i,1:(nt-1)]) /(nt-1)								
+  }
+}	  
 
 
 #=====================================================================================
@@ -1459,7 +1632,7 @@ re_normal_gaus_metareg <- function()	                             # this code fo
     #resdev[i] <- sum(dev[i,2:na[i]]) # summed residual deviance contribution for this trial								
     for (k in 2:na[i]) { # LOOP THROUGH ARMS								
       delta[i,k] ~ dnorm(md[i,k],taud[i,k]) # trial-specific treat effects distributions								
-      md[i,k] <- d[t[i,k]] - d[t[i,1]] + (beta[t[i,k]]-beta[t[i,1]])*(x[i]-mx) + sw[i,k] # mean of treat effects distributions (with multi-arm trial correction)								
+      md[i,k] <- d[t[i,k]] - d[t[i,1]] + (beta[t[i,k]]-beta[t[i,1]])*(x[i]) + sw[i,k] # mean of treat effects distributions (with multi-arm trial correction)								
       taud[i,k] <- tau *2*(k-1)/k # precision of treat effects distributions (with multi-arm trial correction)								
       w[i,k] <- (delta[i,k] - d[t[i,k]] + d[t[i,1]]) # adjustment for multi-arm RCTs								
       sw[i,k] <- sum(w[i,1:k-1])/(k-1) # cumulative adjustment for multi-arm trials								
@@ -1596,8 +1769,11 @@ re_normal_armdata_meta = function(){
 # Write model files
 #==============================
 normal_models = function(fe = fe_normal_gaus, re = re_normal_gaus, re_inf = re_normal_gaus_inform, 
-                         fe_inc = fe_normal_gaus_inc, re_inc = re_normal_gaus_inc, re3 = re_normal_gaus_3arm, re3_inc = re_normal_gaus_3arm_inc,
-                         re_meta = re_normal_gaus_metareg, re3_meta = re_normal_gaus_metareg_3arm, re_arm_meta = re_normal_armdata_meta){
+                         fe_inc = fe_normal_gaus_inc, re_inc = re_normal_gaus_inc, re3 = re_normal_gaus_3arm, re3_inc = re_normal_gaus_3arm_inc, re3_inf = re_normal_gaus_3arm_inform,
+                         re_meta = re_normal_gaus_metareg, re3_meta = re_normal_gaus_metareg_3arm, re_arm_meta = re_normal_armdata_meta,
+                         re2_inf = re_normal_gaus_2arm_inform,
+                         re2 = re_normal_gaus_2arm,
+                         re2_inc = re_normal_gaus_2arm_inc){
   
   write.model(fe, "fe-normal-gaus.txt")
   MODELFILE.fe <- c("fe-normal-gaus.txt")
@@ -1632,10 +1808,23 @@ normal_models = function(fe = fe_normal_gaus, re = re_normal_gaus, re_inf = re_n
   write.model(re_arm_meta, "re_normal_armdata_meta.txt")
   MODELFILE.re_armdata_meta <- c("re_normal_armdata_meta.txt")
   
+  write.model(re2_inf, "re_normal_gaus_2arm_inform.txt")
+  MODELFILE.re2_inf <- c("re_normal_gaus_2arm_inform.txt")
+  
+  write.model(re3_inf, "re_normal_gaus_3arm_inform.txt")
+  MODELFILE.re3_inf <- c("re_normal_gaus_3arm_inform.txt")
+  
+  write.model(re2, "re_normal_gaus_2arm.txt")
+  MODELFILE.re2 <- c("re_normal_gaus_2arm.txt")
+  
+  write.model(re2_inc, "re_normal_gaus_2arm_inc.txt")
+  MODELFILE.re2_inc <- c("re_normal_gaus_2arm_inc.txt")
   
   list = list(fe = MODELFILE.fe, fe_inc= MODELFILE.fe_inc,re = MODELFILE.re, 
               re_inf = MODELFILE.re_inf ,re_inc = MODELFILE.re_inc,re3 = MODELFILE.re3,
-              re3_inc = MODELFILE.re3_inc, re_meta = MODELFILE.re_meta, re3_meta = MODELFILE.re3_meta, re_arm_meta =  MODELFILE.re_armdata_meta )
+              re3_inc = MODELFILE.re3_inc, re_meta = MODELFILE.re_meta, 
+              re3_meta = MODELFILE.re3_meta, re_arm_meta =  MODELFILE.re_armdata_meta, 
+              re2 = MODELFILE.re2, re2_inc = MODELFILE.re2_inc, re3_inf =MODELFILE.re3_inf )
   
   list
 }
@@ -1726,11 +1915,11 @@ rankogram = ggplot(dat,aes(x = Rankings, y = `Probability of Best Treatment`,fil
 
 
 if(FE == TRUE){  
-  results = list(model = model,comp = comp,rr = rr,rankogram = rankogram)
+  results = list(model = model,comp = comp,rr = rr,rankogram = rankogram,bugs = model.con$summary, dic = model.con$DIC)
   
 }else {sd = model$summary[grep("^sd$",row.names(model$summary),fixed = F),]
 
-results = list(model = model,sd = sd,comp = comp,rr = rr,rankogram = rankogram)}
+results = list(model = model,sd = sd,comp = comp,rr = rr,rankogram = rankogram,bugs = model.con$summary, dic = model.con$DIC)}
 
 
 results

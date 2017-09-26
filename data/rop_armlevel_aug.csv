@@ -16,8 +16,8 @@ number of study,study auhor and year,treatment name,treatment class,type of outc
 4,Dhaliwal 2010,drops,drops,PIPP,60 seconds,reactivity,15.2,2.4,NA,no,no,NA,NA,76,NA,NA,NA,NA,NA,NA,NA,0.47,NA,NA,28.6,ND,34.1,NA,1208,NA
 4,Dhaliwal 2010,WFDRI.drops,drops.WFDRI,min02,60 seconds,reactivity,88,10,NA,no,,NA,NA,76,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.6,ND,34.1,NA,1208,NA
 4,Dhaliwal 2010,drops,drops,min02,60 seconds,reactivity,87,12,NA,no,,NA,NA,76,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.6,ND,34.1,NA,1208,NA
-4,Dhaliwal 2010,WFDRI.drops,drops.WFDRI,maxHR,60 seconds,reactivity,172,17,NA,no,,NA,NA,76,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.6,ND,34.1,NA,1208,NA
-4,Dhaliwal 2010,drops,drops,maxHR,60 seconds,reactivity,168,18,NA,no,,NA,NA,76,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.6,ND,34.1,NA,1208,NA
+4,Dhaliwal 2010,WFDRI.drops,drops.WFDRI,hr max,60 seconds,reactivity,172,17,NA,no,,NA,NA,76,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.6,ND,34.1,NA,1208,NA
+4,Dhaliwal 2010,drops,drops,hr max,60 seconds,reactivity,168,18,NA,no,,NA,NA,76,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.6,ND,34.1,NA,1208,NA
 5,Dilli 2014,sweet.nns.drops,drops.mult,PIPP,During exam,reactivity,13.7,2.1,NA,no,no,NA,NA,32,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.2,ND,35.2,NA,1248,NA
 5,Dilli 2014,nns.drops,drops.phys,PIPP,During exam,reactivity,16.4,1.8,NA,no,no,NA,NA,32,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.8,ND,35.7,NA,1360,NA
 5,Dilli 2014,sweet.nns.drops,drops.mult,02 desat <85%,During exam,reactivity,NA,NA,NA,NA,,NA,NA,32,NA,NA,NA,NA,NA,NA,NA,NA,6,NA,28.2,ND,35.2,NA,1248,NA
@@ -70,14 +70,16 @@ number of study,study auhor and year,treatment name,treatment class,type of outc
 9,Kleberg 2008,drops,drops,PIPP,During exam,reactivity,13.5,4,NA,yes,no,NA,NA,35,13.5,NA,NA,0,16,NA,NA,0.683,NA,NA,ND,ND,ND,ND,ND,p value is *mann-whitney U
 9,Kleberg 2008,NIDCAP,drops.mult,02 sat,post-exam,recovery,95,3.25,NA,yes,,NA,NA,33,95,NA,NA,85,98,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,p value is *mann-whitney U
 9,Kleberg 2008,drops,drops,02 sat,post-exam,recovery,95,3.5,NA,yes,,NA,NA,35,95,NA,NA,86,100,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,p value is *mann-whitney U
-9,Kleberg 2008,NIDCAP,drops.mult,HR,30 min post,recovery,154,16.75,NA,yes,,NA,NA,33,154,NA,NA,127,194,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,p value is *mann-whitney U
-9,Kleberg 2008,drops,drops,HR,30 min post,recovery,152,10.5,NA,yes,,NA,NA,35,152,NA,NA,132,174,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,p value is *mann-whitney U
+9,Kleberg 2008,NIDCAP,drops.mult,hr,30 min post,recovery,154,16.75,NA,yes,,NA,NA,33,154,NA,NA,127,194,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,p value is *mann-whitney U
+9,Kleberg 2008,drops,drops,hr,30 min post,recovery,152,10.5,NA,yes,,NA,NA,35,152,NA,NA,132,174,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,p value is *mann-whitney U
 10,Mandel 2012,N2O.sweet.drops,drops.N2O.sweet,PIPP,speculum insertion,reactivity,8.5,2.991336582,0.637755102,no,no,NA,NA,22,NA,NA,NA,NA,NA,7.3,9.8,NA,NA,NA,27.8,ND,35,no,1003.4,NA
 10,Mandel 2012,sweet.drops,drops.sweet,PIPP,speculum insertion,reactivity,8.4,1.839920706,0.433673469,no,no,NA,NA,18,NA,NA,NA,NA,NA,7.6,9.3,NA,NA,NA,28.1,ND,35.4,no,1052.2,NA
 10,Mandel 2012,N2O.sweet.drops,drops.N2O.sweet,Apnea in 24h,24h,recovery,1.27,1.69,NA,no,,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.8,ND,35,no,1003.4,NA
 10,Mandel 2012,sweet.drops,drops.sweet,Apnea in 24h,24h,recovery,1.55,1.95,NA,no,,NA,NA,18,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.1,ND,35.4,no,1052.2,NA
 10,Mandel 2012,N2O.sweet.drops,drops.N2O.sweet,02 < 88% in 24h,24h,recovery,12.6,8.7,NA,no,,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.8,ND,35,no,1003.4,NA
 10,Mandel 2012,sweet.drops,drops.sweet,02 < 88% in 24h,24h,recovery,9.9,10.4,NA,no,,NA,NA,18,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.1,ND,35.4,no,1052.2,NA
+10,Mandel 2012,N2O.sweet.drops,drops.N2O.sweet,any.ae,02 < 88% in 24h,recovery,12.6,8.7,NA,no,,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.8,ND,35,no,1003.4,NA
+10,Mandel 2012,sweet.drops,drops.sweet,any.ae,02 < 88% in 24h,recovery,9.9,10.4,NA,no,,NA,NA,18,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.1,ND,35.4,no,1052.2,NA
 11,Marsh 2005,drops,drops,PIPP,speculum insertion,reactivity,11,3.2,NA,no,no,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,0.001,NA,NA,27.4,39.2,33,yes,ND,NA
 11,Marsh 2005,no.treatment,plac,PIPP,speculum insertion,reactivity,13.5,3.5,NA,no,no,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,0.001,NA,NA,27.4,39.4,33.02857143,yes,ND,NA
 11,Marsh 2005,drops,drops,PIPP,1 min post-exam,recovery,9.3,3.7,NA,no,no,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.4,39.2,33,yes,ND,NA
@@ -110,8 +112,8 @@ number of study,study auhor and year,treatment name,treatment class,type of outc
 15,Olsson 2011,drops,drops,PIPP,During exam,reactivity,6,3.851851852,NA,yes,no,NA,NA,15,6,4,9.2,NA,NA,NA,NA,NA,NA,NA,27.9,ND,ND,no,1051,NA
 15,Olsson 2011,sweet.drops,drops.sweet,crying time,During exam,reactivity,6.8,8.1,NA,no,,NA,NA,14,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.9,ND,ND,no,1202,NA
 15,Olsson 2011,drops,drops,crying time,During exam,reactivity,5.7,7.3,NA,no,,NA,NA,15,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.9,ND,ND,no,1051,NA
-15,Olsson 2011,sweet.drops,drops.sweet,HR increase,During exam,reactivity,12.2,14,NA,no,,NA,NA,14,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.9,ND,ND,no,1202,NA
-15,Olsson 2011,drops,drops,HR increase,During exam,reactivity,11.9,31.3,NA,no,,NA,NA,15,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.9,ND,ND,no,1051,NA
+15,Olsson 2011,sweet.drops,drops.sweet,hr cbl,During exam,reactivity,12.2,14,NA,no,,NA,NA,14,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.9,ND,ND,no,1202,NA
+15,Olsson 2011,drops,drops,hr cbl,During exam,reactivity,11.9,31.3,NA,no,,NA,NA,15,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.9,ND,ND,no,1051,NA
 15,Olsson 2011,sweet.drops,drops.sweet,02 decrease,During exam,reactivity,4.4,7.6,NA,no,,NA,NA,14,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.9,ND,ND,no,1202,NA
 15,Olsson 2011,drops,drops,02 decrease,During exam,reactivity,0.8,3.2,NA,no,,NA,NA,15,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.9,ND,ND,no,1051,NA
 16,O'sullivan 2010,nns.drops,drops.phys,PIPP,During exam,reactivity,16.8625,0.974679434,NA,yes,yes,NA,NA,20,9.5,NA,NA,6,10,NA,NA,NA,NA,NA,29.5,ND,33.1,no,1140,NA
@@ -178,22 +180,22 @@ number of study,study auhor and year,treatment name,treatment class,type of outc
 25,Benzer 2015,sweet.sing,sweet.sing,PIPP,first eye 30 sec,reactivity,7.2,2.8,NA,NA,no,NA,NA,21,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
 26,Ilarslan 2012,nns.drops,drops.nns,PIPP,time of speculum insertion,reactivity,17.2,1.7,NA,NA,no,NA,NA,19,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
 26,Ilarslan 2012,nns.sweet.drops,drops.mult,PIPP,time of speculum insertion,reactivity,14.5,1.8,NA,NA,no,NA,NA,21,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-26,Ilarslan 2012,nns.drops,drops.nns,02 desat,time of speculum insertion,reactivity,2.5,0.6,NA,NA,,NA,NA,19,NA,NA,NA,NA,NA,NA,NA,0.001,NA,NA,ND,ND,ND,no,ND,NA
-26,Ilarslan 2012,nns.sweet.drops,drops.mult,02 desat,time of speculum insertion,reactivity,1.7,0.8,NA,NA,,NA,NA,21,NA,NA,NA,NA,NA,NA,NA,0.001,NA,NA,ND,ND,ND,no,ND,NA
-26,Ilarslan 2012,nns.drops,drops.nns,crying time,procedure,recovery,96.3,24,NA,NA,,NA,NA,19,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-26,Ilarslan 2012,nns.sweet.drops,drops.mult,crying time,procedure,recovery,58.8,12.1,NA,NA,,NA,NA,21,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+26,Ilarslan 2012,nns.drops,drops.nns,02 decrease,time of speculum insertion,reactivity,2.5,0.6,NA,NA,,NA,NA,19,NA,NA,NA,NA,NA,NA,NA,0.001,NA,NA,ND,ND,ND,no,ND,NA
+26,Ilarslan 2012,nns.sweet.drops,drops.mult,02 decrease,time of speculum insertion,reactivity,1.7,0.8,NA,NA,,NA,NA,21,NA,NA,NA,NA,NA,NA,NA,0.001,NA,NA,ND,ND,ND,no,ND,NA
+26,Ilarslan 2012,nns.drops,drops.nns,crying time,procedure,reactivity,96.3,24,NA,NA,,NA,NA,19,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+26,Ilarslan 2012,nns.sweet.drops,drops.mult,crying time,procedure,reactivity,58.8,12.1,NA,NA,,NA,NA,21,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
 27,Mehta 2005,drops,drops,bp change,during screening,reactivity,NA,NA,NA,NA,,NA,NA,15,9,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
 27,Mehta 2005,drops.nospec,drops.nospec,bp change,during screening,reactivity,NA,NA,NA,NA,,NA,NA,15,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
 27,Mehta 2005,drops.wfdri,drops.wfdri,bp change,during screening,reactivity,NA,NA,NA,NA,,NA,NA,15,10,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
 27,Mehta 2005,drops,drops,bp change,immediately after screening,recovery,NA,NA,NA,NA,,NA,NA,15,12,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
 27,Mehta 2005,drops.nospec,drops.nospec,bp change,immediately after screening,recovery,NA,NA,NA,NA,,NA,NA,15,-3,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
 27,Mehta 2005,drops.wfdri,drops.wfdri,bp change,immediately after screening,recovery,NA,NA,NA,NA,,NA,NA,15,12,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
-27,Mehta 2005,drops,drops,hr change,during screening,reactivity,NA,NA,NA,NA,,NA,NA,15,10.5,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
-27,Mehta 2005,drops.nospec,drops.nospec,hr change,during screening,reactivity,NA,NA,NA,NA,,NA,NA,15,7,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
-27,Mehta 2005,drops.wfdri,drops.wfdri,hr change,during screening,reactivity,NA,NA,NA,NA,,NA,NA,15,12,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
-27,Mehta 2005,drops,drops,hr change,immediately after screening,recovery,NA,NA,NA,NA,,NA,NA,15,7.5,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
-27,Mehta 2005,drops.nospec,drops.nospec,hr change,immediately after screening,recovery,NA,NA,NA,NA,,NA,NA,15,6,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
-27,Mehta 2005,drops.wfdri,drops.wfdri,hr change,immediately after screening,recovery,NA,NA,NA,NA,,NA,NA,15,11.5,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
+27,Mehta 2005,drops,drops,hr cbl,during screening,reactivity,NA,NA,NA,NA,,NA,NA,15,10.5,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
+27,Mehta 2005,drops.nospec,drops.nospec,hr cbl,during screening,reactivity,NA,NA,NA,NA,,NA,NA,15,7,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
+27,Mehta 2005,drops.wfdri,drops.wfdri,hr cbl,during screening,reactivity,NA,NA,NA,NA,,NA,NA,15,12,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
+27,Mehta 2005,drops,drops,hr cbl,immediately after screening,recovery,NA,NA,NA,NA,,NA,NA,15,7.5,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
+27,Mehta 2005,drops.nospec,drops.nospec,hr cbl,immediately after screening,recovery,NA,NA,NA,NA,,NA,NA,15,6,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
+27,Mehta 2005,drops.wfdri,drops.wfdri,hr cbl,immediately after screening,recovery,NA,NA,NA,NA,,NA,NA,15,11.5,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
 27,Mehta 2005,drops,drops,02 sat change,during screening,reactivity,NA,NA,NA,NA,,NA,NA,15,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
 27,Mehta 2005,drops.nospec,drops.nospec,02 sat change,during screening,reactivity,NA,NA,NA,NA,,NA,NA,15,-2,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"
 27,Mehta 2005,drops.wfdri,drops.wfdri,02 sat change,during screening,reactivity,NA,NA,NA,NA,,NA,NA,15,-7,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35,no,ND,"average pma was 33,35,36, 35 used"

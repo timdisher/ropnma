@@ -1,0 +1,29 @@
+model
+{
+    for (i in 1:ns2) {
+        y[i, 2] ~ dnorm(delta[i, 2], prec[i, 2])
+        resdev[i] <- (y[i, 2] - delta[i, 2]) * (y[i, 2] - delta[i, 
+            2]) * prec[i, 2]
+    }
+    for (i in 1:ns2) {
+        for (k in 2:na[i]) {
+            var[i, k] <- pow(se[i, k], 2)
+            prec[i, k] <- 1/var[i, k]
+            delta[i, k] ~ dnorm(d[t[i, 1], t[i, k]], tau)
+            dev[i, k] <- (y[i, k] - delta[i, k]) * (y[i, k] - 
+                delta[i, k]) * prec[i, k]
+        }
+    }
+    totresdev <- sum(resdev[])
+    for (k in 1:nt) {
+        d[k, k] <- 0.00000E+00
+    }
+    for (c in 1:(nt - 1)) {
+        for (k in (c + 1):nt) {
+            d[c, k] ~ dnorm(0.00000E+00, 0.001)
+            hr[c, k] <- exp(d[c, k])
+        }
+    }
+    sd ~ dunif(0.00000E+00, 5)
+    tau <- pow(sd, -2)
+}

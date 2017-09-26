@@ -1,0 +1,43 @@
+model
+{
+    for (i in 1:ns) {
+        mu[i] ~ dnorm(0.00000E+00, 1.00000E-04)
+        for (k in 1:na[i]) {
+            r[i, k] ~ dbin(p[i, k], n[i, k])
+            logit(p[i, k]) <- mu[i] + d[t[i, k]] - d[t[i, 1]]
+            rhat[i, k] <- p[i, k] * n[i, k]
+            dev[i, k] <- 2 * (r[i, k] * (log(r[i, k]) - log(rhat[i, 
+                k])) + (n[i, k] - r[i, k]) * (log(n[i, k] - r[i, 
+                k]) - log(n[i, k] - rhat[i, k])))
+        }
+        resdev[i] <- sum(dev[i, 1:na[i]])
+    }
+    totresdev <- sum(resdev[])
+    d[1] <- 0.00000E+00
+    for (k in 2:nt) {
+        d[k] ~ dnorm(0.00000E+00, 1.00000E-04)
+    }
+    for (c in 1:(nt - 1)) {
+        for (k in (c + 1):nt) {
+            or[c, k] <- exp(d[k] - d[c])
+            lor[c, k] <- (d[k] - d[c])
+            better[c, k] <- 1 - step(d[k] - d[c])
+        }
+    }
+    for (k in 1:nt) {
+        rk[k] <- rank(d[], k)
+        best[k] <- equals(rk[k], 1)
+        for (h in 1:nt) {
+            prob[h, k] <- equals(rk[k], h)
+        }
+    }
+    for (k in 1:nt) {
+        for (h in 1:nt) {
+            cumeffectiveness[k, h] <- sum(prob[k, 1:h])
+        }
+    }
+    for (i in 1:nt) {
+        SUCRA[i] <- sum(cumeffectiveness[i, 1:(nt - 1)])/(nt - 
+            1)
+    }
+}

@@ -54,8 +54,7 @@ model
         }
         for (k in 2:na[i]) {
             delta[i, k] ~ dnorm(md[i, k], taud[i, k])
-            md[i, k] <- d[t[i, k]] - d[t[i, 1]] + (beta[t[i, 
-                k]] - beta[t[i, 1]]) * (x[i]) + sw[i, k]
+            md[i, k] <- d[t[i, k]] - d[t[i, 1]] + sw[i, k]
             taud[i, k] <- tau * 2 * (k - 1)/k
             w[i, k] <- (delta[i, k] - d[t[i, k]] + d[t[i, 1]])
             sw[i, k] <- sum(w[i, 1:k - 1])/(k - 1)
@@ -63,13 +62,10 @@ model
     }
     totresdev <- sum(resdev[])
     d[1] <- 0.00000E+00
-    beta[1] <- 0.00000E+00
     for (k in 2:nt) {
         d[k] ~ dnorm(0.00000E+00, 1.00000E-04)
-        beta[k] <- B
     }
-    B ~ dnorm(0.00000E+00, 1.00000E-04)
-    sd ~ dunif(0.00000E+00, 5)
+    sd ~ dnorm(0,4.400000E-1)I(0,)
     tau <- pow(sd, -2)
     for (c in 1:(nt - 1)) {
         for (k in (c + 1):nt) {

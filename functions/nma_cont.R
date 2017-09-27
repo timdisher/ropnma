@@ -442,12 +442,12 @@ if(inc == TRUE){
   
   
   if(FE == TRUE){  
-    results = list(model = model,comp = comp,rr = rr,rankogram = rankogram)
+    results = list(model = model,comp = comp,rr = rr,rankogram = rankogram,bugs = model.con$summary, dic = model.con$DIC)
     
   }else {sd = model.con$summary[grep("^sd$",row.names(model.con$summary),fixed = F),]
   
   results = list(model = model,sd = sd,comp = comp,rr = rr,rankogram = rankogram, inc_table = inc.con,
-                 devplot = dev_plot)}
+                 devplot = dev_plot,bugs = model.con$summary, dic = model.con$DIC)}
   
   
   results
@@ -1915,11 +1915,11 @@ rankogram = ggplot(dat,aes(x = Rankings, y = `Probability of Best Treatment`,fil
 
 
 if(FE == TRUE){  
-  results = list(model = model,comp = comp,rr = rr,rankogram = rankogram,bugs = model.con$summary, dic = model.con$DIC)
+  results = list(model = model,comp = comp,rr = rr,rankogram = rankogram,bugs = model$summary, dic = model$DIC)
   
 }else {sd = model$summary[grep("^sd$",row.names(model$summary),fixed = F),]
 
-results = list(model = model,sd = sd,comp = comp,rr = rr,rankogram = rankogram,bugs = model.con$summary, dic = model.con$DIC)}
+results = list(model = model,sd = sd,comp = comp,rr = rr,rankogram = rankogram,bugs = model$summary, dic = model$DIC)}
 
 
 results

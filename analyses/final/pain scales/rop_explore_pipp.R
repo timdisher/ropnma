@@ -73,11 +73,11 @@ pa_recov_contrast = pairwise(data = pa_recov,treat = trt_group, n= sample_size, 
 (pa_recov_int = netmeta(TE,seTE,treat1,treat2,studlab,data = pa_recov_contrast, sm = "MD")) ###required to drawn netgraph
 
 #Generate characteristics tables
-netmeta_xl_chars(pa_recov,"pa_recov",ref = "drops",treat = "trt_group",location = "./tables/final/char_tables/pain scales recovery") ##create table of characteristics
+recov_chars = netmeta_xl_chars(pa_recov,"pa_recov",ref = "drops",treat = "trt_group",location = "./tables/final/char_tables/pain scales recovery") ##create table of characteristics
 
 
 ### Generate network graph
-momlinc_netgraph(pa_recov_int,pa_recov_int_char,"pa_reac",2,location = "./figs/final/pain scales recovery/nma figs")
+ momlinc_netgraph(pa_recov_int,pa_recov_int_char,"pa_reac",2,location = "./figs/final/pain scales recovery/nma figs")
 
 
 ### Placebo response graph
@@ -90,5 +90,5 @@ plac_resp_graph(pa_recov_graph, ref = "drops", facet = TRUE, fv = "speculum", lo
 
 # All pairwise meta-analyses
 
-(pa_recov_pairwise = all_pairwise(pa_recov_direct_comp_char,pa_recov_contrast, outcome = "PIPP recovery", location = "./figs/final/pain scales recovery/pairwise ma"))
+(pa_recov_pairwise = all_pairwise(recov_chars$direct,sm = "MD",pa_recov_contrast, outcome = "PIPP recovery", location = "./figs/final/pain scales recovery/pairwise ma"))
 

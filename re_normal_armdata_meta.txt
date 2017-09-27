@@ -9,7 +9,7 @@ model
             prec[i, k] <- 1/var[i, k]
             y[i, k] ~ dnorm(theta[i, k], prec[i, k])
             theta[i, k] <- mu[i] + delta[i, k] + (beta[t[i, k]] - 
-                beta[t[i, 1]]) * (x[i])
+                beta[t[i, 1]]) * (mu[i] - mx)
             dev[i, k] <- (y[i, k] - theta[i, k]) * (y[i, k] - 
                 theta[i, k]) * prec[i, k]
         }

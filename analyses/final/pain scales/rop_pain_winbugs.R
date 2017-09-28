@@ -52,8 +52,8 @@ source("./functions/nma_utility_functions.R")
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
 model = normal_models()
-# bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
-bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
+bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
+# bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
 
 
 pa_reac_data = NULL
@@ -226,14 +226,13 @@ pa_reac_data$sa8$meta_cr %>% filter(t_1 == 1) %>% mutate(y2_diff = y_2 - y_1,
 # 2 = I2 is 70%
 # Effect to detect = 2 points (1 MID)
 # Assumed SD of PIPP = used Dhaliwhal (largest study)
-sd_pipp = sqrt((2.4^2*76+2.1^2*76)/(76+76))
-
+pa_reac_data$pa$data$wide %>% arrange(n_1)
+sd_pipp = sqrt((2.4^2*75+2.1^2*75)/(75+75))
 req_samp = round((power.t.test(sig.level = 0.05,power = 0.8,delta = 2, sd = 2.25))$n,0)*2
 #==========================================================================
 
 momlinc_netgraph(pa_reac_int,chars$int_char,2)
 
-pa_reac_data$pa$data$wide %>% arrange(n_1)
 
 
 eff_ss = function(n){
@@ -357,11 +356,49 @@ power_table = left_join(n,n_adj, by = c("comp","num")) %>% mutate(tot_eff = ntot
 
 
 
+# Forest plot vs ref======
 power_table = power_table %>% arrange(num) 
+pa_reac_forest_data = as.data.frame(pa_reac_data$pa$nma$comp[1:11,1:3])
 
-t = as.data.frame(pa_reac_data$pa$nma$comp[1:11,1:3])
 
-test = bind_cols(power_table,t)
+pa_reac_forest_data = bind_cols(power_table,pa_reac_forest_data) %>% select(-one_of(c("sample_frac","tot_eff","sample_frac_adj","adj_n",
+                                                                                      "indirect_n_adj","power","num",
+                                                                                      "Comparison (Trt A vs. Trt B)"))) %>%
+  mutate(comp = c("Drops + sweet taste mult","Drops + phys","Drops + sweet taste", "Placebo",
+                  "Drops + ebm mult","Drops + acetaminophen", "Drops + WFDRI",
+                  "Drops + N2O + sweet taste","Sweet taste alone","Repeated sweet taste",
+                  "Sweet tate + singing")) %>% arrange(as.numeric(as.character(`Mean Difference of Trt A vs. Trt B`))) 
+
+pa_reac_plot_data = pa_reac_forest_data[,c(6,7)] %>%separate(`95% CrI of Mean Difference`,c("lower","upper"),sep = " to ") %>% rename(mean = `Mean Difference of Trt A vs. Trt B`)
+pa_reac_table_data = pa_reac_forest_data %>%  mutate(cri = paste("(",`95% CrI of Mean Difference`,")",sep="")) %>% select(-`95% CrI of Mean Difference`) %>% unite(mean_cri,`Mean Difference of Trt A vs. Trt B`,cri,sep = " ")
+
+
+
+pdf("./figs/final/pain scales reactivity/nma_pa_reac_power_forest.pdf", onefile = FALSE, width = 12, height = 5)
+forestplot(rbind(c("Comparison","Direct","Effective 
+indirect
+","Heterogeneity
+adjusted N
+                   ","Power","Mean Difference (95% CrI)"),pa_reac_table_data),
+           c(NA,as.numeric(as.character(pa_reac_plot_data$mean))),
+           c(NA,as.numeric(as.character(pa_reac_plot_data$lower))),
+           c(NA,as.numeric(as.character(pa_reac_plot_data$upper))),
+           graph.pos = 6, graphwidth = unit(50,'mm'),
+           is.summary = c(TRUE,rep(FALSE,11)),
+           hrzl_lines = gpar(col="#444444"),
+           align = c("l",rep("c",4),"l"),
+           boxsize = 0.4,
+           colgap = unit(3,"mm"),
+           lineheight = unit(7,"mm"),
+           txt_gp = fpTxtGp(label = gpar(fontsize = 11, family = "calibri")),
+           col = fpColors(box = "mediumpurple", line = "midnightblue"),
+           xlab = "PIPP Score",
+           title = "PIPP Reactivity (Intervention vs Anesthetic eye drops alone)"
+)
+dev.off()
+
+
+
 
 # #========================================================================================
 # 

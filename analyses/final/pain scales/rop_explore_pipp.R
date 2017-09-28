@@ -23,7 +23,7 @@ library(grid)
 pa_reac = rop_data_arm %>% filter(outcome == "PIPP" | outcome == "NIPS", timepoint_group == "reactivity") #O'sullivan only study with N-PASS score scaled to PIPP
 
 pa_reac = pa_reac %>% filter(studlab != "Ucar 2014") #No variance info
-pa_reac$trt_group = fct_infreq(pa_reac$trt_group) %>% droplevels(data)
+pa_reac$trt_group = fct_infreq(pa_reac$trt_group) %>% droplevels()
 
 ### converts data to correct format to allow for assessment of connectivity
 pa_reac_contrast = pairwise(data = pa_reac,treat = trt_group, n= sample_size, 
@@ -54,9 +54,6 @@ plac_resp_graph(pa_reac_graph, ref = "drops", facet = TRUE, fv = "speculum")
 
 (pa_reac_pairwise = all_pairwise(chars$direct,pa_reac_contrast, outcome = "PIPP reactivity", location = "./figs/final/pain scales reactivity/pairwise ma", sm = "MD"))
 
-direct_comp_char = chars$direct
-data = pa_reac_contrast
-out
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

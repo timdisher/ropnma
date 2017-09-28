@@ -31,7 +31,7 @@
 ##requires tidyverse and netmeta
 #-----------------------------------------------------------------------------------------------------------------------------
 
-netmeta_xl_chars = function(data,outcome,ref,treat = "treatment",location = getwd,cont = TRUE,event = NULL){
+netmeta_xl_chars = function(data,outcome,ref,treat = "treatment",location = getwd(),cont = TRUE,event = NULL){
 
 if(cont == TRUE){  
 contrast = pairwise(data = data,treat = data[[treat]], n= sample_size, mean = mean,sd = std_dev,studlab = studlab)} else{
@@ -48,11 +48,12 @@ poss_pw = choose(trts,2) # total possible pairwise comparisons
 
 
 #-- Create a numbered list of treatments with ref as #1--#
-data[[treat]] = fct_relevel(data[[treat]], ref)
-names= as.character((data %>% select(treat) %>% distinct() %>% arrange_("trt_group"))[[treat]])
+data[[treat]] = fct_infreq(data[[treat]])
+data = droplevels(data)
+names= (data %>% select(treat) %>% distinct())[[treat]]
 
-names = tibble("Treatment Number" = seq(1:trts),
-               "Treatment Description" = names)
+names = tibble("Treatment Number" = as.numeric(names),
+               "Treatment Description" = names) %>% arrange(`Treatment Number`)
 
                
 #- Assign treatment numbers based on tibble above -#
@@ -121,7 +122,7 @@ int_nums = data %>% group_by_(treat) %>% summarise("Number of Comparisons" = n()
                                                    "Number of Patients" = sum(sample_size)) %>% rename_(Treatment = treat)
 
 
-int_char <- tibble("Treatment" = names[[2]]) %>% left_join(int_nums)
+int_char <- tibble("Treatment" = names[[2]]) %>% left_join(int_nums, by = "Treatment")
   
 
 
@@ -131,7 +132,7 @@ int_char <- tibble("Treatment" = names[[2]]) %>% left_join(int_nums)
 direct_comp_char <- direct %>% filter(nstud > 0) %>% left_join(names, by = c("trt1" = "Treatment Number")) %>%
 left_join(names, by = c("trt2" = "Treatment Number")) %>% rename(treatment_1 = `Treatment Description.x`,
                                                                  treatment_2 = `Treatment Description.y`) %>%
-  mutate(Treatment = paste(treatment_1,"vs",treatment_2)) %>%
+  mutate(Treatment = paste(treatment_2,"vs",treatment_1)) %>%
   select(Treatment,nstud,ntot) %>% rename("# Studies" = nstud,
                                           "# Patients" = ntot)
 
@@ -383,14 +384,14 @@ comp_matrix = str_split_fixed(comps_data$Treatment, " vs ",2)
 
 if(cont == TRUE){
 for(i in seq_along(comps_data$Treatment)){
-  temp_data = data %>% filter(treat1 == comp_matrix[[i,1]] & treat2 == comp_matrix[i,2])
+  temp_data = data %>% filter(treat1 == comp_matrix[[i,2]] & treat2 == comp_matrix[i,1])
   list[[i]] = metacont(n2,mean2,sd2,n1,mean1,sd1, sm = sm, data = temp_data,studlab = studlab)
   names(list)[i] = comps_data$Treatment[i]
 }
   } else{
   
   for(i in seq_along(comps_data$Treatment)){
-    temp_data = data %>% filter(treat1 == comp_matrix[[i,1]] & treat2 == comp_matrix[i,2])
+    temp_data = data %>% filter(treat1 == comp_matrix[[i,2]] & treat2 == comp_matrix[i,1])
     list[[i]] = metabin(n2,event2,sd2,n1,event1,sd1, sm = sm, data = temp_data,studlab = studlab)
     names(list)[i] = comps_data$Treatment[i] 
   
@@ -401,7 +402,7 @@ for(i in seq_along(comps_data$Treatment)){
 
 for(i in seq_along(list)){
   pdf(paste(location,"/",outcome,"_",names(list[i]),"_pw_ma.pdf",sep=""),width = 12, height = 6)
-  forest(list[[i]], lab.e = comp_matrix[i,2], lab.c = comp_matrix[i,1])
+  forest(list[[i]], lab.e = comp_matrix[i,1], lab.c = comp_matrix[i,2])
   grid.text(paste(outcome,names(list[i]),sep = " "), .5, .8, gp=gpar(cex=2))
   dev.off()
 }

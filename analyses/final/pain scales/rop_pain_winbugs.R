@@ -52,8 +52,8 @@ source("./functions/nma_utility_functions.R")
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
 model = normal_models()
-bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
-
+# bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
+bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
 
 
 pa_reac_data = NULL
@@ -241,7 +241,7 @@ eff_ss = function(n){
 }
 
 power = chars$direct_zeros %>% rename(ctrl = `Treatment Description.x`,
-                                      trt = `Treatment Description.y`) %>%  unite(comp,ctrl,trt,sep = " vs ") %>% select(comp, ntot,nstud) 
+                                      trt = `Treatment Description.y`) %>%  unite(comp,trt,ctrl,sep = " vs ") %>% select(comp, ntot,nstud) %>% mutate(num = seq(1,66,1))
 
 no_het = power %>% filter(nstud <2) %>% mutate(adj_n = ntot)
 
@@ -260,102 +260,108 @@ comps_adj = comb %>% select(comp,adj_n) %>% spread(comp,adj_n) #Create wide form
 
 #Adjusted
 
-n_adj = comb[grep("drops vs",comb$comp),c(1,5)] %>%
+n_adj = comb[grep("vs drops$",comb$comp),c(1,4,6)] %>%
   mutate(indirect_n_adj =c(
-    #drops vs drops sweet
-    eff_ss(c(comps_adj$`drops phys vs drops sweet`,comps_adj$`drops vs drops phys`)) +
-    eff_ss(c(comps_adj$`drops sweet vs drops sweet mult`,comps_adj$`drops vs drops sweet mult`))+
-    eff_ss(c(comps_adj$`drops sweet vs drops.acet`,comps_adj$`drops vs drops.acet`)),
+    #drops sweet vs drops
+    eff_ss(c(comps_adj$`drops sweet vs drops phys`,comps_adj$`drops phys vs drops`)) +
+    eff_ss(c(comps_adj$`drops sweet vs drops sweet mult`,comps_adj$`drops sweet mult vs drops`))+
+    eff_ss(c(comps_adj$`drops.acet vs drops sweet`,comps_adj$`drops.acet vs drops`)),
 
-    eff_ss(c(comps_adj$`drops phys vs drops sweet mult`,comps_adj$`drops vs drops phys`)) +
-    eff_ss(c(comps_adj$`drops sweet vs drops sweet mult`,comps_adj$`drops vs drops sweet`))+
-    eff_ss(c(comps_adj$`drops ebm mult vs drops sweet mult`,comps_adj$`drops vs drops ebm mult`)),
+    eff_ss(c(comps_adj$`drops sweet vs drops phys`,comps_adj$`drops phys vs drops`)) +
+    eff_ss(c(comps_adj$`drops sweet vs drops sweet mult`,comps_adj$`drops sweet vs drops`))+
+    eff_ss(c(comps_adj$`drops ebm mult vs drops sweet mult`,comps_adj$`drops ebm mult vs drops`)),
    
-   #drops vs drops.acet
-   eff_ss(c(comps_adj$`drops sweet vs drops.acet`,comps_adj$`drops vs drops sweet`)),
+   #drops.acet vs drops
+   eff_ss(c(comps_adj$`drops.acet vs drops sweet`,comps_adj$`drops sweet vs drops`)),
    
-   #drops vs placebo
+   #placebo vs drops
    0,
    
-   #drops vs drops ebm mult
-   eff_ss(c(comps_adj$`drops ebm mult vs drops sweet mult`,comps_adj$`drops vs drops sweet mult`)) +
-     eff_ss(c(comps_adj$`drops ebm mult vs drops phys`,comps_adj$`drops vs drops phys`)),
+   #drops ebm mult vs drops
+   eff_ss(c(comps_adj$`drops ebm mult vs drops sweet mult`,comps_adj$`drops sweet mult vs drops`)) +
+     eff_ss(c(comps_adj$`drops ebm mult vs drops phys`,comps_adj$`drops phys vs drops`)),
    
-   #drops vs drops phys
-   eff_ss(c(comps_adj$`drops phys vs drops sweet mult`,comps_adj$`drops vs drops sweet mult`)) +
-     eff_ss(c(comps_adj$`drops phys vs drops sweet`,comps_adj$`drops vs drops sweet`))+
-     eff_ss(c(comps_adj$`drops ebm mult vs drops phys`,comps_adj$`drops vs drops ebm mult`)),
+   #drops phys vs drops
+   eff_ss(c(comps_adj$`drops sweet vs drops phys`,comps_adj$`drops sweet mult vs drops`)) +
+     eff_ss(c(comps_adj$`drops sweet vs drops phys`,comps_adj$`drops sweet vs drops`))+
+     eff_ss(c(comps_adj$`drops ebm mult vs drops phys`,comps_adj$`drops ebm mult vs drops`)),
    
    #drops vs drops WFDRI
    0,
    
    #drops vs N20 sweet
-   eff_ss(c(comps_adj$`drops sweet vs drops.N2O.sweet`,comps_adj$`drops vs drops sweet`)),
+   eff_ss(c(comps_adj$`drops.N2O.sweet vs drops sweet`,comps_adj$`drops sweet vs drops`)),
    
    #drops vs sweet
    0,
    
    #drops vs sweet rep
-   eff_ss(c(comps_adj$`placebo vs sweet rep`,comps_adj$`drops vs placebo`)),
+   eff_ss(c(comps_adj$`sweet rep vs placebo`,comps_adj$`placebo vs drops`)),
    
    #drops vs sweet sing
-   eff_ss(c(comps_adj$`placebo vs sweet sing`,comps_adj$`drops vs placebo`)))
+   eff_ss(c(comps_adj$`sweet sing vs placebo`,comps_adj$`placebo vs drops`)))
 )
 
 #Unadjusted
-n = comb[grep("drops vs",comb$comp),c(1,2)] %>%
+n = comb[grep("vs drops$",comb$comp),c(1,2,4)] %>%
   mutate(indirect_n =c(
-    #drops vs drops sweet
-    eff_ss(c(comps$`drops phys vs drops sweet`,comps$`drops vs drops phys`)) +
-      eff_ss(c(comps$`drops sweet vs drops sweet mult`,comps$`drops vs drops sweet mult`))+
-      eff_ss(c(comps$`drops sweet vs drops.acet`,comps$`drops vs drops.acet`)),
+    #drops sweet vs drops
+    eff_ss(c(comps$`drops sweet vs drops phys`,comps$`drops phys vs drops`)) +
+      eff_ss(c(comps$`drops sweet vs drops sweet mult`,comps$`drops sweet mult vs drops`))+
+      eff_ss(c(comps$`drops.acet vs drops sweet`,comps$`drops.acet vs drops`)),
     
-    eff_ss(c(comps$`drops phys vs drops sweet mult`,comps$`drops vs drops phys`)) +
-      eff_ss(c(comps$`drops sweet vs drops sweet mult`,comps$`drops vs drops sweet`))+
-      eff_ss(c(comps$`drops ebm mult vs drops sweet mult`,comps$`drops vs drops ebm mult`)),
+    eff_ss(c(comps$`drops sweet vs drops phys`,comps$`drops phys vs drops`)) +
+      eff_ss(c(comps$`drops sweet vs drops sweet mult`,comps$`drops sweet vs drops`))+
+      eff_ss(c(comps$`drops ebm mult vs drops sweet mult`,comps$`drops ebm mult vs drops`)),
     
-    #drops vs drops.acet
-    eff_ss(c(comps$`drops sweet vs drops.acet`,comps$`drops vs drops sweet`)),
+    #drops.acet vs drops
+    eff_ss(c(comps$`drops.acet vs drops sweet`,comps$`drops sweet vs drops`)),
     
-    #drops vs placebo
+    #placebo vs drops
     0,
     
-    #drops vs drops ebm mult
-    eff_ss(c(comps$`drops ebm mult vs drops sweet mult`,comps$`drops vs drops sweet mult`)) +
-      eff_ss(c(comps$`drops ebm mult vs drops phys`,comps$`drops vs drops phys`)),
+    #drops ebm mult vs drops
+    eff_ss(c(comps$`drops ebm mult vs drops sweet mult`,comps$`drops sweet mult vs drops`)) +
+      eff_ss(c(comps$`drops ebm mult vs drops phys`,comps$`drops phys vs drops`)),
     
-    #drops vs drops phys
-    eff_ss(c(comps$`drops phys vs drops sweet mult`,comps$`drops vs drops sweet mult`)) +
-      eff_ss(c(comps$`drops phys vs drops sweet`,comps$`drops vs drops sweet`))+
-      eff_ss(c(comps$`drops ebm mult vs drops phys`,comps$`drops vs drops ebm mult`)),
+    #drops phys vs drops
+    eff_ss(c(comps$`drops sweet vs drops phys`,comps$`drops sweet mult vs drops`)) +
+      eff_ss(c(comps$`drops sweet vs drops phys`,comps$`drops sweet vs drops`))+
+      eff_ss(c(comps$`drops ebm mult vs drops phys`,comps$`drops ebm mult vs drops`)),
     
     #drops vs drops WFDRI
     0,
     
     #drops vs N20 sweet
-    eff_ss(c(comps$`drops sweet vs drops.N2O.sweet`,comps$`drops vs drops sweet`)),
+    eff_ss(c(comps$`drops.N2O.sweet vs drops sweet`,comps$`drops sweet vs drops`)),
     
     #drops vs sweet
     0,
     
     #drops vs sweet rep
-    eff_ss(c(comps$`placebo vs sweet rep`,comps$`drops vs placebo`)),
+    eff_ss(c(comps$`sweet rep vs placebo`,comps$`placebo vs drops`)),
     
     #drops vs sweet sing
-    eff_ss(c(comps$`placebo vs sweet sing`,comps$`drops vs placebo`)))
+    eff_ss(c(comps$`sweet sing vs placebo`,comps$`placebo vs drops`)))
   )
 
 
-power_table = left_join(n,n_adj, by = "comp") %>% mutate(tot_eff = ntot + indirect_n,
+power_table = left_join(n,n_adj, by = c("comp","num")) %>% mutate(tot_eff = ntot + indirect_n,
                                                          tot_eff_adj = adj_n + indirect_n_adj,
                                                          sample_frac = ifelse(tot_eff/req_samp >1,">100",round(tot_eff/req_samp*100,2)),
                                                          power = round((power.t.test(tot_eff/2,delta = 2, sd = 2.25))$power,2),
                                                          sample_frac_adj = ifelse(tot_eff_adj/req_samp >1,">100",round(tot_eff_adj/req_samp*100,2)),
                                                          power_adj = round((power.t.test(tot_eff_adj/2,delta = 2, sd = 2.25))$power,2)) %>% 
   
-  select(comp,ntot,indirect_n,tot_eff,sample_frac,power,adj_n,indirect_n_adj,tot_eff_adj,sample_frac_adj,power_adj)
+  select(comp,ntot,indirect_n,tot_eff,sample_frac,power,adj_n,indirect_n_adj,tot_eff_adj,sample_frac_adj,power_adj,num)
 
 
+
+power_table = power_table %>% arrange(num) 
+
+t = as.data.frame(pa_reac_data$pa$nma$comp[1:11,1:3])
+
+test = bind_cols(power_table,t)
 
 # #========================================================================================
 # 
@@ -538,29 +544,29 @@ recov_comps_adj = recov_comb %>% select(comp,adj_n) %>% spread(comp,adj_n) #Crea
 #Adjusted
 recov_n = recov_comb[grep("drops vs",recov_comb$comp),c(1,5)] %>%
   mutate(indirect_n_adj =c(
-    #drops vs drops sweet
-    eff_ss(c(recov_comps_adj$`drops sweet vs drops.acet`,recov_comps_adj$`drops vs drops.acet`)),
+    #drops sweet vs drops
+    eff_ss(c(recov_comps_adj$`drops.acet vs drops sweet`,recov_comps_adj$`drops.acet vs drops`)),
     
     #drops vs drops acet
-    eff_ss(c(recov_comps_adj$`drops sweet vs drops.acet`,recov_comps_adj$`drops vs drops sweet`)),
+    eff_ss(c(recov_comps_adj$`drops.acet vs drops sweet`,recov_comps_adj$`drops sweet vs drops`)),
     
-    #drops vs drops ebm mult
-    eff_ss(c(recov_comps_adj$`drops ebm mult vs drops sweet mult`,recov_comps_adj$`drops vs drops sweet mult`)),
+    #drops ebm mult vs drops
+    eff_ss(c(recov_comps_adj$`drops ebm mult vs drops sweet mult`,recov_comps_adj$`drops sweet mult vs drops`)),
     
     #drops vs drops morph
-    eff_ss(c(recov_comps_adj$`drops morph vs drops.acet`,recov_comps_adj$`drops vs drops.acet`)),
+    eff_ss(c(recov_comps_adj$`drops morph vs drops.acet`,recov_comps_adj$`drops.acet vs drops`)),
     
-    #drops vs drops phys
-    eff_ss(c(recov_comps_adj$`drops phys vs drops sweet mult`,recov_comps_adj$`drops vs drops sweet mult`)) +
-      eff_ss(c(recov_comps_adj$`drops ebm mult vs drops phys`,recov_comps_adj$`drops vs drops ebm mult`)),
+    #drops phys vs drops
+    eff_ss(c(recov_comps_adj$`drops sweet vs drops phys`,recov_comps_adj$`drops sweet mult vs drops`)) +
+      eff_ss(c(recov_comps_adj$`drops ebm mult vs drops phys`,recov_comps_adj$`drops ebm mult vs drops`)),
     
-    #drops vs drops sweet mult
-    eff_ss(c(recov_comps_adj$`drops ebm mult vs drops sweet mult`,recov_comps_adj$`drops vs drops ebm mult`)),
+    #drops sweet mult vs drops
+    eff_ss(c(recov_comps_adj$`drops ebm mult vs drops sweet mult`,recov_comps_adj$`drops ebm mult vs drops`)),
     
     #drops vs phys
     0,
     
-    #drops vs placebo
+    #placebo vs drops
     0,
     
     #drops vs sweet
@@ -573,30 +579,30 @@ recov_n = recov_comb[grep("drops vs",recov_comb$comp),c(1,5)] %>%
 
 recov_n = recov_comb[grep("drops vs",recov_comb$comp),c(1,5)] %>%
   mutate(indirect_n =c(
-    #drops vs drops sweet
-    eff_ss(c(recov_comps$`drops sweet vs drops.acet`,recov_comps$`drops vs drops.acet`)),
+    #drops sweet vs drops
+    eff_ss(c(recov_comps$`drops.acet vs drops sweet`,recov_comps$`drops.acet vs drops`)),
     
     #drops vs drops acet
-    eff_ss(c(recov_comps$`drops sweet vs drops.acet`,recov_comps$`drops vs drops sweet`)),
+    eff_ss(c(recov_comps$`drops.acet vs drops sweet`,recov_comps$`drops sweet vs drops`)),
     
-    #drops vs drops ebm mult
-    eff_ss(c(recov_comps$`drops ebm mult vs drops sweet mult`,recov_comps$`drops vs drops sweet mult`)),
+    #drops ebm mult vs drops
+    eff_ss(c(recov_comps$`drops ebm mult vs drops sweet mult`,recov_comps$`drops sweet mult vs drops`)),
     
     #drops vs drops morph
-    eff_ss(c(recov_comps$`drops morph vs drops.acet`,recov_comps$`drops vs drops.acet`)),
+    eff_ss(c(recov_comps$`drops morph vs drops.acet`,recov_comps$`drops.acet vs drops`)),
     
     
-    #drops vs drops phys
-    eff_ss(c(recov_comps$`drops phys vs drops sweet mult`,recov_comps$`drops vs drops sweet mult`)) +
-      eff_ss(c(recov_comps$`drops ebm mult vs drops phys`,recov_comps$`drops vs drops ebm mult`)),
+    #drops phys vs drops
+    eff_ss(c(recov_comps$`drops sweet vs drops phys`,recov_comps$`drops sweet mult vs drops`)) +
+      eff_ss(c(recov_comps$`drops ebm mult vs drops phys`,recov_comps$`drops ebm mult vs drops`)),
     
-    #drops vs drops sweet mult
-    eff_ss(c(recov_comps$`drops ebm mult vs drops sweet mult`,recov_comps$`drops vs drops ebm mult`)),
+    #drops sweet mult vs drops
+    eff_ss(c(recov_comps$`drops ebm mult vs drops sweet mult`,recov_comps$`drops ebm mult vs drops`)),
     
     #drops vs phys
     0,
     
-    #drops vs placebo
+    #placebo vs drops
     0,
     
     #drops vs sweet

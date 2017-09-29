@@ -59,7 +59,7 @@ bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
 pa_reac_data = NULL
 
 
-pa_reac_data$pa = nma(pa_reac, inc = TRUE)
+pa_reac_data$pa = nma(pa_reac, inc = FALSE)
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
@@ -345,6 +345,9 @@ n = comb[grep("vs drops$",comb$comp),c(1,2,4)] %>%
   )
 
 
+
+
+
 power_table = left_join(n,n_adj, by = c("comp","num")) %>% mutate(tot_eff = ntot + indirect_n,
                                                          tot_eff_adj = adj_n + indirect_n_adj,
                                                          sample_frac = ifelse(tot_eff/req_samp >1,">100",round(tot_eff/req_samp*100,2)),
@@ -353,6 +356,32 @@ power_table = left_join(n,n_adj, by = c("comp","num")) %>% mutate(tot_eff = ntot
                                                          power_adj = round((power.t.test(tot_eff_adj/2,delta = 2, sd = 2.25))$power,2)) %>% 
   
   select(comp,ntot,indirect_n,tot_eff,sample_frac,power,adj_n,indirect_n_adj,tot_eff_adj,sample_frac_adj,power_adj,num)
+
+retrodesign <- function(A, s, alpha=.05, df=Inf, n.sims=10000) { 
+  z <- qt(1-alpha/2, df)
+  p.hi <- 1 - pt(z-A/s, df)
+  p.lo <- pt(-z-A/s, df)  
+  power <- p.hi + p.lo
+  typeS <- p.lo/power
+  estimate <- A + s*rt(n.sims,df)
+  significant <- abs(estimate) > s*z
+  exaggeration <- mean(abs(estimate)[significant])/A
+  return(list(power=power,
+              typeS=typeS, exaggeration=exaggeration))
+}
+
+
+power_table = power_table %>% mutate(post_sd = pa_reac_data$pa$nma$bugs[1:11,2],
+                                    gelman_power = 0,
+                                    gelman_n = 0,
+                                    gelman_m = 0)
+
+for(i in seq_along(power_table$comp)){
+  power_table$gelman_power[i] = retrodesign(2,power_table$post_sd[i])[["power"]]
+  power_table$gelman_m[i] = retrodesign(2,power_table$post_sd[i])[["exaggeration"]]
+  power_table$gelman_n[i] = (power.t.test(power = power_table$gelman_power[i],delta = 2, sd = 2.25))$n*2
+  
+}
 
 
 
@@ -363,14 +392,23 @@ pa_reac_forest_data = as.data.frame(pa_reac_data$pa$nma$comp[1:11,1:3])
 
 pa_reac_forest_data = bind_cols(power_table,pa_reac_forest_data) %>% select(-one_of(c("sample_frac","tot_eff","sample_frac_adj","adj_n",
                                                                                       "indirect_n_adj","power","num",
-                                                                                      "Comparison (Trt A vs. Trt B)"))) %>%
+                                                                                      "Comparison (Trt A vs. Trt B)","tot_eff_adj",
+                                                                                      "power_adj"))) %>%
   mutate(comp = c("Drops + sweet taste mult","Drops + phys","Drops + sweet taste", "Placebo",
                   "Drops + ebm mult","Drops + acetaminophen", "Drops + WFDRI",
                   "Drops + N2O + sweet taste","Sweet taste alone","Repeated sweet taste",
                   "Sweet tate + singing")) %>% arrange(as.numeric(as.character(`Mean Difference of Trt A vs. Trt B`))) 
 
-pa_reac_plot_data = pa_reac_forest_data[,c(6,7)] %>%separate(`95% CrI of Mean Difference`,c("lower","upper"),sep = " to ") %>% rename(mean = `Mean Difference of Trt A vs. Trt B`)
-pa_reac_table_data = pa_reac_forest_data %>%  mutate(cri = paste("(",`95% CrI of Mean Difference`,")",sep="")) %>% select(-`95% CrI of Mean Difference`) %>% unite(mean_cri,`Mean Difference of Trt A vs. Trt B`,cri,sep = " ")
+pa_reac_plot_data = pa_reac_forest_data[,c(8,9)] %>%separate(`95% CrI of Mean Difference`,c("lower","upper"),sep = " to ") %>% rename(mean = `Mean Difference of Trt A vs. Trt B`)
+pa_reac_table_data = pa_reac_forest_data %>%  mutate(cri = paste("(",`95% CrI of Mean Difference`,")",sep="")) %>% select(-`95% CrI of Mean Difference`) %>% unite(mean_cri,`Mean Difference of Trt A vs. Trt B`,cri,sep = " ") %>%
+  select(-post_sd) 
+
+pa_reac_table_data$gelman_n = round(pa_reac_table_data$gelman_n,0)
+pa_reac_table_data$gelman_m = round(pa_reac_table_data$gelman_m,2)
+pa_reac_table_data$gelman_power = round(pa_reac_table_data$gelman_power,2)
+
+pa_reac_table_data = pa_reac_table_data %>%  mutate(sig = c("yes","no","yes",rep("no",8)),
+         gelman_m = ifelse(sig == "yes",gelman_m,"NA"))  %>% select(comp,ntot,indirect_n,gelman_n,gelman_power,gelman_m,mean_cri)
 
 
 
@@ -379,14 +417,16 @@ forestplot(rbind(c("Comparison","Direct","Effective
 indirect
 ","Heterogeneity
 adjusted N
-                   ","Power","Mean Difference (95% CrI)"),pa_reac_table_data),
+                   ","Power","Exaggeration 
+factor
+                   ","Mean Difference (95% CrI)"),pa_reac_table_data),
            c(NA,as.numeric(as.character(pa_reac_plot_data$mean))),
            c(NA,as.numeric(as.character(pa_reac_plot_data$lower))),
            c(NA,as.numeric(as.character(pa_reac_plot_data$upper))),
-           graph.pos = 6, graphwidth = unit(50,'mm'),
+           graph.pos = 7, graphwidth = unit(50,'mm'),
            is.summary = c(TRUE,rep(FALSE,11)),
            hrzl_lines = gpar(col="#444444"),
-           align = c("l",rep("c",4),"l"),
+           align = c("l",rep("c",5),"l"),
            boxsize = 0.4,
            colgap = unit(3,"mm"),
            lineheight = unit(7,"mm"),
@@ -403,7 +443,7 @@ dev.off()
 # #========================================================================================
 # 
 # 
-# Outcome: Pain Reactivity-----
+# Outcome: Pain Recovery-----
 # 
 # #========================================================================================
 
@@ -561,7 +601,7 @@ momlinc_netgraph(pa_recov_int,recov_chars$int_char,2)
 
 
 recov_power = recov_chars$direct_zeros %>% rename(ctrl = `Treatment Description.x`,
-                                      trt = `Treatment Description.y`) %>%  unite(comp,ctrl,trt,sep = " vs ") %>% select(comp, ntot,nstud) 
+                                      trt = `Treatment Description.y`) %>%  unite(comp,trt,ctrl,sep = " vs ") %>% select(comp, ntot,nstud) %>% mutate(num = seq(1,45,1))
 
 recov_no_het = recov_power %>% filter(nstud <2) %>% mutate(adj_n = ntot)
 
@@ -579,7 +619,7 @@ recov_comps = recov_comb %>% select(comp,ntot) %>% spread(comp,ntot) #Create wid
 recov_comps_adj = recov_comb %>% select(comp,adj_n) %>% spread(comp,adj_n) #Create wide format of adjusted ns
 
 #Adjusted
-recov_n = recov_comb[grep("drops vs",recov_comb$comp),c(1,5)] %>%
+recov_n_adj = recov_comb[grep("vs drops$",recov_comb$comp),c(1,4,6)] %>%
   mutate(indirect_n_adj =c(
     #drops sweet vs drops
     eff_ss(c(recov_comps_adj$`drops.acet vs drops sweet`,recov_comps_adj$`drops.acet vs drops`)),
@@ -614,7 +654,7 @@ recov_n = recov_comb[grep("drops vs",recov_comb$comp),c(1,5)] %>%
 
 #Unadjusted
 
-recov_n = recov_comb[grep("drops vs",recov_comb$comp),c(1,5)] %>%
+recov_n = recov_comb[grep("vs drops$",recov_comb$comp),c(1,2,4)] %>%
   mutate(indirect_n =c(
     #drops sweet vs drops
     eff_ss(c(recov_comps$`drops.acet vs drops sweet`,recov_comps$`drops.acet vs drops`)),
@@ -647,11 +687,75 @@ recov_n = recov_comb[grep("drops vs",recov_comb$comp),c(1,5)] %>%
     
   ))
 
-recov_power_table = left_join(recov_n,recov_n_adj, by = "comp") %>% mutate(tot_eff = ntot + indirect_n,
+recov_power_table = left_join(recov_n,recov_n_adj, by = c("comp","num")) %>% mutate(tot_eff = ntot + indirect_n,
                                                          tot_eff_adj = adj_n + indirect_n_adj,
                                                          sample_frac = ifelse(tot_eff/req_samp >1,">100",round(tot_eff/req_samp*100,2)),
                                                          power = round((power.t.test(tot_eff/2,delta = 2, sd = 2.25))$power,2),
                                                          sample_frac_adj = ifelse(tot_eff_adj/req_samp >1,">100",round(tot_eff_adj/req_samp*100,2)),
                                                          power_adj = round((power.t.test(tot_eff_adj/2,delta = 2, sd = 2.25))$power,2)) %>% 
   
-  select(comp,ntot,indirect_n,tot_eff,sample_frac,power,adj_n,indirect_n_adj,tot_eff_adj,sample_frac_adj,power_adj)
+  select(comp,ntot,indirect_n,tot_eff,sample_frac,power,adj_n,indirect_n_adj,tot_eff_adj,sample_frac_adj,power_adj,num)
+
+
+recov_power_table = recov_power_table %>% mutate(post_sd = pa_recov_data$pa$nma$bugs[1:9,2],
+                                     gelman_power = 0,
+                                     gelman_n = 0,
+                                     gelman_m = 0)
+
+for(i in seq_along(recov_power_table$comp)){
+  recov_power_table$gelman_power[i] = retrodesign(2,recov_power_table$post_sd[i])[["power"]]
+  recov_power_table$gelman_m[i] = retrodesign(2,recov_power_table$post_sd[i])[["exaggeration"]]
+  recov_power_table$gelman_n[i] = (power.t.test(power = recov_power_table$gelman_power[i],delta = 2, sd = 2.25))$n*2
+  
+}
+
+# Forest plot vs ref======
+recov_power_table = recov_power_table %>% arrange(num) 
+pa_recov_forest_data = as.data.frame(pa_recov_data$pa$nma$comp[1:9,1:3])
+
+
+pa_recov_forest_data = bind_cols(recov_power_table,pa_recov_forest_data) %>% select(-one_of(c("sample_frac","tot_eff","sample_frac_adj","adj_n",
+                                                                                      "indirect_n_adj","power","num",
+                                                                                      "Comparison (Trt A vs. Trt B)","tot_eff_adj",
+                                                                                      "power_adj"))) %>%
+  mutate(comp = c("Drops + phys","Drops + sweet taste mult","Drops + sweet taste","Drops + ebm mult",
+                  "Drops + acetaminophen","Drops + morphine","NNS alone","Placebo", 
+                  "Sweet taste alone")) %>% arrange(as.numeric(as.character(`Mean Difference of Trt A vs. Trt B`))) 
+
+pa_recov_plot_data = pa_recov_forest_data[,c(8,9)] %>%separate(`95% CrI of Mean Difference`,c("lower","upper"),sep = " to ") %>% rename(mean = `Mean Difference of Trt A vs. Trt B`)
+pa_recov_table_data = pa_recov_forest_data %>%  mutate(cri = paste("(",`95% CrI of Mean Difference`,")",sep="")) %>% select(-`95% CrI of Mean Difference`) %>% unite(mean_cri,`Mean Difference of Trt A vs. Trt B`,cri,sep = " ") %>%
+  select(-post_sd) 
+
+pa_recov_table_data$gelman_n = round(pa_recov_table_data$gelman_n,0)
+pa_recov_table_data$gelman_m = round(pa_recov_table_data$gelman_m,2)
+pa_recov_table_data$gelman_power = round(pa_recov_table_data$gelman_power,2)
+
+pa_recov_table_data = pa_recov_table_data %>%  mutate(sig = c("yes","yes",rep("no",7)),
+                                                    gelman_m = ifelse(sig == "yes",gelman_m,"NA"))  %>% select(comp,ntot,indirect_n,gelman_n,gelman_power,gelman_m,mean_cri)
+
+
+
+pdf("./figs/final/pain scales recovery/nma_pa_recov_power_forest.pdf", onefile = FALSE, width = 12, height = 5)
+forestplot(rbind(c("Comparison","Direct","Effective 
+indirect
+","Heterogeneity
+adjusted N
+                   ","Power","Exaggeration 
+factor
+                   ","Mean Difference (95% CrI)"),pa_recov_table_data),
+           c(NA,as.numeric(as.character(pa_recov_plot_data$mean))),
+           c(NA,as.numeric(as.character(pa_recov_plot_data$lower))),
+           c(NA,as.numeric(as.character(pa_recov_plot_data$upper))),
+           graph.pos = 7, graphwidth = unit(50,'mm'),
+           is.summary = c(TRUE,rep(FALSE,11)),
+           hrzl_lines = gpar(col="#444444"),
+           align = c("l",rep("c",5),"l"),
+           boxsize = 0.4,
+           colgap = unit(3,"mm"),
+           lineheight = unit(7,"mm"),
+           txt_gp = fpTxtGp(label = gpar(fontsize = 11, family = "calibri")),
+           col = fpColors(box = "mediumpurple", line = "midnightblue"),
+           xlab = "PIPP Score",
+           title = "PIPP Recovery (Intervention vs Anesthetic eye drops alone)"
+)
+dev.off()

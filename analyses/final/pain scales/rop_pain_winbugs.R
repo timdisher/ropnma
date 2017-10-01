@@ -21,6 +21,7 @@ library(stargazer)
 library(reshape2)
 library(forcats)
 library(scales)
+library(forestplot)
 
 
 source("./analyses/final/pain scales/rop_explore_pipp.R")
@@ -52,8 +53,8 @@ source("./functions/nma_utility_functions.R")
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
 model = normal_models()
-bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
-# bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
+# bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
+bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
 
 
 pa_reac_data = NULL
@@ -172,7 +173,7 @@ pa_reac_data$sa7$bugs = bugs(pa_reac_data$sa7$list,NULL,params_mr,model.file = m
                    bugs.directory = bugsdir, debug = F)
 
 pa_reac_data$sa7$meta %>% filter(t_1 == 1) %>% gather(diff,value,y_2:y_4) %>% gather(trt,num, t_2:t_4) %>%
-  select(diff,value,num,x) %>% na.omit %>% left_join(wf_test$treatments, by = c("num" = "t")) %>% ggplot(aes(x = x, y = value)) + 
+  select(diff,value,num,x) %>% na.omit %>% left_join(pa_reac_data$sa7$treatments, by = c("num" = "t")) %>% ggplot(aes(x = x, y = value)) + 
   geom_point() + facet_wrap(~description) + geom_smooth(method = "lm",se = FALSE, colour = "black")
 
 pa_reac_data$sa7$bugs = nma_outputs(model = pa_reac_data$sa7$bugs,pa_reac_data$sa7$treatments)
@@ -413,8 +414,8 @@ pa_reac_table_data = pa_reac_table_data %>%  mutate(sig = c("yes","no","yes",rep
 
 
 pdf("./figs/final/pain scales reactivity/nma_pa_reac_power_forest.pdf", onefile = FALSE, width = 12, height = 5)
-forestplot(rbind(c("Comparison","Direct","Effective 
-indirect
+forestplot(rbind(c("Comparison","Direct N","Effective 
+indirect N
 ","Heterogeneity
 adjusted N
                    ","Power","Exaggeration 
@@ -438,6 +439,7 @@ factor
 dev.off()
 
 
+# save(pa_reac_data, file = "./cache/pa_reac.rda")
 
 
 # #========================================================================================
@@ -510,26 +512,39 @@ pa_recov_data$sa3 = nma(pa_recov,"scaled_score","yes")
 #
 # Sensitivity 4 ---- Vague priors
 # --------- Include crossovers
-# --------- **Standardized mean difference**
-# --------- Include imputed means (as SMD)
+# --------- mean difference
+# --------- Include imputed means
 # --------- include scaled scores
 # --------- **Informative priors on sigma**
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # 
-pa_recov_data$sa4 = prep_wb(data = pa_recov,smd = TRUE)
+pa_recov_data$sa4 = prep_wb(data = pa_recov,smd = FALSE)
+
+pa_recov_data$sa4 = nma_cont(pa_recov,pa_recov_data$sa4$wb, pa_recov_data$sa4$treatments,params = params.re, model = "re-normal-gaus_3arm_inf_direct.txt",
+                               bugsdir = bugsdir, n.iter = 100000, n.burnin = 40000,n.thin = 5, FE = FALSE, debug = F)
 
 
+#===============================================================
+# Sensitivity 5 - 
+# --------- Include crossovers
+# --------- include scaled scores
+# --------- include imputed means
+# --------- vague priors on sigma
+# --------- *Weakly informative priors on treatment effects*
+# Difference of 3.5 considered to be very large = 1/12.25 = 0.082
+#===============================================================
+pa_recov_data$sa5= prep_wb(data = pa_recov,smd = FALSE)
 
-pa_recov_data$sa4$re = nma_cont(pa_recov_data$sa4, pa_recov_data$pa$treatments,params = params.re, model = model$re_inf,
-                               bugsdir = bugsdir, n.iter = 100000, n.burnin = 40000,n.thin = 16, FE = FALSE)
+pa_recov_data$sa5 = nma_cont(pa_recov, pa_recov_data$sa5$wb, pa_recov_data$sa5$treatments,params = params.re, model = "re-normal-gaus_3arm_skep_priors.txt",
+                            bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 5, FE = FALSE)
 
 
 #=========================================
-# Sensitivity 5 - Meta-regression on sample size
+# Sensitivity 6 - Meta-regression on sample size
 #=========================================
-pa_recov_data$sa5$data = prep_wb(pa_recov)
+pa_recov_data$sa6$data = prep_wb(pa_recov)
 
-pa_recov_data$sa5$data$meta = as.data.frame(pa_recov_data$sa5$data$wide %>% rowwise() %>% mutate(x = sum(n_1,n_2,n_3, na.rm = TRUE)) %>% left_join(rop_data_study %>% select(studlab,design), by = "studlab") %>%
+pa_recov_data$sa6$data$meta = as.data.frame(pa_recov_data$sa6$data$wide %>% rowwise() %>% mutate(x = sum(n_1,n_2,n_3, na.rm = TRUE)) %>% left_join(rop_data_study %>% select(studlab,design), by = "studlab") %>%
                                
                                left_join(rop_data_arm %>% select(studlab,p_value) %>% distinct() %>% filter(!is.na(p_value)),by = "studlab") %>%
                                
@@ -538,52 +553,52 @@ pa_recov_data$sa5$data$meta = as.data.frame(pa_recov_data$sa5$data$wide %>% roww
                                select(matches("t_"),matches("y_"),matches("se_"),V,na,x) %>% select(-y_1))
 
 
-pa_recovsa5_data = nma_winbugs_datalist(pa_recov_data$sa5$data$meta,pa_recov_data$sa5$data$treatments)
-pa_recovsa5_data$x = as.vector(pa_recov_data$sa5$data$meta$x)
-pa_recovsa5_data$mx = mean(pa_recovsa5_data$x)
+pa_recovsa6_data = nma_winbugs_datalist(pa_recov_data$sa6$data$meta,pa_recov_data$sa6$data$treatments)
+pa_recovsa6_data$x = as.vector(pa_recov_data$sa6$data$meta$x)
+pa_recovsa6_data$mx = mean(pa_recovsa6_data$x)
 
 params_mr  = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd", "B")
 
-recov_metareg_samplesize = bugs(pa_recovsa5_data,NULL,params_mr,model.file = model$re3_meta,
+recov_metareg_samplesize = bugs(pa_recovsa6_data,NULL,params_mr,model.file = model$re3_meta,
                    n.chains = 3, n.iter = 100000, n.burnin = 40000, n.thin = 10,
                    bugs.directory = bugsdir, debug = F)
 
 
-pa_recov_data$sa5$tables = nma_outputs(model = recov_metareg_samplesize,pa_recov_data$sa5$data$treatments)
-pa_recov_data$sa5$tables$B = as.data.frame(recov_metareg_samplesize$summary) %>% rownames_to_column("parameter") %>% filter(parameter == "B")
+pa_recov_data$sa6$tables = nma_outputs(model = recov_metareg_samplesize,pa_recov_data$sa6$data$treatments)
+pa_recov_data$sa6$tables$B = as.data.frame(recov_metareg_samplesize$summary) %>% rownames_to_column("parameter") %>% filter(parameter == "B")
 
-pa_recov_data$sa5$data$meta %>% filter(t_1 == 1) %>% select(-t_1) %>% gather(diff,value,matches("y_")) %>% gather(trt,num, matches("t_")) %>%
-  select(diff,value,num,x) %>% na.omit %>% left_join(pa_recov_data$sa5$data$treatments, by = c("num" = "t")) %>% ggplot(aes(x = x, y = value)) + 
+pa_recov_data$sa6$data$meta %>% filter(t_1 == 1) %>% select(-t_1) %>% gather(diff,value,matches("y_")) %>% gather(trt,num, matches("t_")) %>%
+  select(diff,value,num,x) %>% na.omit %>% left_join(pa_recov_data$sa6$data$treatments, by = c("num" = "t")) %>% ggplot(aes(x = x, y = value)) + 
   geom_point() + facet_wrap(~description) + geom_smooth(method = "lm",se = FALSE, colour = "black")
 
 #=========================================
-# Sensitivity 6 - Meta-regression on control arm risk
+# Sensitivity 7 - Meta-regression on control arm risk
 #=========================================
 
-pa_recov_data$sa6$data = prep_wb(pa_recov)
+pa_recov_data$sa7$data = prep_wb(pa_recov)
 
-pa_recov_data$sa6$data$meta = pa_recov_data$sa6$data$arm_wide %>% mutate(
+pa_recov_data$sa7$data$meta = pa_recov_data$sa7$data$arm_wide %>% mutate(
   se_1 = sd_1/sqrt(n_1),
   se_2 = sd_2/sqrt(n_2),
   se_3 = sd_3/sqrt(n_3)) %>% select(matches("t_"),matches("y_"),matches("se_"),na) %>% arrange(na)
 
-pa_recovsa6_data = nma_winbugs_datalist(pa_recov_data$sa6$data$meta,
-                                        pa_recov_data$sa6$data$treatments,contrast = FALSE)
+pa_recovsa7_data = nma_winbugs_datalist(pa_recov_data$sa7$data$meta,
+                                        pa_recov_data$sa7$data$treatments,contrast = FALSE)
 
-pa_recovsa6_data$mx = as.vector(pa_recov_data$sa6$data$meta %>% filter(t_1 == 1) %>% summarise(mx = mean(y_1)))[[1]]
+pa_recovsa7_data$mx = as.vector(pa_recov_data$sa7$data$meta %>% filter(t_1 == 1) %>% summarise(mx = mean(y_1)))[[1]]
 
 
-recov_metareg_baselinerisk = bugs(pa_recovsa6_data,NULL,params_mr,model.file = model$re_arm_meta,
+recov_metareg_baselinerisk = bugs(pa_recovsa7_data,NULL,params_mr,model.file = model$re_arm_meta,
                            n.chains = 3, n.iter = 100000, n.burnin = 40000, n.thin = 10,
                            bugs.directory = bugsdir, debug = F)
 
 
 
-pa_recov_data$sa6$tables = nma_outputs(model = recov_metareg_baselinerisk,pa_recov_data$sa6$data$treatments)
+pa_recov_data$sa7$tables = nma_outputs(model = recov_metareg_baselinerisk,pa_recov_data$sa7$data$treatments)
 
-pa_recov_data$sa6$data$meta %>% filter(t_1 == 1) %>% mutate(y2_diff = y_2 - y_1,
+pa_recov_data$sa7$data$meta %>% filter(t_1 == 1) %>% mutate(y2_diff = y_2 - y_1,
                                            y3_diff = y_3 - y_1) %>% gather(diff,value,ends_with("_diff")) %>% select(-t_1) %>% gather(trt,num, matches("t_")) %>%
-  select(y_1,value,num) %>% na.omit %>% left_join(pa_recov_data$sa6$data$treatments, by = c("num" = "t")) %>%
+  select(y_1,value,num) %>% na.omit %>% left_join(pa_recov_data$sa7$data$treatments, by = c("num" = "t")) %>%
   ggplot(aes(y = value, x = y_1)) + geom_point() + geom_smooth(method = "lm", se = FALSE,colour = "black") + facet_wrap(~description)
 
 
@@ -736,8 +751,8 @@ pa_recov_table_data = pa_recov_table_data %>%  mutate(sig = c("yes","yes",rep("n
 
 
 pdf("./figs/final/pain scales recovery/nma_pa_recov_power_forest.pdf", onefile = FALSE, width = 12, height = 5)
-forestplot(rbind(c("Comparison","Direct","Effective 
-indirect
+forestplot(rbind(c("Comparison","Direct N","Effective 
+indirect N
 ","Heterogeneity
 adjusted N
                    ","Power","Exaggeration 
@@ -759,3 +774,7 @@ factor
            title = "PIPP Recovery (Intervention vs Anesthetic eye drops alone)"
 )
 dev.off()
+
+# save(pa_recov_data,file = "./cache/pa_recov.rda")
+
+load("./cache/pa_recov.rda")

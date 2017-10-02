@@ -47,8 +47,13 @@ source("./functions/nma_utility_functions.R")
 # --------- Vague priors on sigma
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
-bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
+bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
 model = normal_models()
+
+
+hr_reac$bugs$pa = nma_cont(hr_reac$bugs$data$wide,hr_reac$bugs$data$wb,hr_reac$bugs$data$treatments,params = params.re, model = list(model$re2,model$re2_inc),
+                            bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 16, FE = FALSE,debug =F,inc = TRUE)
+
 
 ##==== See pairwise meta analysis, no network to analyze
 
@@ -78,7 +83,7 @@ model = normal_models()
 hr_recov$bugs$data= prep_wb(data = hr_recov$data,smd = FALSE)
 
 
-hr_reac$bugs$pa = nma_cont(hr_recov$bugs$data$wide,hr_recov$bugs$data$wb,hr_recov$bugs$data$treatments,params = params.re, model = list(model$re3,model$re3_inc),
+hr_recov$bugs$pa = nma_cont(hr_recov$bugs$data$wide,hr_recov$bugs$data$wb,hr_recov$bugs$data$treatments,params = params.re, model = list(model$re3,model$re3_inc),
                            bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 16, FE = FALSE,debug =F,inc = TRUE)
 
 

@@ -296,15 +296,23 @@ nma_cont = function(names,data,treatments,n.iter = 40000, n.burnin = 20000, mode
 #======================================
   
 # summarize mean differences - mean, 2.5%, median, 97.5%
-  md = (as.matrix(model.con$summary[grep("meandif", rownames(model.con$summary), fixed=F), c(1,3,5,7)]))
+  if(data$nt == 2){
+  md = (as.matrix(model.con$summary[1:2, c(1,3,5,7)]))} else{
+  md = (as.matrix(model.con$summary[grep("meandif", rownames(model.con$summary), fixed=F), c(1,3,5,7)]))}
   
 # summarize the probability better - mean, 2.5%, median, 97.5%
-  better = (as.matrix(model.con$summary[grep("better", rownames(model.con$summary), fixed=F), c(1,2)]))
+  if(data$nt == 2){
+    better = (as.matrix(model.con$summary[17:18, c(1,2)]))} else{
+  
+  
+  better = (as.matrix(model.con$summary[grep("better", rownames(model.con$summary), fixed=F), c(1,2)]))}
   
   
 # conver comparison columns into a matrix
   b <- gsub("\\meandif|\\[|\\]", "",rownames(md))
-  b_clean <- matrix(as.numeric(unlist(strsplit(b, ","))), ncol=2, byrow=T)
+  if(data$nt == 2){b_clean <- matrix(as.numeric(unlist(strsplit(b, ",")))[1:2], ncol=2, byrow=T)}else{
+    b_clean <- matrix(as.numeric(unlist(strsplit(b, ","))), ncol=2, byrow=T)}
+  
   comp <- paste(treatments$description[b_clean[,2]], ' vs.', treatments$description[b_clean[,1]])
   
   md_med <- round(md[,"50%"],2)

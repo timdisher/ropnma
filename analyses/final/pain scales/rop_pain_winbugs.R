@@ -42,7 +42,6 @@ source("./functions/nma_utility_functions.R")
 
 
 
-
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
 # Primary Analysis
@@ -234,7 +233,21 @@ req_samp = round((power.t.test(sig.level = 0.05,power = 0.8,delta = 2, sd = 2.25
 
 momlinc_netgraph(pa_reac_int,chars$int_char,2)
 
-
+# library(gemtc) # Het from gemtc instead of netmeta
+# 
+# 
+# test = pa_reac %>% select(studlab,trt_group,mean,std_dev,sample_size) %>%
+#   rename(study = studlab,
+#          treatment = trt_group,
+#          std.dev = std_dev,
+#          sampleSize = sample_size) %>% mutate(study = as.factor(study)) %>% as.data.frame()
+# 
+# test.network =mtc.network(data.ab = test)
+# 
+# test = plot(test.network, layout = igraph::layout.fruchterman.reingold)
+# test.run = mtc.model(test.network, type = "consistency", linearModel = "random")
+# 
+# test.run = mtc.run(test.run)
 
 eff_ss = function(n){
   round(prod(n)/sum(n),0) 

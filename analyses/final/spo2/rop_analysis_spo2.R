@@ -85,4 +85,4 @@ os_reac$bugs$pa = nma_cont(os_reac$bugs$data$wide,os_reac$bugs$data$wb,os_reac$b
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
-#==== Single study only
+#==== Single study only and treatments are equivalent

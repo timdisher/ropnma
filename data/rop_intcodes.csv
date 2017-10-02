@@ -1,25 +1,25 @@
 intervention_name,class_code
 drops,drops
-drops.nospec,drops no spec
-drops.ss,drops sweet mult
-drops.sweet,drops sweet
-drops.wfdri,drops wfdri
-ebm.drops,drops ebm mult
-feed.1hr.drops,drops diet 1hr
-feed.2hr.drops,drops diet 2hr
-morphine.drops,drops morph
-NIDCAP,drops sweet mult
-nns.drops,drops phys
-nns.ebm.drops,drops ebm mult
-nns.sweet.drops,drops sweet mult
-N2O.sweet.drops,drops.N2O.sweet
+drops.nospec,drops_no_spec
+drops.ss,drops_sweet_mult
+drops.sweet,drops_sweet
+drops.wfdri,drops_wfdri
+ebm.drops,drops_ebm_mult
+feed.1hr.drops,drops_diet_1hr
+feed.2hr.drops,drops_diet_2hr
+morphine.drops,drops_morph
+NIDCAP,drops_sweet_mult
+nns.drops,drops_phys
+nns.ebm.drops,drops_ebm_mult
+nns.sweet.drops,drops_sweet_mult
+N2O.sweet.drops,drops_N2O_sweet
 nns,phys
 no.treatment,placebo
-acetaminophen.drops,drops.acet
-sensorial.sat,drops sweet mult
+acetaminophen.drops,drops_acet
+sensorial.sat,drops_sweet_mult
 sweet,sweet
-sweet.drops,drops sweet
-sweet.nns.drops,drops sweet mult
-sweet.rep,sweet rep
-sweet.sing,sweet sing
-WFDRI.drops,drops WFDRI
+sweet.drops,drops_sweet
+sweet.nns.drops,drops_sweet_mult
+sweet.rep,sweet_rep
+sweet.sing,sweet_sing
+WFDRI.drops,drops_WFDRI

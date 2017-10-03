@@ -51,8 +51,12 @@ bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
 model = normal_models()
 
 
+hr_reac$bugs$data= prep_wb(data = hr_reac$data,smd = FALSE)
 hr_reac$bugs$pa = nma_cont(hr_reac$bugs$data$wide,hr_reac$bugs$data$wb,hr_reac$bugs$data$treatments,params = params.re, model = list(model$re2,model$re2_inc),
                             bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 16, FE = FALSE,debug =F,inc = TRUE)
+
+
+# save(hr_reac,file = "./cache/hr_reac.rda")
 
 
 ##==== See pairwise meta analysis, no network to analyze
@@ -87,3 +91,4 @@ hr_recov$bugs$pa = nma_cont(hr_recov$bugs$data$wide,hr_recov$bugs$data$wb,hr_rec
                            bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 16, FE = FALSE,debug =F,inc = TRUE)
 
 
+# save(hr_recov,file = "./cache/hr_recov.rda")

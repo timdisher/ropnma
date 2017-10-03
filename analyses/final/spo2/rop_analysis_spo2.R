@@ -58,7 +58,7 @@ os_reac$bugs$pa = nma_cont(os_reac$bugs$data$wide,os_reac$bugs$data$wb,os_reac$b
 
 
 
-
+save(os_reac, file = "./cache/spo2_reac.rda")
 
 
 # #========================================================================================

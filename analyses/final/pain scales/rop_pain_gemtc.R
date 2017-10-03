@@ -21,19 +21,24 @@ library(stargazer)
 library(reshape2)
 library(forcats)
 library(scales)
+library(forestplot)
 
 
-source("./analyses/final/cry time/rop_explore_cry.R")
+source("./analyses/final/pain scales/rop_explore_pipp.R")
 
-source("./functions/nma_cont.R")
+source("./functions/gemtc test/nma_cont_gemtc.R")
 source("./functions/nma_utility_functions.R")
-# #========================================================================================
-# 
-# 
-# Outcome: Heart rate Reactivity-----
-# 
-# #========================================================================================
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# Load data in WInBugs Format
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
+
+# #========================================================================================
+# 
+# 
+# Outcome: Pain Reactivity-----
+# 
+# #========================================================================================
 
 
 
@@ -44,18 +49,17 @@ source("./functions/nma_utility_functions.R")
 # --------- Mean difference outcome
 # --------- Include imputed means
 # --------- include scaled scores
-# --------- Vague priors on sigma
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
-bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
-model = normal_models()
 
+pa_reac_data = NULL
 
-(cry_reac$bugs$data= prep_wb(data = cry_reac$data,smd = FALSE))
+pa_reac_data$pa$gemtc = nma(pa_reac, inc = FALSE)
 
+pa_reac_data$pa$network = mtc.network(data.re =pa_reac_data$pa$gemtc$data)
 
-cry_reac$bugs$pa = nma_cont(cry_reac$bugs$data$wide,cry_reac$bugs$data$wb,cry_reac$bugs$data$treatments,params = params.re, model = list(model$re2,model$re2_inc),
-                           bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 16, FE = FALSE,debug =F,inc = TRUE)
+pa_reac_data$pa$results = mtc.model(pa_reac_data$pa$network, type = "consistency",
+                                    linearModel = "random",likelihood = "normal",
+                                    link = "identity")
+pa_reac_data$pa$results = mtc.run(pa_reac_data$pa$results)
 
-
-save(cry_reac,file = "./cache/cry_reac.rda")
+summary(pa_reac_data$pa$results)

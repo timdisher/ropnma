@@ -32,7 +32,6 @@ source("./functions/nma_utility_functions.R")
 # Load data in WInBugs Format
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-
 # #========================================================================================
 # 
 # 
@@ -60,6 +59,7 @@ pa_reac_data = NULL
 
 
 pa_reac_data$pa = nma(pa_reac, inc = FALSE)
+
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
@@ -273,6 +273,8 @@ comps = comb %>% select(comp,ntot) %>% spread(comp,ntot) #Create wide format of 
 comps_adj = comb %>% select(comp,adj_n) %>% spread(comp,adj_n) #Create wide format of adjusted ns
 
 #Adjusted
+#====================== ISSUE
+# Need to add in drops sweet mult and drops phys, and adjust order
 
 n_adj = comb[grep("vs drops$",comb$comp),c(1,4,6)] %>%
   mutate(indirect_n_adj =c(
@@ -319,6 +321,13 @@ n_adj = comb[grep("vs drops$",comb$comp),c(1,4,6)] %>%
 #Unadjusted
 n = comb[grep("vs drops$",comb$comp),c(1,2,4)] %>%
   mutate(indirect_n =c(
+    #drops_sweet_mult
+    
+    #drops_phys vs drops
+    eff_ss(c(comps$`drops_sweet vs drops_phys`,comps$`drops_sweet_mult vs drops`)) +
+      eff_ss(c(comps$`drops_sweet vs drops_phys`,comps$`drops_sweet vs drops`))+
+      eff_ss(c(comps$`drops_ebm_mult vs drops_phys`,comps$`drops_ebm_mult vs drops`)),
+    
     #drops_sweet vs drops
     eff_ss(c(comps$`drops_sweet vs drops_phys`,comps$`drops_phys vs drops`)) +
       eff_ss(c(comps$`drops_sweet vs drops_sweet_mult`,comps$`drops_sweet_mult vs drops`))+
@@ -328,26 +337,21 @@ n = comb[grep("vs drops$",comb$comp),c(1,2,4)] %>%
       eff_ss(c(comps$`drops_sweet vs drops_sweet_mult`,comps$`drops_sweet vs drops`))+
       eff_ss(c(comps$`drops_ebm_mult vs drops_sweet_mult`,comps$`drops_ebm_mult vs drops`)),
     
-    #drops_acet vs drops
-    eff_ss(c(comps$`drops_acet vs drops_sweet`,comps$`drops_sweet vs drops`)),
-    
     #placebo vs drops
     0,
+    
+    #drops_acet vs drops
+    eff_ss(c(comps$`drops_acet vs drops_sweet`,comps$`drops_sweet vs drops`)),
     
     #drops_ebm_mult vs drops
     eff_ss(c(comps$`drops_ebm_mult vs drops_sweet_mult`,comps$`drops_sweet_mult vs drops`)) +
       eff_ss(c(comps$`drops_ebm_mult vs drops_phys`,comps$`drops_phys vs drops`)),
     
-    #drops_phys vs drops
-    eff_ss(c(comps$`drops_sweet vs drops_phys`,comps$`drops_sweet_mult vs drops`)) +
-      eff_ss(c(comps$`drops_sweet vs drops_phys`,comps$`drops_sweet vs drops`))+
-      eff_ss(c(comps$`drops_ebm_mult vs drops_phys`,comps$`drops_ebm_mult vs drops`)),
+    #drops vs N20 sweet
+    eff_ss(c(comps$`drops_N2O_sweet vs drops_sweet`,comps$`drops_sweet vs drops`)),
     
     #drops vs drops WFDRI
     0,
-    
-    #drops vs N20 sweet
-    eff_ss(c(comps$`drops_N2O_sweet vs drops_sweet`,comps$`drops_sweet vs drops`)),
     
     #drops vs sweet
     0,
@@ -410,8 +414,8 @@ pa_reac_forest_data = bind_cols(power_table,pa_reac_forest_data) %>% select(-one
                                                                                       "Comparison (Trt A vs. Trt B)","tot_eff_adj",
                                                                                       "power_adj"))) %>%
   mutate(comp = c("Drops + sweet taste mult","Drops + phys","Drops + sweet taste", "Placebo",
-                  "Drops + ebm mult","Drops + acetaminophen", "Drops + WFDRI",
-                  "Drops + N2O + sweet taste","Sweet taste alone","Repeated sweet taste",
+                  "Drops + acetaminophen","Drops + ebm mult",
+                  "Drops + N2O + sweet taste","Drops + WFDRI","Sweet taste alone","Repeated sweet taste",
                   "Sweet taste + singing")) %>% arrange(as.numeric(as.character(`Mean Difference of Trt A vs. Trt B`))) 
 
 pa_reac_plot_data = pa_reac_forest_data[,c(8,9)] %>%separate(`95% CrI of Mean Difference`,c("lower","upper"),sep = " to ") %>% rename(mean = `Mean Difference of Trt A vs. Trt B`)

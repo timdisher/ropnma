@@ -32,7 +32,6 @@ source("./functions/nma_utility_functions.R")
 # Load data in WInBugs Format
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-
 # #========================================================================================
 # 
 # 
@@ -404,7 +403,9 @@ for(i in seq_along(power_table$comp)){
 power_table = power_table %>% arrange(num) 
 pa_reac_forest_data = as.data.frame(pa_reac_data$pa$nma$comp[1:11,1:3])
 
-
+#==========================
+# ISSUE INTRODUCED HERE
+#==========================
 pa_reac_forest_data = bind_cols(power_table,pa_reac_forest_data) %>% select(-one_of(c("sample_frac","tot_eff","sample_frac_adj","adj_n",
                                                                                       "indirect_n_adj","power","num",
                                                                                       "Comparison (Trt A vs. Trt B)","tot_eff_adj",

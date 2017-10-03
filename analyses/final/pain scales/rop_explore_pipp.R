@@ -80,8 +80,7 @@ recov_chars = netmeta_xl_chars(pa_recov,"pa_recov",ref = "drops",treat = "trt_gr
 
 
 ### Generate network graph
- momlinc_netgraph(pa_recov_int,recov_chars$int_char,2)
-
+momlinc_netgraph(pa_recov_int,recov_chars$int_char,2)
 
 ### Placebo response graph
 pa_recov_graph = pa_recov %>% left_join(rop_data_study, by = c("studlab"))

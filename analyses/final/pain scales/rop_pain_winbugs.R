@@ -40,7 +40,7 @@ source("./functions/nma_utility_functions.R")
 # 
 # #========================================================================================
 
-
+load("./cache/pa_reac.rda")
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
@@ -231,8 +231,9 @@ sd_pipp = sqrt((2.4^2*75+2.1^2*75)/(75+75))
 req_samp = round((power.t.test(sig.level = 0.05,power = 0.8,delta = 2, sd = 2.25))$n,0)*2
 #==========================================================================
 
+# pdf("pa_reac_netgraph.pdf")
 momlinc_netgraph(pa_reac_int,chars$int_char,2)
-
+# dev.off()
 # library(gemtc) # Het from gemtc instead of netmeta
 # 
 # 
@@ -265,7 +266,7 @@ for(i in 1:length(het$comp)){
 }
 
 comb = bind_rows(het,no_het) %>% mutate(isquared = ifelse(is.na(isquared),1,isquared),
-                                        adj_n = round(ntot*isquared,0))
+                                        adj_n = round(ntot*isquared,0)) %>% arrange(num)
 
 comps = comb %>% select(comp,ntot) %>% spread(comp,ntot) #Create wide format of unadjusted ns
 
@@ -275,87 +276,87 @@ comps_adj = comb %>% select(comp,adj_n) %>% spread(comp,adj_n) #Create wide form
 
 n_adj = comb[grep("vs drops$",comb$comp),c(1,4,6)] %>%
   mutate(indirect_n_adj =c(
-    #drops sweet vs drops
-    eff_ss(c(comps_adj$`drops sweet vs drops phys`,comps_adj$`drops phys vs drops`)) +
-    eff_ss(c(comps_adj$`drops sweet vs drops sweet mult`,comps_adj$`drops sweet mult vs drops`))+
-    eff_ss(c(comps_adj$`drops.acet vs drops sweet`,comps_adj$`drops.acet vs drops`)),
+    #drops_sweet vs drops
+    eff_ss(c(comps_adj$`drops_sweet vs drops_phys`,comps_adj$`drops_phys vs drops`)) +
+    eff_ss(c(comps_adj$`drops_sweet vs drops_sweet_mult`,comps_adj$`drops_sweet_mult vs drops`))+
+    eff_ss(c(comps_adj$`drops_acet vs drops_sweet`,comps_adj$`drops_acet vs drops`)),
 
-    eff_ss(c(comps_adj$`drops sweet vs drops phys`,comps_adj$`drops phys vs drops`)) +
-    eff_ss(c(comps_adj$`drops sweet vs drops sweet mult`,comps_adj$`drops sweet vs drops`))+
-    eff_ss(c(comps_adj$`drops ebm mult vs drops sweet mult`,comps_adj$`drops ebm mult vs drops`)),
+    eff_ss(c(comps_adj$`drops_sweet vs drops_phys`,comps_adj$`drops_phys vs drops`)) +
+    eff_ss(c(comps_adj$`drops_sweet vs drops_sweet_mult`,comps_adj$`drops_sweet vs drops`))+
+    eff_ss(c(comps_adj$`drops_ebm_mult vs drops_sweet_mult`,comps_adj$`drops_ebm_mult vs drops`)),
    
-   #drops.acet vs drops
-   eff_ss(c(comps_adj$`drops.acet vs drops sweet`,comps_adj$`drops sweet vs drops`)),
+   #drops_acet vs drops
+   eff_ss(c(comps_adj$`drops_acet vs drops_sweet`,comps_adj$`drops_sweet vs drops`)),
    
    #placebo vs drops
    0,
    
-   #drops ebm mult vs drops
-   eff_ss(c(comps_adj$`drops ebm mult vs drops sweet mult`,comps_adj$`drops sweet mult vs drops`)) +
-     eff_ss(c(comps_adj$`drops ebm mult vs drops phys`,comps_adj$`drops phys vs drops`)),
+   #drops_ebm_mult vs drops
+   eff_ss(c(comps_adj$`drops_ebm_mult vs drops_sweet_mult`,comps_adj$`drops_sweet_mult vs drops`)) +
+     eff_ss(c(comps_adj$`drops_ebm_mult vs drops_phys`,comps_adj$`drops_phys vs drops`)),
    
-   #drops phys vs drops
-   eff_ss(c(comps_adj$`drops sweet vs drops phys`,comps_adj$`drops sweet mult vs drops`)) +
-     eff_ss(c(comps_adj$`drops sweet vs drops phys`,comps_adj$`drops sweet vs drops`))+
-     eff_ss(c(comps_adj$`drops ebm mult vs drops phys`,comps_adj$`drops ebm mult vs drops`)),
+   #drops_phys vs drops
+   eff_ss(c(comps_adj$`drops_sweet vs drops_phys`,comps_adj$`drops_sweet_mult vs drops`)) +
+     eff_ss(c(comps_adj$`drops_sweet vs drops_phys`,comps_adj$`drops_sweet vs drops`))+
+     eff_ss(c(comps_adj$`drops_ebm_mult vs drops_phys`,comps_adj$`drops_ebm_mult vs drops`)),
    
    #drops vs drops WFDRI
    0,
    
    #drops vs N20 sweet
-   eff_ss(c(comps_adj$`drops.N2O.sweet vs drops sweet`,comps_adj$`drops sweet vs drops`)),
+   eff_ss(c(comps_adj$`drops_N2O_sweet vs drops_sweet`,comps_adj$`drops_sweet vs drops`)),
    
    #drops vs sweet
    0,
    
-   #drops vs sweet rep
-   eff_ss(c(comps_adj$`sweet rep vs placebo`,comps_adj$`placebo vs drops`)),
+   #drops vs sweet_rep
+   eff_ss(c(comps_adj$`sweet_rep vs placebo`,comps_adj$`placebo vs drops`)),
    
-   #drops vs sweet sing
-   eff_ss(c(comps_adj$`sweet sing vs placebo`,comps_adj$`placebo vs drops`)))
+   #drops vs sweet_sing
+   eff_ss(c(comps_adj$`sweet_sing vs placebo`,comps_adj$`placebo vs drops`)))
 )
 
 #Unadjusted
 n = comb[grep("vs drops$",comb$comp),c(1,2,4)] %>%
   mutate(indirect_n =c(
-    #drops sweet vs drops
-    eff_ss(c(comps$`drops sweet vs drops phys`,comps$`drops phys vs drops`)) +
-      eff_ss(c(comps$`drops sweet vs drops sweet mult`,comps$`drops sweet mult vs drops`))+
-      eff_ss(c(comps$`drops.acet vs drops sweet`,comps$`drops.acet vs drops`)),
+    #drops_sweet vs drops
+    eff_ss(c(comps$`drops_sweet vs drops_phys`,comps$`drops_phys vs drops`)) +
+      eff_ss(c(comps$`drops_sweet vs drops_sweet_mult`,comps$`drops_sweet_mult vs drops`))+
+      eff_ss(c(comps$`drops_acet vs drops_sweet`,comps$`drops_acet vs drops`)),
     
-    eff_ss(c(comps$`drops sweet vs drops phys`,comps$`drops phys vs drops`)) +
-      eff_ss(c(comps$`drops sweet vs drops sweet mult`,comps$`drops sweet vs drops`))+
-      eff_ss(c(comps$`drops ebm mult vs drops sweet mult`,comps$`drops ebm mult vs drops`)),
+    eff_ss(c(comps$`drops_sweet vs drops_phys`,comps$`drops_phys vs drops`)) +
+      eff_ss(c(comps$`drops_sweet vs drops_sweet_mult`,comps$`drops_sweet vs drops`))+
+      eff_ss(c(comps$`drops_ebm_mult vs drops_sweet_mult`,comps$`drops_ebm_mult vs drops`)),
     
-    #drops.acet vs drops
-    eff_ss(c(comps$`drops.acet vs drops sweet`,comps$`drops sweet vs drops`)),
+    #drops_acet vs drops
+    eff_ss(c(comps$`drops_acet vs drops_sweet`,comps$`drops_sweet vs drops`)),
     
     #placebo vs drops
     0,
     
-    #drops ebm mult vs drops
-    eff_ss(c(comps$`drops ebm mult vs drops sweet mult`,comps$`drops sweet mult vs drops`)) +
-      eff_ss(c(comps$`drops ebm mult vs drops phys`,comps$`drops phys vs drops`)),
+    #drops_ebm_mult vs drops
+    eff_ss(c(comps$`drops_ebm_mult vs drops_sweet_mult`,comps$`drops_sweet_mult vs drops`)) +
+      eff_ss(c(comps$`drops_ebm_mult vs drops_phys`,comps$`drops_phys vs drops`)),
     
-    #drops phys vs drops
-    eff_ss(c(comps$`drops sweet vs drops phys`,comps$`drops sweet mult vs drops`)) +
-      eff_ss(c(comps$`drops sweet vs drops phys`,comps$`drops sweet vs drops`))+
-      eff_ss(c(comps$`drops ebm mult vs drops phys`,comps$`drops ebm mult vs drops`)),
+    #drops_phys vs drops
+    eff_ss(c(comps$`drops_sweet vs drops_phys`,comps$`drops_sweet_mult vs drops`)) +
+      eff_ss(c(comps$`drops_sweet vs drops_phys`,comps$`drops_sweet vs drops`))+
+      eff_ss(c(comps$`drops_ebm_mult vs drops_phys`,comps$`drops_ebm_mult vs drops`)),
     
     #drops vs drops WFDRI
     0,
     
     #drops vs N20 sweet
-    eff_ss(c(comps$`drops.N2O.sweet vs drops sweet`,comps$`drops sweet vs drops`)),
+    eff_ss(c(comps$`drops_N2O_sweet vs drops_sweet`,comps$`drops_sweet vs drops`)),
     
     #drops vs sweet
     0,
     
-    #drops vs sweet rep
-    eff_ss(c(comps$`sweet rep vs placebo`,comps$`placebo vs drops`)),
+    #drops vs sweet_rep
+    eff_ss(c(comps$`sweet_rep vs placebo`,comps$`placebo vs drops`)),
     
-    #drops vs sweet sing
-    eff_ss(c(comps$`sweet sing vs placebo`,comps$`placebo vs drops`)))
+    #drops vs sweet_sing
+    eff_ss(c(comps$`sweet_sing vs placebo`,comps$`placebo vs drops`)))
   )
 
 
@@ -411,7 +412,7 @@ pa_reac_forest_data = bind_cols(power_table,pa_reac_forest_data) %>% select(-one
   mutate(comp = c("Drops + sweet taste mult","Drops + phys","Drops + sweet taste", "Placebo",
                   "Drops + ebm mult","Drops + acetaminophen", "Drops + WFDRI",
                   "Drops + N2O + sweet taste","Sweet taste alone","Repeated sweet taste",
-                  "Sweet tate + singing")) %>% arrange(as.numeric(as.character(`Mean Difference of Trt A vs. Trt B`))) 
+                  "Sweet taste + singing")) %>% arrange(as.numeric(as.character(`Mean Difference of Trt A vs. Trt B`))) 
 
 pa_reac_plot_data = pa_reac_forest_data[,c(8,9)] %>%separate(`95% CrI of Mean Difference`,c("lower","upper"),sep = " to ") %>% rename(mean = `Mean Difference of Trt A vs. Trt B`)
 pa_reac_table_data = pa_reac_forest_data %>%  mutate(cri = paste("(",`95% CrI of Mean Difference`,")",sep="")) %>% select(-`95% CrI of Mean Difference`) %>% unite(mean_cri,`Mean Difference of Trt A vs. Trt B`,cri,sep = " ") %>%
@@ -426,7 +427,10 @@ pa_reac_table_data = pa_reac_table_data %>%  mutate(sig = c("yes","no","yes",rep
 
 
 
-pdf("./figs/final/pain scales reactivity/nma_pa_reac_power_forest.pdf", onefile = FALSE, width = 12, height = 5)
+# pdf("./figs/final/pain scales reactivity/nma_pa_reac_power_forest.pdf", onefile = FALSE, width = 12, height = 5)
+
+png("./figs/final/pain scales reactivity/nma_pa_reac_power_forest.png",res = 300, width = 3500, height = 1800)
+
 forestplot(rbind(c("Comparison","Direct N","Effective 
 indirect N
 ","Heterogeneity
@@ -588,7 +592,10 @@ pa_recov_data$sa6$data$meta %>% filter(t_1 == 1) %>% select(-t_1) %>% gather(dif
 # Sensitivity 7 - Meta-regression on control arm risk
 #=========================================
 
+png(filename = "pa_reac_netgraph.png")
 pa_recov_data$sa7$data = prep_wb(pa_recov)
+dev.off()
+
 
 pa_recov_data$sa7$data$meta = pa_recov_data$sa7$data$arm_wide %>% mutate(
   se_1 = sd_1/sqrt(n_1),
@@ -624,8 +631,9 @@ pa_recov_data$sa7$data$meta %>% filter(t_1 == 1) %>% mutate(y2_diff = y_2 - y_1,
 # Assumed SD of PIPP = used Dhaliwhal (largest study)
 
 #==========================================================================
+pdf("pa_recov.pdf")
 momlinc_netgraph(pa_recov_int,recov_chars$int_char,2)
-
+dev.off()
 
 
 recov_power = recov_chars$direct_zeros %>% rename(ctrl = `Treatment Description.x`,
@@ -649,24 +657,24 @@ recov_comps_adj = recov_comb %>% select(comp,adj_n) %>% spread(comp,adj_n) #Crea
 #Adjusted
 recov_n_adj = recov_comb[grep("vs drops$",recov_comb$comp),c(1,4,6)] %>%
   mutate(indirect_n_adj =c(
-    #drops sweet vs drops
-    eff_ss(c(recov_comps_adj$`drops.acet vs drops sweet`,recov_comps_adj$`drops.acet vs drops`)),
+    #drops_sweet vs drops
+    eff_ss(c(recov_comps_adj$`drops_acet vs drops_sweet`,recov_comps_adj$`drops_acet vs drops`)),
     
     #drops vs drops acet
-    eff_ss(c(recov_comps_adj$`drops.acet vs drops sweet`,recov_comps_adj$`drops sweet vs drops`)),
+    eff_ss(c(recov_comps_adj$`drops_acet vs drops_sweet`,recov_comps_adj$`drops_sweet vs drops`)),
     
-    #drops ebm mult vs drops
-    eff_ss(c(recov_comps_adj$`drops ebm mult vs drops sweet mult`,recov_comps_adj$`drops sweet mult vs drops`)),
+    #drops_ebm_mult vs drops
+    eff_ss(c(recov_comps_adj$`drops_ebm_mult vs drops_sweet_mult`,recov_comps_adj$`drops_sweet_mult vs drops`)),
     
-    #drops vs drops morph
-    eff_ss(c(recov_comps_adj$`drops morph vs drops.acet`,recov_comps_adj$`drops.acet vs drops`)),
+    #drops vs drops_morph
+    eff_ss(c(recov_comps_adj$`drops_morph vs drops_acet`,recov_comps_adj$`drops_acet vs drops`)),
     
-    #drops phys vs drops
-    eff_ss(c(recov_comps_adj$`drops sweet vs drops phys`,recov_comps_adj$`drops sweet mult vs drops`)) +
-      eff_ss(c(recov_comps_adj$`drops ebm mult vs drops phys`,recov_comps_adj$`drops ebm mult vs drops`)),
+    #drops_phys vs drops
+    eff_ss(c(recov_comps_adj$`drops_sweet vs drops_phys`,recov_comps_adj$`drops_sweet_mult vs drops`)) +
+      eff_ss(c(recov_comps_adj$`drops_ebm_mult vs drops_phys`,recov_comps_adj$`drops_ebm_mult vs drops`)),
     
-    #drops sweet mult vs drops
-    eff_ss(c(recov_comps_adj$`drops ebm mult vs drops sweet mult`,recov_comps_adj$`drops ebm mult vs drops`)),
+    #drops_sweet_mult vs drops
+    eff_ss(c(recov_comps_adj$`drops_ebm_mult vs drops_sweet_mult`,recov_comps_adj$`drops_ebm_mult vs drops`)),
     
     #drops vs phys
     0,
@@ -684,25 +692,25 @@ recov_n_adj = recov_comb[grep("vs drops$",recov_comb$comp),c(1,4,6)] %>%
 
 recov_n = recov_comb[grep("vs drops$",recov_comb$comp),c(1,2,4)] %>%
   mutate(indirect_n =c(
-    #drops sweet vs drops
-    eff_ss(c(recov_comps$`drops.acet vs drops sweet`,recov_comps$`drops.acet vs drops`)),
+    #drops_sweet vs drops
+    eff_ss(c(recov_comps$`drops_acet vs drops_sweet`,recov_comps$`drops_acet vs drops`)),
     
     #drops vs drops acet
-    eff_ss(c(recov_comps$`drops.acet vs drops sweet`,recov_comps$`drops sweet vs drops`)),
+    eff_ss(c(recov_comps$`drops_acet vs drops_sweet`,recov_comps$`drops_sweet vs drops`)),
     
-    #drops ebm mult vs drops
-    eff_ss(c(recov_comps$`drops ebm mult vs drops sweet mult`,recov_comps$`drops sweet mult vs drops`)),
+    #drops_ebm_mult vs drops
+    eff_ss(c(recov_comps$`drops_ebm_mult vs drops_sweet_mult`,recov_comps$`drops_sweet_mult vs drops`)),
     
-    #drops vs drops morph
-    eff_ss(c(recov_comps$`drops morph vs drops.acet`,recov_comps$`drops.acet vs drops`)),
+    #drops vs drops_morph
+    eff_ss(c(recov_comps$`drops_morph vs drops_acet`,recov_comps$`drops_acet vs drops`)),
     
     
-    #drops phys vs drops
-    eff_ss(c(recov_comps$`drops sweet vs drops phys`,recov_comps$`drops sweet mult vs drops`)) +
-      eff_ss(c(recov_comps$`drops ebm mult vs drops phys`,recov_comps$`drops ebm mult vs drops`)),
+    #drops_phys vs drops
+    eff_ss(c(recov_comps$`drops_sweet vs drops_phys`,recov_comps$`drops_sweet_mult vs drops`)) +
+      eff_ss(c(recov_comps$`drops_ebm_mult vs drops_phys`,recov_comps$`drops_ebm_mult vs drops`)),
     
-    #drops sweet mult vs drops
-    eff_ss(c(recov_comps$`drops ebm mult vs drops sweet mult`,recov_comps$`drops ebm mult vs drops`)),
+    #drops_sweet_mult vs drops
+    eff_ss(c(recov_comps$`drops_ebm_mult vs drops_sweet_mult`,recov_comps$`drops_ebm_mult vs drops`)),
     
     #drops vs phys
     0,
@@ -763,7 +771,8 @@ pa_recov_table_data = pa_recov_table_data %>%  mutate(sig = c("yes","yes",rep("n
 
 
 
-pdf("./figs/final/pain scales recovery/nma_pa_recov_power_forest.pdf", onefile = FALSE, width = 12, height = 5)
+
+png("./figs/final/pain scales recovery/nma_pa_recov_power_forest.png",res = 300, width = 3500, height = 1200)
 forestplot(rbind(c("Comparison","Direct N","Effective 
 indirect N
 ","Heterogeneity

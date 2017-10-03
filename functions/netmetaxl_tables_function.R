@@ -165,7 +165,7 @@ out
 momlinc_netgraph = function(netmeta, int_char,pointsize){ ##outcome is a string
   
   
-trt_details = tibble(Treatment = names(netmeta$TE.fixed[,1])) %>% left_join(int_char,by = "Treatment") %>% 
+trt_details =  tibble(Treatment = names(netmeta$TE.fixed[,1])) %>% left_join(int_char,by = "Treatment") %>% 
   mutate(w = `Number of Patients`/sum(`Number of Patients`)) ### normalizes weights based on sample size in treatment node
 
 

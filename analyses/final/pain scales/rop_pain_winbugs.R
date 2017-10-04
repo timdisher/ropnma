@@ -51,8 +51,8 @@ load("./cache/pa_reac.rda")
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
 model = normal_models()
-# bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
-bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
+bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
+# bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
 
 
 pa_reac_data = NULL
@@ -272,42 +272,46 @@ comps = comb %>% select(comp,ntot) %>% spread(comp,ntot) #Create wide format of 
 
 comps_adj = comb %>% select(comp,adj_n) %>% spread(comp,adj_n) #Create wide format of adjusted ns
 
-#Adjusted
-#====================== ISSUE
-# Need to add in drops sweet mult and drops phys, and adjust order
+
 
 n_adj = comb[grep("vs drops$",comb$comp),c(1,4,6)] %>%
   mutate(indirect_n_adj =c(
+    #drops_sweet_mult vs drops
+    eff_ss(c(comps_adj$`drops_phys vs drops_sweet_mult`,comps_adj$`drops_phys vs drops`)) +
+      eff_ss(c(comps_adj$`drops_sweet vs drops_sweet_mult`,comps_adj$`drops_sweet vs drops`))+
+      eff_ss(c(comps_adj$`drops_acet vs drops_sweet`,comps_adj$`drops_acet vs drops`)),
+    
+    #drops_phys vs drops
+    eff_ss(c(comps_adj$`drops_phys vs drops_sweet_mult`,comps_adj$`drops_sweet_mult vs drops`)) +
+      eff_ss(c(comps_adj$`drops_sweet vs drops_phys`,comps_adj$`drops_sweet vs drops`))+
+      eff_ss(c(comps_adj$`drops_ebm_mult vs drops_sweet_mult`,comps_adj$`drops_ebm_mult vs drops`)),
+    
+    
     #drops_sweet vs drops
     eff_ss(c(comps_adj$`drops_sweet vs drops_phys`,comps_adj$`drops_phys vs drops`)) +
     eff_ss(c(comps_adj$`drops_sweet vs drops_sweet_mult`,comps_adj$`drops_sweet_mult vs drops`))+
     eff_ss(c(comps_adj$`drops_acet vs drops_sweet`,comps_adj$`drops_acet vs drops`)),
-
-    eff_ss(c(comps_adj$`drops_sweet vs drops_phys`,comps_adj$`drops_phys vs drops`)) +
-    eff_ss(c(comps_adj$`drops_sweet vs drops_sweet_mult`,comps_adj$`drops_sweet vs drops`))+
-    eff_ss(c(comps_adj$`drops_ebm_mult vs drops_sweet_mult`,comps_adj$`drops_ebm_mult vs drops`)),
    
+    #placebo vs drops
+    0,
+    
    #drops_acet vs drops
    eff_ss(c(comps_adj$`drops_acet vs drops_sweet`,comps_adj$`drops_sweet vs drops`)),
    
-   #placebo vs drops
-   0,
+  
    
    #drops_ebm_mult vs drops
    eff_ss(c(comps_adj$`drops_ebm_mult vs drops_sweet_mult`,comps_adj$`drops_sweet_mult vs drops`)) +
      eff_ss(c(comps_adj$`drops_ebm_mult vs drops_phys`,comps_adj$`drops_phys vs drops`)),
    
-   #drops_phys vs drops
-   eff_ss(c(comps_adj$`drops_sweet vs drops_phys`,comps_adj$`drops_sweet_mult vs drops`)) +
-     eff_ss(c(comps_adj$`drops_sweet vs drops_phys`,comps_adj$`drops_sweet vs drops`))+
-     eff_ss(c(comps_adj$`drops_ebm_mult vs drops_phys`,comps_adj$`drops_ebm_mult vs drops`)),
-   
-   #drops vs drops WFDRI
-   0,
    
    #drops vs N20 sweet
    eff_ss(c(comps_adj$`drops_N2O_sweet vs drops_sweet`,comps_adj$`drops_sweet vs drops`)),
    
+   #drops vs drops WFDRI
+   0,
+   
+
    #drops vs sweet
    0,
    
@@ -321,21 +325,21 @@ n_adj = comb[grep("vs drops$",comb$comp),c(1,4,6)] %>%
 #Unadjusted
 n = comb[grep("vs drops$",comb$comp),c(1,2,4)] %>%
   mutate(indirect_n =c(
-    #drops_sweet_mult
+    #drops_sweet_mult vs drops
+    eff_ss(c(comps$`drops_phys vs drops_sweet_mult`,comps$`drops_phys vs drops`)) +
+      eff_ss(c(comps$`drops_sweet vs drops_sweet_mult`,comps$`drops_sweet vs drops`))+
+      eff_ss(c(comps$`drops_acet vs drops_sweet`,comps$`drops_acet vs drops`)),
     
     #drops_phys vs drops
-    eff_ss(c(comps$`drops_sweet vs drops_phys`,comps$`drops_sweet_mult vs drops`)) +
+    eff_ss(c(comps$`drops_phys vs drops_sweet_mult`,comps$`drops_sweet_mult vs drops`)) +
       eff_ss(c(comps$`drops_sweet vs drops_phys`,comps$`drops_sweet vs drops`))+
-      eff_ss(c(comps$`drops_ebm_mult vs drops_phys`,comps$`drops_ebm_mult vs drops`)),
+      eff_ss(c(comps$`drops_ebm_mult vs drops_sweet_mult`,comps$`drops_ebm_mult vs drops`)),
+    
     
     #drops_sweet vs drops
     eff_ss(c(comps$`drops_sweet vs drops_phys`,comps$`drops_phys vs drops`)) +
       eff_ss(c(comps$`drops_sweet vs drops_sweet_mult`,comps$`drops_sweet_mult vs drops`))+
       eff_ss(c(comps$`drops_acet vs drops_sweet`,comps$`drops_acet vs drops`)),
-    
-    eff_ss(c(comps$`drops_sweet vs drops_phys`,comps$`drops_phys vs drops`)) +
-      eff_ss(c(comps$`drops_sweet vs drops_sweet_mult`,comps$`drops_sweet vs drops`))+
-      eff_ss(c(comps$`drops_ebm_mult vs drops_sweet_mult`,comps$`drops_ebm_mult vs drops`)),
     
     #placebo vs drops
     0,
@@ -343,15 +347,19 @@ n = comb[grep("vs drops$",comb$comp),c(1,2,4)] %>%
     #drops_acet vs drops
     eff_ss(c(comps$`drops_acet vs drops_sweet`,comps$`drops_sweet vs drops`)),
     
+    
+    
     #drops_ebm_mult vs drops
     eff_ss(c(comps$`drops_ebm_mult vs drops_sweet_mult`,comps$`drops_sweet_mult vs drops`)) +
       eff_ss(c(comps$`drops_ebm_mult vs drops_phys`,comps$`drops_phys vs drops`)),
+    
     
     #drops vs N20 sweet
     eff_ss(c(comps$`drops_N2O_sweet vs drops_sweet`,comps$`drops_sweet vs drops`)),
     
     #drops vs drops WFDRI
     0,
+    
     
     #drops vs sweet
     0,

@@ -51,14 +51,14 @@ load("./cache/pa_reac.rda")
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
 model = normal_models()
-bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
-# bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
+# bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
+bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
 
 
 pa_reac_data = NULL
 
 
-pa_reac_data$pa = nma(pa_reac, inc = FALSE)
+pa_reac_data$pa = nma(pa_reac, inc = TRUE)
 
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -675,18 +675,18 @@ recov_n_adj = recov_comb[grep("vs drops$",recov_comb$comp),c(1,4,6)] %>%
     #drops vs drops acet
     eff_ss(c(recov_comps_adj$`drops_acet vs drops_sweet`,recov_comps_adj$`drops_sweet vs drops`)),
     
-    #drops_ebm_mult vs drops
-    eff_ss(c(recov_comps_adj$`drops_ebm_mult vs drops_sweet_mult`,recov_comps_adj$`drops_sweet_mult vs drops`)),
-    
-    #drops vs drops_morph
-    eff_ss(c(recov_comps_adj$`drops_morph vs drops_acet`,recov_comps_adj$`drops_acet vs drops`)),
-    
     #drops_phys vs drops
     eff_ss(c(recov_comps_adj$`drops_sweet vs drops_phys`,recov_comps_adj$`drops_sweet_mult vs drops`)) +
       eff_ss(c(recov_comps_adj$`drops_ebm_mult vs drops_phys`,recov_comps_adj$`drops_ebm_mult vs drops`)),
     
     #drops_sweet_mult vs drops
     eff_ss(c(recov_comps_adj$`drops_ebm_mult vs drops_sweet_mult`,recov_comps_adj$`drops_ebm_mult vs drops`)),
+    
+    #drops_ebm_mult vs drops
+    eff_ss(c(recov_comps_adj$`drops_ebm_mult vs drops_sweet_mult`,recov_comps_adj$`drops_sweet_mult vs drops`)),
+    
+    #drops vs drops_morph
+    eff_ss(c(recov_comps_adj$`drops_morph vs drops_acet`,recov_comps_adj$`drops_acet vs drops`)),
     
     #drops vs phys
     0,
@@ -710,19 +710,18 @@ recov_n = recov_comb[grep("vs drops$",recov_comb$comp),c(1,2,4)] %>%
     #drops vs drops acet
     eff_ss(c(recov_comps$`drops_acet vs drops_sweet`,recov_comps$`drops_sweet vs drops`)),
     
-    #drops_ebm_mult vs drops
-    eff_ss(c(recov_comps$`drops_ebm_mult vs drops_sweet_mult`,recov_comps$`drops_sweet_mult vs drops`)),
-    
-    #drops vs drops_morph
-    eff_ss(c(recov_comps$`drops_morph vs drops_acet`,recov_comps$`drops_acet vs drops`)),
-    
-    
     #drops_phys vs drops
     eff_ss(c(recov_comps$`drops_sweet vs drops_phys`,recov_comps$`drops_sweet_mult vs drops`)) +
       eff_ss(c(recov_comps$`drops_ebm_mult vs drops_phys`,recov_comps$`drops_ebm_mult vs drops`)),
     
     #drops_sweet_mult vs drops
     eff_ss(c(recov_comps$`drops_ebm_mult vs drops_sweet_mult`,recov_comps$`drops_ebm_mult vs drops`)),
+    
+    #drops_ebm_mult vs drops
+    eff_ss(c(recov_comps$`drops_ebm_mult vs drops_sweet_mult`,recov_comps$`drops_sweet_mult vs drops`)),
+    
+    #drops vs drops_morph
+    eff_ss(c(recov_comps$`drops_morph vs drops_acet`,recov_comps$`drops_acet vs drops`)),
     
     #drops vs phys
     0,
@@ -766,9 +765,8 @@ pa_recov_forest_data = bind_cols(recov_power_table,pa_recov_forest_data) %>% sel
                                                                                       "indirect_n_adj","power","num",
                                                                                       "Comparison (Trt A vs. Trt B)","tot_eff_adj",
                                                                                       "power_adj"))) %>%
-  mutate(comp = c("Drops + phys","Drops + sweet taste mult","Drops + sweet taste","Drops + ebm mult",
-                  "Drops + acetaminophen","Drops + morphine","NNS alone","Placebo", 
-                  "Sweet taste alone")) %>% arrange(as.numeric(as.character(`Mean Difference of Trt A vs. Trt B`))) 
+  mutate(comp = c("Drops + phys","Drops + sweet taste mult","Drops + sweet taste","Drops + acetaminophen",
+                  "Drops + ebm mult","Drops + morphine","Phys alone","Placebo","Sweet taste alone")) %>% arrange(as.numeric(as.character(`Mean Difference of Trt A vs. Trt B`))) 
 
 pa_recov_plot_data = pa_recov_forest_data[,c(8,9)] %>%separate(`95% CrI of Mean Difference`,c("lower","upper"),sep = " to ") %>% rename(mean = `Mean Difference of Trt A vs. Trt B`)
 pa_recov_table_data = pa_recov_forest_data %>%  mutate(cri = paste("(",`95% CrI of Mean Difference`,")",sep="")) %>% select(-`95% CrI of Mean Difference`) %>% unite(mean_cri,`Mean Difference of Trt A vs. Trt B`,cri,sep = " ") %>%
@@ -809,6 +807,6 @@ factor
 )
 dev.off()
 
-# save(pa_recov_data,file = "./cache/pa_recov.rda")
+save(pa_recov_data,file = "./cache/pa_recov.rda")
 
-load("./cache/pa_recov.rda")
+

@@ -145,41 +145,6 @@ pa_reac_data$sa6 = nma_cont(pa_reac, pa_reac_data$sa6$wb, pa_reac_data$sa6$treat
 
 
 #=========================================
-# Sensitivity 7 - Meta-regression on high overall risk of bias
-#=========================================
-pa_reac_data$sa7 = prep_wb(pa_reac)
-
-
-
-pa_reac_data$sa7$meta = as.data.frame(pa_reac_data$sa7$wide %>% left_join(rop_data_study %>% select(studlab,oa_rob_sub,design), by = "studlab") %>%
-                               
-                               left_join(rop_data_arm %>% select(studlab,p_value) %>% distinct() %>% filter(!is.na(p_value)),by = "studlab") %>%
-                               
-                               mutate(se_2 = ifelse(design == "Crossover",se_paired(y_2,p_value,n_1),se_2),
-                                      oa_rob_sub = ifelse(oa_rob_sub == "high",1,0)) %>% rename(x = oa_rob_sub) %>%
-                               
-                               select(matches("t_"),matches("y_"),matches("se_"),V,na,x) %>% select(-y_1))
-
-
-pa_reac_data$sa7$list = nma_winbugs_datalist(pa_reac_data$sa7$meta,pa_reac_data$sa7$treatments)
-pa_reac_data$sa7$list$x = as.vector(pa_reac_data$sa7$meta$x)
-
-
-params_mr  = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd", "B")
-
-pa_reac_data$sa7$bugs = bugs(pa_reac_data$sa7$list,NULL,params_mr,model.file = model$re_meta,
-                   n.chains = 3, n.iter = 100000, n.burnin = 40000, n.thin = 10,
-                   bugs.directory = bugsdir, debug = F)
-
-pa_reac_data$sa7$meta %>% filter(t_1 == 1) %>% gather(diff,value,y_2:y_4) %>% gather(trt,num, t_2:t_4) %>%
-  select(diff,value,num,x) %>% na.omit %>% left_join(pa_reac_data$sa7$treatments, by = c("num" = "t")) %>% ggplot(aes(x = x, y = value)) + 
-  geom_point() + facet_wrap(~description) + geom_smooth(method = "lm",se = FALSE, colour = "black")
-
-pa_reac_data$sa7$bugs = nma_outputs(model = pa_reac_data$sa7$bugs,pa_reac_data$sa7$treatments)
-
-pa_reac_data$sa7$bugs$B = pa_reac_data$sa7$bugs$bugs[grep("^B$", rownames(pa_reac_data$sa7$bugs$bugs)),]
-
-#=========================================
 # Sensitivity 8 - Meta-regression on control arm risk
 #=========================================
 
@@ -510,7 +475,7 @@ pa_recov_data$pa = nma(pa_recov, inc = TRUE)
 
 pa_recov_data$sa1 = nma(pa_recov,"design","Crossover", SA = TRUE) 
 
-
+rop_data_study %>% summarise(n = sum(n))
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
 # Sensitivity 2 ----
@@ -567,38 +532,6 @@ pa_recov_data$sa5= prep_wb(data = pa_recov,smd = FALSE)
 pa_recov_data$sa5 = nma_cont(pa_recov, pa_recov_data$sa5$wb, pa_recov_data$sa5$treatments,params = params.re, model = "re-normal-gaus_3arm_skep_priors.txt",
                             bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 5, FE = FALSE)
 
-
-#=========================================
-# Sensitivity 6 - Meta-regression on sample size
-#=========================================
-pa_recov_data$sa6$data = prep_wb(pa_recov)
-
-pa_recov_data$sa6$data$meta = as.data.frame(pa_recov_data$sa6$data$wide %>% rowwise() %>% mutate(x = sum(n_1,n_2,n_3, na.rm = TRUE)) %>% left_join(rop_data_study %>% select(studlab,design), by = "studlab") %>%
-                               
-                               left_join(rop_data_arm %>% select(studlab,p_value) %>% distinct() %>% filter(!is.na(p_value)),by = "studlab") %>%
-                               
-                               mutate(se_2 = ifelse(design == "Crossover",se_paired(y_2,p_value,n_1),se_2)) %>%
-                               
-                               select(matches("t_"),matches("y_"),matches("se_"),V,na,x) %>% select(-y_1))
-
-
-pa_recovsa6_data = nma_winbugs_datalist(pa_recov_data$sa6$data$meta,pa_recov_data$sa6$data$treatments)
-pa_recovsa6_data$x = as.vector(pa_recov_data$sa6$data$meta$x)
-pa_recovsa6_data$mx = mean(pa_recovsa6_data$x)
-
-params_mr  = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd", "B")
-
-recov_metareg_samplesize = bugs(pa_recovsa6_data,NULL,params_mr,model.file = model$re3_meta,
-                   n.chains = 3, n.iter = 100000, n.burnin = 40000, n.thin = 10,
-                   bugs.directory = bugsdir, debug = F)
-
-
-pa_recov_data$sa6$tables = nma_outputs(model = recov_metareg_samplesize,pa_recov_data$sa6$data$treatments)
-pa_recov_data$sa6$tables$B = as.data.frame(recov_metareg_samplesize$summary) %>% rownames_to_column("parameter") %>% filter(parameter == "B")
-
-pa_recov_data$sa6$data$meta %>% filter(t_1 == 1) %>% select(-t_1) %>% gather(diff,value,matches("y_")) %>% gather(trt,num, matches("t_")) %>%
-  select(diff,value,num,x) %>% na.omit %>% left_join(pa_recov_data$sa6$data$treatments, by = c("num" = "t")) %>% ggplot(aes(x = x, y = value)) + 
-  geom_point() + facet_wrap(~description) + geom_smooth(method = "lm",se = FALSE, colour = "black")
 
 #=========================================
 # Sensitivity 7 - Meta-regression on control arm risk

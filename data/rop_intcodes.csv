@@ -15,7 +15,8 @@ nns.sweet.drops,drops_sweet_mult
 N2O.sweet.drops,drops_N2O_sweet
 nns,phys
 no.treatment,placebo
-acetaminophen.drops,drops_acet
+acetaminophen.drops.30,drops_acet30
+acetaminophen.drops.60,drops_acet60
 sensorial.sat,drops_sweet_mult
 sweet,sweet
 sweet.drops,drops_sweet

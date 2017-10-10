@@ -34,8 +34,8 @@ number of study,study auhor and year,treatment name,treatment class,type of outc
 6,Gal 2005,drops,drops,PIPP,1 minute pre-exam,baseline,3,1.7,NA,no,no,NA,NA,23,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,26.4,48.8,33.37142857,yes,ND,NA
 6,Gal 2005,sweet.drops,drops_sweet,PIPP,speculum insertion,reactivity,8.3,4.5,NA,no,no,NA,NA,23,NA,NA,NA,NA,NA,NA,NA,0.01,NA,NA,26.4,47.3,33.15714286,yes,ND,p-value is one sided
 6,Gal 2005,drops,drops,PIPP,speculum insertion,reactivity,10.5,4,NA,no,no,NA,NA,23,NA,NA,NA,NA,NA,NA,NA,0.01,NA,NA,26.4,48.8,33.37142857,yes,ND,p-value is one sided
-6,Gal 2005,sweet.drops,drops_sweet,PIPP,1 min post-exam,recovery,7.7,3.6,NA,no,no,NA,NA,23,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,26.4,47.3,33.15714286,yes,ND,NA
-6,Gal 2005,drops,drops,PIPP,1 min post-exam,recovery,8.3,3.5,NA,no,no,NA,NA,23,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,26.4,48.8,33.37142857,yes,ND,NA
+6,Gal 2005,sweet.drops,drops_sweet,PIPP,1 min post-exam,recovery,7.7,3.6,NA,no,no,NA,NA,23,NA,NA,NA,NA,NA,NA,NA,0.24,NA,NA,26.4,47.3,33.15714286,yes,ND,NA
+6,Gal 2005,drops,drops,PIPP,1 min post-exam,recovery,8.3,3.5,NA,no,no,NA,NA,23,NA,NA,NA,NA,NA,NA,NA,0.24,NA,NA,26.4,48.8,33.37142857,yes,ND,NA
 6,Gal 2005,sweet.drops,drops_sweet,02 desat > 10%,1 minute pre-exam,baseline,NA,NA,NA,NA,,NA,NA,23,NA,NA,NA,NA,NA,NA,NA,NA,0,NA,26.4,47.3,33.15714286,yes,ND,NA
 6,Gal 2005,drops,drops,02 desat > 10%,1 minute pre-exam,baseline,NA,NA,NA,NA,,NA,NA,23,NA,NA,NA,NA,NA,NA,NA,NA,0,NA,26.4,48.8,33.37142857,yes,ND,NA
 6,Gal 2005,sweet.drops,drops_sweet,02 desat > 10%,speculum insertion,reactivity,NA,NA,NA,NA,,NA,NA,23,NA,NA,NA,NA,NA,NA,NA,NA,3,NA,26.4,47.3,33.15714286,yes,ND,NA
@@ -56,15 +56,15 @@ number of study,study auhor and year,treatment name,treatment class,type of outc
 7,Grabska 2005,nns.drops,drops_phys,RR,During exam,reactivity,46,8,NA,no,,NA,NA,16,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,50.8,35.25714286,yes,1880,NA
 7,Grabska 2005,sweet.nns.drops,drops_mult,RR,2min post,recovery,59,17,NA,no,,NA,NA,16,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,50.8,35.25714286,yes,1880,NA
 7,Grabska 2005,nns.drops,drops_phys,RR,2min post,recovery,57,8,NA,no,,NA,NA,16,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,50.8,35.25714286,yes,1880,NA
-8,Kabatas 2016,acetaminophen.drops,drops_acet,PIPP,During exam,reactivity,12,2.962962963,NA,yes,no,NA,NA,58,12,9,13,NA,NA,NA,NA,NA,NA,NA,28,ND,32.3,no,1092,NA
+8,Kabatas 2016,acetaminophen.drops.60,drops_acet_60m,PIPP,During exam,reactivity,12,2.962962963,NA,yes,no,NA,NA,58,12,9,13,NA,NA,NA,NA,NA,NA,NA,28,ND,32.3,no,1092,NA
 8,Kabatas 2016,drops,drops,PIPP,During exam,reactivity,14,1.481481481,NA,yes,no,NA,NA,56,14,13,15,NA,NA,NA,NA,NA,NA,NA,28.3,ND,32.5,no,1170,NA
-8,Kabatas 2016,acetaminophen.drops,drops_acet,tachy >180bpm,During exam,reactivity,NA,NA,NA,NA,,NA,NA,58,NA,NA,NA,NA,NA,NA,NA,NA,17,NA,28,ND,32.3,no,1092,NA
+8,Kabatas 2016,acetaminophen.drops.60,drops_acet_60m,tachy >180bpm,During exam,reactivity,NA,NA,NA,NA,,NA,NA,58,NA,NA,NA,NA,NA,NA,NA,NA,17,NA,28,ND,32.3,no,1092,NA
 8,Kabatas 2016,drops,drops,tachy >180bpm,During exam,reactivity,NA,NA,NA,NA,,NA,NA,56,NA,NA,NA,NA,NA,NA,NA,NA,10,NA,28.3,ND,32.5,no,1170,NA
-8,Kabatas 2016,acetaminophen.drops,drops_acet,brady and desat,During exam,reactivity,NA,NA,NA,NA,,NA,NA,58,NA,NA,NA,NA,NA,NA,NA,NA,5,NA,28,ND,32.3,no,1092,NA
+8,Kabatas 2016,acetaminophen.drops.60,drops_acet_60m,brady and desat,During exam,reactivity,NA,NA,NA,NA,,NA,NA,58,NA,NA,NA,NA,NA,NA,NA,NA,5,NA,28,ND,32.3,no,1092,NA
 8,Kabatas 2016,drops,drops,brady and desat,During exam,reactivity,NA,NA,NA,NA,,NA,NA,56,NA,NA,NA,NA,NA,NA,NA,NA,4,NA,28.3,ND,32.5,no,1170,NA
-8,Kabatas 2016,acetaminophen.drops,drops_acet,crying time,During exam,reactivity,28.6,19.5,NA,no,,NA,NA,58,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,32.3,no,1092,NA
+8,Kabatas 2016,acetaminophen.drops.60,drops_acet_60m,crying time,During exam,reactivity,28.6,19.5,NA,no,,NA,NA,58,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,32.3,no,1092,NA
 8,Kabatas 2016,drops,drops,crying time,During exam,reactivity,23.8,15.7,NA,no,,NA,NA,56,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.3,ND,32.5,no,1170,NA
-8,Kabatas 2016,acetaminophen.drops,drops_acet,any_ae,brady and desat during exam,reactivity,NA,NA,NA,NA,,NA,NA,58,NA,NA,NA,NA,NA,NA,NA,NA,5,NA,28,ND,32.3,no,1092,NA
+8,Kabatas 2016,acetaminophen.drops.60,drops_acet_60m,any_ae,brady and desat during exam,reactivity,NA,NA,NA,NA,,NA,NA,58,NA,NA,NA,NA,NA,NA,NA,NA,5,NA,28,ND,32.3,no,1092,NA
 8,Kabatas 2016,drops,drops,any_ae,brady and desat during exam,reactivity,NA,NA,NA,NA,,NA,NA,56,NA,NA,NA,NA,NA,NA,NA,NA,4,NA,28.3,ND,32.5,no,1170,NA
 9,Kleberg 2008,NIDCAP,drops_mult,PIPP,During exam,reactivity,13,4,NA,yes,no,NA,NA,33,13,NA,NA,2,18,NA,NA,0.683,NA,NA,ND,ND,ND,ND,ND,p value is *mann-whitney U
 9,Kleberg 2008,drops,drops,PIPP,During exam,reactivity,13.5,4,NA,yes,no,NA,NA,35,13.5,NA,NA,0,16,NA,NA,0.683,NA,NA,ND,ND,ND,ND,ND,p value is *mann-whitney U
@@ -82,8 +82,8 @@ number of study,study auhor and year,treatment name,treatment class,type of outc
 10,Mandel 2012,sweet.drops,drops_sweet,any_ae,02 < 88% in 24h,recovery,9.9,10.4,NA,no,,NA,NA,18,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28.1,ND,35.4,no,1052.2,NA
 11,Marsh 2005,drops,drops,PIPP,speculum insertion,reactivity,11,3.2,NA,no,no,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,0.001,NA,NA,27.4,39.2,33,yes,ND,NA
 11,Marsh 2005,no.treatment,plac,PIPP,speculum insertion,reactivity,13.5,3.5,NA,no,no,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,0.001,NA,NA,27.4,39.4,33.02857143,yes,ND,NA
-11,Marsh 2005,drops,drops,PIPP,1 min post-exam,recovery,9.3,3.7,NA,no,no,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.4,39.2,33,yes,ND,NA
-11,Marsh 2005,no.treatment,plac,PIPP,1 min post-exam,recovery,10.5,3.5,NA,no,no,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.4,39.4,33.02857143,yes,ND,NA
+11,Marsh 2005,drops,drops,PIPP,1 min post-exam,recovery,9.3,3.7,NA,no,no,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,0.09,NA,NA,27.4,39.2,33,yes,ND,NA
+11,Marsh 2005,no.treatment,plac,PIPP,1 min post-exam,recovery,10.5,3.5,NA,no,no,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,0.09,NA,NA,27.4,39.4,33.02857143,yes,ND,NA
 11,Marsh 2005,drops,drops,02 desat >10% on PIPP points,,reactivity,NA,NA,NA,NA,,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,NA,6,NA,27.4,39.2,33,yes,ND,NA
 11,Marsh 2005,no.treatment,plac,02 desat >10% on PIPP points,,reactivity,NA,NA,NA,NA,,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,NA,13,NA,27.4,39.4,33.02857143,yes,ND,NA
 11,Marsh 2005,drops,drops,02 desat >10% on PIPP points,,recovery,NA,NA,NA,NA,,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,NA,6,NA,27.4,39.2,33,yes,ND,NA
@@ -145,13 +145,13 @@ number of study,study auhor and year,treatment name,treatment class,type of outc
 20,Strube 2010,feed.1hr.drops,diet1hr,crying time,,reactivity,79.5,58,NA,no,,NA,NA,25,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,28,ND,35.5,no,1062.3,NA
 20,Strube 2010,feed.2hr.drops,diet2hr,crying time,,reactivity,88.3,47.2,NA,no,,NA,NA,32,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,29.1,ND,36,no,1114.6,NA
 21,Manjunatha 2009,morphine.drops,drops_morph,PIPP,5 min post,recovery,3.5,1.5,NA,no,no,NA,NA,6,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,NA
-21,Manjunatha 2009,acetaminophen.drops,drops_acet,PIPP,5 min post,recovery,4.6,1.5,NA,no,no,NA,NA,5,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,NA
+21,Manjunatha 2009,acetaminophen.drops.60,drops_acet,PIPP,5 min post,recovery,4.6,1.5,NA,no,no,NA,NA,5,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,NA
 21,Manjunatha 2009,drops,drops,PIPP,5 min post,recovery,6.2,2.2,NA,no,no,NA,NA,6,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,NA
 22,Seifi 2013,sweet.drops,drops_sweet,PIPP,first 45 seconds,reactivity,9,2.1,NA,no,no,NA,NA,40,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.9,ND,ND,ND,1028.5,NA
-22,Seifi 2013,acetaminophen.drops,drops_acet,PIPP,first 45 seconds,reactivity,12.9,2.4,NA,no,no,NA,NA,41,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.4,ND,ND,ND,921.5,NA
+22,Seifi 2013,acetaminophen.drops.30,drops_acet_30m,PIPP,first 45 seconds,reactivity,12.9,2.4,NA,no,no,NA,NA,41,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.4,ND,ND,ND,921.5,NA
 22,Seifi 2013,drops,drops,PIPP,first 45 seconds,reactivity,13.7,1.6,NA,no,no,NA,NA,39,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.4,ND,ND,ND,1013.7,NA
 22,Seifi 2013,sweet.drops,drops_sweet,PIPP,last 45 seconds,recovery,11.2,3,NA,no,no,NA,NA,40,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.9,ND,ND,ND,1028.5,NA
-22,Seifi 2013,acetaminophen.drops,drops_acet,PIPP,last 45 seconds,recovery,12.3,2.4,NA,no,no,NA,NA,41,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.4,ND,ND,ND,921.5,NA
+22,Seifi 2013,acetaminophen.drops.30,drops_acet_30m,PIPP,last 45 seconds,recovery,12.3,2.4,NA,no,no,NA,NA,41,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.4,ND,ND,ND,921.5,NA
 22,Seifi 2013,drops,drops,PIPP,last 45 seconds,recovery,12.1,2.6,NA,no,no,NA,NA,39,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,27.4,ND,ND,ND,1013.7,NA
 23,Zeraati 2016,drops,drops,PIPP,NA,reactivity,10,1.7,NA,no,no,NA,NA,40,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,30.6,34.9,35.58571429,yes,1355.8,NA
 23,Zeraati 2016,sensorial.sat,drops_mult,PIPP,NA,reactivity,6.4,1.7,NA,no,no,NA,NA,40,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,30.4,35.1,35.41428571,yes,1385.8,NA

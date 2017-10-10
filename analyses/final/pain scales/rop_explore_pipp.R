@@ -29,7 +29,7 @@ pa_reac$trt_group = fct_infreq(pa_reac$trt_group) %>% droplevels()
 pa_reac_contrast = pairwise(data = pa_reac,treat = trt_group, n= sample_size, 
                             mean = mean,sd = std_dev,studlab = studlab) 
 
-
+summary(pa_reac$trt_group)
 #- Assess whether network is connected -#
 pa_reac_netconnect = netconnection(treat1,treat2,data = pa_reac_contrast)
 pa_reac_int = netmeta(TE,seTE,treat1,treat2,studlab,data = pa_reac_contrast, sm = "MD", comb.random = TRUE) ###required to drawn netgraph

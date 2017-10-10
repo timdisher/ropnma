@@ -20,6 +20,7 @@ rop_data_arm = replace(rop_data_arm,rop_data_arm == "ND" | rop_data_arm == "SN",
 ###Recode int classes 
 (rop_data_arm$trt_group = int_codes[match(rop_data_arm$treatment,int_codes[["intervention_name"]]),2][[1]])
 
+
 ###Use codebook to transform variables to correct type
 
 codebook_study = codebook %>% filter(sheet == "study_level")

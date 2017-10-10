@@ -65,7 +65,7 @@ model
     for (k in 2:nt) {
         d[k] ~ dnorm(0.00000E+00, 8.20000E-02)
     }
-    sd ~ dunif(0,5)
+    sd ~ dnorm(0,0.625)I(0,)
     tau <- pow(sd, -2)
     for (c in 1:(nt - 1)) {
         for (k in (c + 1):nt) {

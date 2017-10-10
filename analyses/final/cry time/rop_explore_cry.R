@@ -34,11 +34,10 @@ cry_reac = NULL
 
 cry_reac$overview = rop_data_arm %>% filter(grepl("cry",outcome), timepoint_group == "reactivity") #No variability data for saunders, mehta is presence/absence
 
-View(cry_reac$overview)
 
 # As per cochrane, we can analyse change cores and raw scores together. 
 
-cry_reac$data = cry_reac$overview %>% filter(outcome %in% c("crying time"),!(trt_group %in% c("drops diet 1hr","drops diet 2hr")) ) %>%
+cry_reac$data = cry_reac$overview %>% filter(outcome %in% c("crying time"),!(trt_group %in% c("drops_diet_1hr","drops_diet_2hr")),!(studlab %in% c("Olsson 2011"))) %>%
   mutate(std_dev = ifelse(is.na(std_dev),se*sqrt(sample_size),std_dev)) #diet not in connected network
 
 ### converts data to correct format to allow for assessment of connectivity
@@ -46,7 +45,12 @@ cry_reac$contrast = pairwise(data = cry_reac$data,treat = trt_group, n= sample_s
                             mean = mean,sd = std_dev,studlab = studlab) 
 
 
-
+cry_excluded = data.frame(study = c("Mehta 2005",
+                                    "Strube 2010",
+                                    "Olsson 2011"),
+                          reason = c("Outcome is presence/absence",
+                                     "Diet is not in connected network",
+                                     "No speculum used"))
 #- Assess whether network is connected -#
 (cry_reac$netconnect = netconnection(treat1,treat2,data = cry_reac$contrast) )
 
@@ -66,11 +70,6 @@ momlinc_netgraph(cry_reac$int,cry_reac$chars$int_char,2)
 (cry_reac$graph$pr = plac_resp_graph(cry_reac$data, ref = "drops"))
 
 (cry_reac$graph$pr_spec = plac_resp_graph(cry_reac$graph$data, ref = "drops", facet = TRUE, fv = "speculum"))
-
-
-# All pairwise meta-analyses
-
-cry_reac$graph$pw = all_pairwise(cry_reac$chars$direct,cry_reac$contrast, outcome = "sp02", sm = "MD",location = "./figs/final/cry_reac/pairwise ma")
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

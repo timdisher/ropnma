@@ -8,11 +8,6 @@
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
-# install.packages('coda')
-# install.packages('R2WinBUGS')
-# install.packages('netmeta')
-# install.packages('reshape2')
-
 library(coda)
 library(R2WinBUGS)
 library(tidyverse)
@@ -21,12 +16,25 @@ library(stargazer)
 library(reshape2)
 library(forcats)
 library(scales)
+library(forestplot)
+library(gemtc)
+library(reshape2)
+library(R2WinBUGS)
+library(coda)
 
 
 source("./analyses/final/cry time/rop_explore_cry.R")
-
 source("./functions/nma_cont.R")
+source("./functions/gemtc test/nma_cont_gemtc.R")
 source("./functions/nma_utility_functions.R")
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# Winbugs stuff
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
+model = normal_models()
+bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
+# bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
+
 # #========================================================================================
 # 
 # 
@@ -55,17 +63,7 @@ model = normal_models()
 
 
 cry_reac$bugs$pa = nma_cont(cry_reac$bugs$data$wide,cry_reac$bugs$data$wb,cry_reac$bugs$data$treatments,params = params.re, model = list(model$re2,model$re2_inc),
-                           bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 16, FE = FALSE,debug =F,inc = TRUE)
+                            bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 16, FE = FALSE,debug =F,inc = TRUE)
 
 
 save(cry_reac,file = "./cache/cry_reac.rda")
-
-
-# #========================================================================================
-# 
-# 
-# Outcome: Cry Recovery-----
-# 
-# #========================================================================================
-
-#Only Mehta to report narratively

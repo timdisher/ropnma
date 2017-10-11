@@ -34,14 +34,28 @@ hr_reac = NULL
 
 hr_reac$overview = rop_data_arm %>% filter(grepl("hr",outcome), timepoint_group == "reactivity") 
 
-# Can use MD for change from baseline, and raw heart rate. Mehta will have to be dropped because there is no variance and it's a crossover. Max heart rate is a different outcome,
+# Mehta will have to be dropped because there is no variance and it's a crossover. Max heart rate is a different outcome,
 # can't combine it plus change scores because it would require standardizing which cochrane does not recommend.
 
-hr_reac$data = hr_reac$overview %>% filter(studlab %in% c("Dhaliwal 2010","Olsson 2011","Xin 2016"), outcome != "hr max") #Drops Mehta and connects network. Will hgave to report taplak seperately.
+hr_reac$data = hr_reac$overview %>% filter(studlab %in% c("Xin 2016"), outcome != "hr max") #Drops Mehta and connects network. Will hgave to report taplak seperately.
 
 ### converts data to correct format to allow for assessment of connectivity
 hr_reac$contrast = pairwise(data = hr_reac$data,treat = trt_group, n= sample_size, 
                             mean = mean,sd = std_dev,studlab = studlab) 
+
+hr_reac$overview$studlab
+hr_reac_excluded = data.frame(study = c("Olsson 2011",
+                                        "Mehta 2005",
+                                        "SenerTaplak 2017",
+                                        "Dhaliwal 2010"),
+                              reason = c("no speculum",
+                                         "no variance",
+                                         "not connected to other treatments",
+                                         "hr max not an outcome of interest")
+                             ) %>% left_join(hr_reac$overview %>% select(studlab, sample_size,outcome) %>%
+                                                group_by(studlab,outcome) %>% summarise(n = sum(sample_size)),c("study" = "studlab"))
+
+
 
 
 
@@ -93,6 +107,15 @@ hr_recov$data = hr_recov$overview %>% filter(studlab != "Mehta 2005", outcome !=
 ### converts data to correct format to allow for assessment of connectivity
 hr_recov$contrast = pairwise(data = hr_recov$data,treat = trt_group, n= sample_size, 
                             mean = mean,sd = std_dev,studlab = studlab) 
+
+
+hr_recov_excluded = data.frame(study_num = factor(c(27,24)),
+                                 study = c("Mehta 2005",
+                                        "SenerTaplak 2017"),
+                              reason = c("no variance",
+                                         "not connected to other treatments")) %>% 
+  left_join(hr_recov$overview %>% select(study_num, sample_size,outcome) %>%
+                  group_by(study_num,outcome) %>% summarise(n = sum(sample_size)),c("study_num")) %>% select(-study_num)
 
 
 

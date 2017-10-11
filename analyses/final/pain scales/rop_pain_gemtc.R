@@ -25,7 +25,7 @@ library(forestplot)
 library(gemtc)
 library(reshape2)
 library(R2WinBUGS)
-library(coda)
+
 
 
 source("./analyses/final/pain scales/rop_explore_pipp.R")
@@ -85,7 +85,7 @@ pa_reac_data$pa$results = mtc.run(pa_reac_data$pa$results)
 summary(pa_reac_data$pa$results)
 
 pa_reac_data$pa$anohe = mtc.anohe(pa_reac_data$pa$network)
-plot(summary(pa_reac_data$pa$anohe))
+# plot(summary(pa_reac_data$pa$anohe))
 forest(relative.effect.table(pa_reac_data$pa$results),"drops")
 
 
@@ -98,7 +98,7 @@ forest(relative.effect.table(pa_reac_data$pa$results),"drops")
 
 pa_reac_data$sa1$results = mtc.model(pa_reac_data$pa$network, type = "consistency",
                                      linearModel = "random",likelihood = "normal",
-                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.625), 
+                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.0625), 
                                      link = "identity")
 
 pa_reac_data$sa1$results = mtc.run(pa_reac_data$sa1$results)
@@ -106,7 +106,10 @@ pa_reac_data$sa1$results = mtc.run(pa_reac_data$sa1$results)
 summary(pa_reac_data$sa1$results)
 
 
-forest(relative.effect.table(pa_reac_data$sa1$results),"drops")
+forest(relative.effect.table(pa_reac_data$sa1$results),"drops") 
+
+pa_reac_sucra = sucra(pa_reac_data$sa1$results, direction = -1)
+
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
 # Sensitivity 2 
@@ -119,7 +122,7 @@ sa2_regressor = list(coefficient = "shared",
 pa_reac_data$sa2$results = mtc.model(pa_reac_data$pa$network, type = "regression",
                                     linearModel = "random",likelihood = "normal",
                                     regressor = sa2_regressor,
-                                    hy.prior = mtc.hy.prior("prec","dhnorm",0,0.625),
+                                    hy.prior = mtc.hy.prior("prec","dhnorm",0,0.0625),
                                     link = "identity")
 
 
@@ -128,6 +131,8 @@ pa_reac_data$sa2$results = mtc.run(pa_reac_data$sa2$results)
 summary(pa_reac_data$sa2$results)
 
 forest(relative.effect.table(pa_reac_data$sa2$results),"drops")
+
+
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
 # Sensitivity 3 
@@ -144,7 +149,7 @@ sa3_regressor = list(coefficient = "shared",
 pa_reac_data$sa3$results = mtc.model(pa_reac_data$pa$network, type = "regression",
                                      linearModel = "random",likelihood = "normal",
                                      regressor = sa3_regressor,
-                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.625),
+                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.0625),
                                      link = "identity")
 
 
@@ -190,7 +195,7 @@ pa_reac_data$sa4$network = mtc.network(data.re =pa_reac_data$sa4$gemtc$data)
 
 pa_reac_data$sa4$results = mtc.model(pa_reac_data$sa4$network, type = "consistency",
                                      linearModel = "random",likelihood = "normal",
-                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.625),
+                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.0625),
                                      link = "identity")
 
 pa_reac_data$sa4$results = mtc.run(pa_reac_data$sa4$results)
@@ -210,7 +215,7 @@ pa_reac_data$sa5$network = mtc.network(data.re =pa_reac_data$sa5$gemtc$data)
 
 pa_reac_data$sa5$results = mtc.model(pa_reac_data$sa5$network, type = "consistency",
                                      linearModel = "random",likelihood = "normal",
-                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.625),
+                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.0625),
                                      link = "identity")
 
 pa_reac_data$sa5$results = mtc.run(pa_reac_data$sa5$results)
@@ -219,82 +224,60 @@ pa_reac_data$sa5$results = mtc.run(pa_reac_data$sa5$results)
 summary(pa_reac_data$sa5$results)
 
 
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-#
-# Sensitivity 6
-# # --------- *Weakly informative priors on treatment effects*
-# Difference of 3.5 considered to be very large 
-# Includes informative on sigma
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-pa_reac_data$sa6= prep_wb(data = pa_reac,smd = FALSE)
-
-pa_reac_data$sa6$xo = pa_reac_data$sa6$wide %>% left_join(rop_data_study %>% select(studlab,design), by = "studlab") %>%
-  
-  left_join(rop_data_arm %>% select(studlab,p_value) %>% distinct() %>% filter(!is.na(p_value)),by = "studlab") %>%
-  
-  mutate(se_2 = ifelse(design == "Crossover",se_paired(y_2,p_value,n_1),se_2)) %>%
-  
-  select(matches("t_"),matches("y_"),matches("se_"),V,na) %>% select(-y_1)
-
-pa_reac_data$sa6 = nma_cont(pa_reac, pa_reac_data$sa6$xo, pa_reac_data$sa6$treatments,params = params.re, model = "re-normal-gaus_skep_priors.txt",
-                            bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 5, FE = FALSE)
-
-
 #=========================================
-# Sensitivity 7 - Meta-regression on high overall risk of bias
+# Sensitivity 6 - Meta-regression on high overall risk of bias
 #=========================================
 
-sa7_regressor = list(coefficient = "shared",
+sa6_regressor = list(coefficient = "shared",
                      variable = "oa_rob_sub",
                      control = "drops")
 
 
 
-pa_reac_data$sa7$results = mtc.model(pa_reac_data$pa$network, type = "regression",
+pa_reac_data$sa6$results = mtc.model(pa_reac_data$pa$network, type = "regression",
                                      linearModel = "random",likelihood = "normal",
                                      hy.prior = mtc.hy.prior("prec","dhnorm",0,0.625),
-                                     regressor = sa7_regressor,
+                                     regressor = sa6_regressor,
                                      link = "identity")
 
-pa_reac_data$sa7$results = mtc.run(pa_reac_data$sa7$results)
+pa_reac_data$sa6$results = mtc.run(pa_reac_data$sa6$results)
 
-summary(pa_reac_data$sa7$results)
+summary(pa_reac_data$sa6$results)
 
 
 #=========================================
-# Sensitivity 8 - Meta-regression on control arm risk
+# Sensitivity 7 - Meta-regression on control arm risk
 #=========================================
 params_mr  = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd", "B")
 
 
-pa_reac_data$sa8 = prep_wb(pa_reac)
+pa_reac_data$sa7 = prep_wb(pa_reac)
 
-pa_reac_data$sa8$meta_cr = pa_reac_data$sa8$arm_wide %>% mutate(
+pa_reac_data$sa7$meta_cr = pa_reac_data$sa7$arm_wide %>% mutate(
   se_1 = sd_1/sqrt(n_1),
   se_2 = sd_2/sqrt(n_2),
   se_3 = sd_3/sqrt(n_3),
   se_4 = sd_4/sqrt(n_4)) %>% select(matches("t_"),matches("y_"),matches("se_"),na) %>% arrange(na)
 
-(pa_reac_data$sa8$list = nma_winbugs_datalist(pa_reac_data$sa8$meta_cr,pa_reac_data$sa8$treatments,contrast = FALSE))
+(pa_reac_data$sa7$list = nma_winbugs_datalist(pa_reac_data$sa7$meta_cr,pa_reac_data$sa7$treatments,contrast = FALSE))
 
-pa_reac_data$sa8$list$mx = as.vector(pa_reac_data$sa8$meta_cr %>% filter(t_1 == 1) %>% summarise(mx = mean(y_1)))[[1]]
+pa_reac_data$sa7$list$mx = as.vector(pa_reac_data$sa7$meta_cr %>% filter(t_1 == 1) %>% summarise(mx = mean(y_1)))[[1]]
 
 
-pa_reac_data$sa8$bugs = bugs(pa_reac_data$sa8$list,NULL,params_mr,model.file = "re_normal_armdata_meta.txt",
-                             n.chains = 3, n.iter = 100000, n.burnin = 40000, n.thin = 10,
+pa_reac_data$sa7$bugs = bugs(pa_reac_data$sa7$list,NULL,params_mr,model.file = "re_normal_armdata_meta.txt",
+                             n.chains = 3, n.iter = 40000, n.burnin = 20000, n.thin = 1,
                              bugs.directory = bugsdir, debug = F)
 
 
 
-pa_reac_data$sa8$bugs = nma_outputs(model = pa_reac_data$sa8$bugs,pa_reac_data$sa8$treatments)
+pa_reac_data$sa7$bugs = nma_outputs(model = pa_reac_data$sa7$bugs,pa_reac_data$sa7$treatments)
 
-pa_reac_data$sa8$bugs$B = pa_reac_data$sa8$bugs$bugs[grep("^B$", rownames(pa_reac_data$sa8$bugs$bugs)),]
+pa_reac_data$sa7$bugs$B = pa_reac_data$sa7$bugs$bugs[grep("^B$", rownames(pa_reac_data$sa7$bugs$bugs)),]
 
-pa_reac_data$sa8$meta_cr %>% filter(t_1 == 1) %>% mutate(y2_diff = y_2 - y_1,
+pa_reac_data$sa7$meta_cr %>% filter(t_1 == 1) %>% mutate(y2_diff = y_2 - y_1,
                                                          y3_diff = y_3 - y_1,
                                                          y4_diff = y_4 - y_1) %>% gather(diff,value,y2_diff:y4_diff) %>% gather(trt,num, t_2:t_4) %>%
-  select(y_1,value,num) %>% na.omit %>% left_join(pa_reac_data$sa8$treatments, by = c("num" = "t")) %>%
+  select(y_1,value,num) %>% na.omit %>% left_join(pa_reac_data$sa7$treatments, by = c("num" = "t")) %>%
   ggplot(aes(y = value, x = y_1)) + geom_point() + geom_smooth(method = "lm", se = FALSE,colour = "black") + facet_wrap(~description)
 
 
@@ -310,20 +293,6 @@ pa_reac_data$pa$gemtc$input %>% arrange(-n)
 sd_pipp = sqrt((2.4^2*75+2.1^2*75)/(75+75))
 req_samp = round((power.t.test(sig.level = 0.05,power = 0.8,delta = 2, sd = 2.25))$n,0)*2
 #==========================================================================
-
-pa_reac_data$wb = prep_wb(data = pa_reac,smd = FALSE)
-
-pa_reac_data$wb$xo = pa_reac_data$wb$wide %>% left_join(rop_data_study %>% select(studlab,design), by = "studlab") %>%
-  
-  left_join(rop_data_arm %>% select(studlab,p_value) %>% distinct() %>% filter(!is.na(p_value)),by = "studlab") %>%
-  
-  mutate(se_2 = ifelse(design == "Crossover",se_paired(y_2,p_value,n_1),se_2)) %>%
-  
-  select(matches("t_"),matches("y_"),matches("se_"),V,na) %>% select(-y_1)
-
-pa_reac_data$wb = nma_cont(pa_reac,pa_reac_data$wb$xo,pa_reac_data$wb$treatments,params = params.re, model = "re-normal-gaus_inf_direct.txt",
-                            bugsdir = bugsdir, n.iter = 40000, n.burnin = 20000,n.thin = 1, FE = FALSE, debug = F)
-
 
 
 eff_ss = function(n){
@@ -408,12 +377,29 @@ retrodesign <- function(A, s, alpha=.05, df=Inf, n.sims=10000) {
               typeS=typeS, exaggeration=exaggeration))
 }
 
+outcome_names = power[grep("vs drops$",power$comp),c(1)] %>% separate(comp,c("t2","t1"), sep = " vs ") %>% select(t2)
 
-power_table = power_table %>% mutate(post_sd = pa_reac_data$wb$bugs[1:12,2],
-                                     gelman_power = 0,
-                                     gelman_n = 0,
-                                     gelman_m = 0)
+pa_reac_pt_res = data.frame(outcome = outcome_names$t2,
+                             median = 0,
+                             low = 0,
+                             high = 0,
+                             sd = 0)
+for(i in seq_along(outcome_names$t2)){
+  temp = summary(relative.effect(pa_reac_data$sa1$results, t1 = "drops",t2 = outcome_names$t2[i])) 
+  
+  pa_reac_pt_res$median[i] = temp$summaries$quantiles[1,3]
+  pa_reac_pt_res$low[i] = temp$summaries$quantiles[1,1]
+  pa_reac_pt_res$high[i] = temp$summaries$quantiles[1,5]
+  pa_reac_pt_res$sd[i] = temp$summaries$statistics[1,2]
+  
+  
+}
 
+
+power_table = power_table %>% mutate(post_sd = round(pa_reac_pt_res$sd,2),
+                                                 gelman_power = 0,
+                                                 gelman_n = 0,
+                                                 gelman_m = 0)
 for(i in seq_along(power_table$comp)){
   power_table$gelman_power[i] = retrodesign(2,power_table$post_sd[i])[["power"]]
   power_table$gelman_m[i] = retrodesign(2,power_table$post_sd[i])[["exaggeration"]]
@@ -425,19 +411,20 @@ for(i in seq_along(power_table$comp)){
 
 # Forest plot vs ref======
 power_table = power_table %>% arrange(num) 
-pa_reac_forest_data = as.data.frame(pa_reac_data$wb$comp[1:12,1:3])
+pa_reac_forest_data = pa_reac_pt_res
 
 
-pa_reac_forest_data = bind_cols(power_table,pa_reac_forest_data) %>% select(-one_of(c("sample_frac","tot_eff","power","num",
-                                                                                      "Comparison (Trt A vs. Trt B)"))) %>%
+pa_reac_forest_data = bind_cols(power_table,pa_reac_forest_data) %>% select(-one_of(c("sample_frac","tot_eff","power","num","outcome","post_sd"))) %>%
   mutate(comp = c("Drops + sweet taste mult","Drops + phys","Drops + sweet taste", "Placebo",
                   "Drops + ebm mult","Drops + acetaminophen 30sec","Drops + acetaminophen 60sec",
                   "Drops + N2O + sweet taste","Drops + WFDRI","Sweet taste alone","Repeated sweet taste",
-                  "Sweet taste + singing")) %>% arrange(as.numeric(as.character(`Mean Difference of Trt A vs. Trt B`))) 
+                  "Sweet taste + singing")) %>% arrange(median) 
 
-pa_reac_plot_data = pa_reac_forest_data[,c(8,9)] %>%separate(`95% CrI of Mean Difference`,c("lower","upper"),sep = " to ") %>% rename(mean = `Mean Difference of Trt A vs. Trt B`)
-pa_reac_table_data = pa_reac_forest_data %>%  mutate(cri = paste("(",`95% CrI of Mean Difference`,")",sep="")) %>% select(-`95% CrI of Mean Difference`) %>% unite(mean_cri,`Mean Difference of Trt A vs. Trt B`,cri,sep = " ") %>%
-  select(-post_sd) 
+pa_reac_plot_data = pa_reac_forest_data %>% select(median, low, high) %>% rename(mean = median,
+                                                                                   lower = low,
+                                                                                   upper = high)
+pa_reac_table_data = pa_reac_forest_data %>%  mutate(mean_cri = paste(round(median,2)," (",round(low,2)," to ",round(high,2),")",sep="")) %>% select(-median,-low,-high,-sd)
+
 
 pa_reac_table_data$gelman_n = round(pa_reac_table_data$gelman_n,0)
 pa_reac_table_data$gelman_m = round(pa_reac_table_data$gelman_m,2)
@@ -477,7 +464,7 @@ factor
 dev.off()
 
 
-# save(pa_reac_data, file = "./cache/pa_reac.rda")
+save(pa_reac_data, file = "./cache/pa_reac.rda")
 
 
 # #========================================================================================
@@ -531,7 +518,7 @@ summary(pa_recov_data$pa$results)
 
 
 pa_recov_data$pa$anohe = mtc.anohe(pa_recov_data$pa$network)
-plot(summary(pa_recov_data$pa$anohe))
+# plot(summary(pa_recov_data$pa$anohe))
 
 forest(relative.effect.table(pa_recov_data$pa$results),"drops")
 
@@ -543,12 +530,13 @@ forest(relative.effect.table(pa_recov_data$pa$results),"drops")
 
 pa_recov_data$sa1$results = mtc.model(pa_recov_data$pa$network, type = "consistency",
                                       linearModel = "random",likelihood = "normal",
-                                      hy.prior = mtc.hy.prior("prec","dhnorm",0,0.625), 
+                                      hy.prior = mtc.hy.prior("prec","dhnorm",0,0.0625), 
                                       link = "identity")
 
 pa_recov_data$sa1$results = mtc.run(pa_recov_data$sa1$results)
 
-summary(pa_recov_data$sa1$results)
+pa_recov_sucra = sucra(pa_recov_data$sa1$results, direction = -1)
+pa_recov_sucra = as.data.frame(pa_recov_sucra) %>% rownames_to_column("treatment")
 
 forest(relative.effect.table(pa_recov_data$sa1$results),"drops")
 
@@ -639,78 +627,57 @@ forest(relative.effect.table(pa_recov_data$sa2$results),"drops")
 
 
 
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-#
-# Sensitivity 6
-# # --------- *Weakly informative priors on treatment effects*
-# Difference of 3.5 considered to be very large 
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-pa_recov_data$sa6= prep_wb(data = pa_recov,smd = FALSE)
-
-pa_recov_data$sa6$xo = pa_recov_data$sa6$wide %>% left_join(rop_data_study %>% select(studlab,design), by = "studlab") %>%
-  
-  left_join(rop_data_arm %>% select(studlab,p_value) %>% distinct() %>% filter(!is.na(p_value)),by = "studlab") %>%
-  
-  mutate(se_2 = ifelse(design == "Crossover",se_paired(y_2,p_value,n_1),se_2)) %>%
-  
-  select(matches("t_"),matches("y_"),matches("se_"),V,na) %>% select(-y_1)
-
-pa_recov_data$sa6 = nma_cont(pa_recov, pa_recov_data$sa6$xo, pa_recov_data$sa6$treatments,params = params.re, model = "re-normal-gaus_3arm_skep_priors.txt",
-                             bugsdir = bugsdir, n.iter = 40000, n.burnin = 20000,n.thin = 1, FE = FALSE)
-
 
 #=========================================
-# Sensitivity 7 - Meta-regression on high overall risk of bias
+# Sensitivity 6 - Meta-regression on high overall risk of bias
 #=========================================
 
-sa7_regressor = list(coefficient = "shared",
+sa6_regressor = list(coefficient = "shared",
                      variable = "oa_rob_sub",
                      control = "drops")
 
 
 
-pa_recov_data$sa7$results = mtc.model(pa_recov_data$pa$network, type = "regression",
+pa_recov_data$sa6$results = mtc.model(pa_recov_data$pa$network, type = "regression",
                                      linearModel = "random",likelihood = "normal",
                                      hy.prior = mtc.hy.prior("prec","dhnorm",0,0.625),
-                                     regressor = sa7_regressor,
+                                     regressor = sa6_regressor,
                                      link = "identity")
 
-pa_recov_data$sa7$results = mtc.run(pa_recov_data$sa7$results)
+pa_recov_data$sa6$results = mtc.run(pa_recov_data$sa6$results)
 
-summary(pa_recov_data$sa7$results)
+summary(pa_recov_data$sa6$results)
 
 
 #=========================================
 # Sensitivity 8 - Meta-regression on control arm risk
 #=========================================
 
-pa_recov_data$sa8 = prep_wb(pa_recov)
+pa_recov_data$sa7 = prep_wb(pa_recov)
 
-pa_recov_data$sa8$meta_cr = pa_recov_data$sa8$arm_wide %>% mutate(
+pa_recov_data$sa7$meta_cr = pa_recov_data$sa7$arm_wide %>% mutate(
   se_1 = sd_1/sqrt(n_1),
   se_2 = sd_2/sqrt(n_2),
   se_3 = sd_3/sqrt(n_3)) %>% select(matches("t_"),matches("y_"),matches("se_"),na) %>% arrange(na)
 
-(pa_recov_data$sa8$list = nma_winbugs_datalist(pa_recov_data$sa8$meta_cr,pa_recov_data$sa8$treatments,contrast = FALSE))
+(pa_recov_data$sa7$list = nma_winbugs_datalist(pa_recov_data$sa7$meta_cr,pa_recov_data$sa7$treatments,contrast = FALSE))
 
-pa_recov_data$sa8$list$mx = as.vector(pa_recov_data$sa8$meta_cr %>% filter(t_1 == 1) %>% summarise(mx = mean(y_1)))[[1]]
+pa_recov_data$sa7$list$mx = as.vector(pa_recov_data$sa7$meta_cr %>% filter(t_1 == 1) %>% summarise(mx = mean(y_1)))[[1]]
 
 
-pa_recov_data$sa8$bugs = bugs(pa_recov_data$sa8$list,NULL,params_mr,model.file = "re_normal_armdata_meta.txt",
+pa_recov_data$sa7$bugs = bugs(pa_recov_data$sa7$list,NULL,params_mr,model.file = "re_normal_armdata_meta.txt",
                              n.chains = 3, n.iter = 100000, n.burnin = 40000, n.thin = 10,
                              bugs.directory = bugsdir, debug = F)
 
 
 
-pa_recov_data$sa8$bugs = nma_outputs(model = pa_recov_data$sa8$bugs,pa_recov_data$sa8$treatments)
+pa_recov_data$sa7$bugs = nma_outputs(model = pa_recov_data$sa7$bugs,pa_recov_data$sa7$treatments)
 
-pa_recov_data$sa8$bugs$B = pa_recov_data$sa8$bugs$bugs[grep("^B$", rownames(pa_recov_data$sa8$bugs$bugs)),]
+pa_recov_data$sa7$bugs$B = pa_recov_data$sa7$bugs$bugs[grep("^B$", rownames(pa_recov_data$sa7$bugs$bugs)),]
 
-pa_recov_data$sa8$meta_cr %>% filter(t_1 == 1) %>% mutate(y2_diff = y_2 - y_1,
-                                                         y3_diff = y_3 - y_1,
-                                                         y4_diff = y_4 - y_1) %>% gather(diff,value,y2_diff:y4_diff) %>% gather(trt,num, t_2:t_4) %>%
-  select(y_1,value,num) %>% na.omit %>% left_join(pa_recov_data$sa8$treatments, by = c("num" = "t")) %>%
+pa_recov_data$sa7$meta_cr %>% filter(t_1 == 1) %>% mutate(y2_diff = y_2 - y_1,
+                                                         y3_diff = y_3 - y_1) %>% gather(diff,value,y2_diff:y3_diff) %>% gather(trt,num, t_2:t_3) %>%
+  select(y_1,value,num) %>% na.omit %>% left_join(pa_recov_data$sa7$treatments, by = c("num" = "t")) %>%
   ggplot(aes(y = value, x = y_1)) + geom_point() + geom_smooth(method = "lm", se = FALSE,colour = "black") + facet_wrap(~description)
 
 
@@ -724,20 +691,6 @@ pa_recov_data$sa8$meta_cr %>% filter(t_1 == 1) %>% mutate(y2_diff = y_2 - y_1,
 # Assumed SD of PIPP = used Dhaliwhal (largest study)
 
 #==========================================================================
-pa_recov_data$wb = prep_wb(data = pa_recov,smd = FALSE)
-
-pa_recov_data$wb$xo = pa_recov_data$wb$wide %>% left_join(rop_data_study %>% select(studlab,design), by = "studlab") %>%
-  
-  left_join(rop_data_arm %>% select(studlab,p_value) %>% distinct() %>% filter(!is.na(p_value)),by = "studlab") %>%
-  
-  mutate(se_2 = ifelse(design == "Crossover",se_paired(y_2,p_value,n_1),se_2)) %>%
-  
-  select(matches("t_"),matches("y_"),matches("se_"),V,na) %>% select(-y_1)
-
-pa_recov_data$wb = nma_cont(pa_recov,pa_recov_data$wb$xo,pa_recov_data$wb$treatments,params = params.re, model = "re-normal-gaus_3arm_inf_direct.txt",
-                           bugsdir = bugsdir, n.iter = 40000, n.burnin = 20000,n.thin = 1, FE = FALSE, debug = F)
-
-
 
 pdf("pa_recov.pdf")
 momlinc_netgraph(pa_recov_int,recov_chars$int_char,2)

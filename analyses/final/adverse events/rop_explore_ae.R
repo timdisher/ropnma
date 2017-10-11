@@ -32,7 +32,7 @@ library(grid)
 # Generate tables and graphs----------------------------------------------------------------------------------------------------------------------------------------------
 ae_reac = NULL
 
-ae_reac$overview = rop_data_arm %>% filter(outcome %in% c("any.ae","02 desat <85%","tachy >180bpm","brady < 100bpm","02 desat > 10%","02 desat >10% on PIPP points",
+ae_reac$overview = rop_data_arm %>% filter(outcome %in% c("any_ae","02 desat <85%","tachy >180bpm","brady < 100bpm","02 desat > 10%","02 desat >10% on PIPP points",
                                                          "brady and desat","Apnea in 24h","02 < 88% in 24h",
                                                          "desat < 80%"), timepoint_group == "reactivity") #No variability data for saunders, mehta is presence/absence
 
@@ -40,7 +40,7 @@ ae_reac$overview = rop_data_arm %>% filter(outcome %in% c("any.ae","02 desat <85
 
 # As per cochrane, we can analyse change cores and raw scores together. 
 
-(ae_reac$data = ae_reac$overview %>% filter(outcome %in% c("any.ae"))) 
+(ae_reac$data = ae_reac$overview %>% filter(outcome %in% c("any_ae"))) 
 
 ### converts data to correct format to allow for assessment of connectivity
 ae_reac$contrast = pairwise(data = ae_reac$data,treat = trt_group, n= sample_size, 
@@ -52,6 +52,10 @@ ae_reac$contrast = pairwise(data = ae_reac$data,treat = trt_group, n= sample_siz
 (ae_reac$netconnect = netconnection(treat1,treat2,data = ae_reac$contrast) ) ###Two networks, but one of them is a single study (Dilli)
 
 ae_reac$data_connect = ae_reac$data %>% filter(studlab != "Dilli 2014")
+
+ae_reac_excluded = ae_reac$overview %>% filter(studlab == "Dilli 2014") %>%
+  select(studlab,outcome,sample_size) %>% group_by(studlab,outcome) %>% summarise(n = sum(sample_size)) %>% ungroup() %>%
+  mutate(reason = c(rep("not part of connected network",4)))
 
 ae_reac$contrast_nodili = pairwise(data = ae_reac$data_connect,treat = trt_group, n= sample_size, 
                             event = num_events,studlab = studlab, sm = "OR") 
@@ -96,7 +100,7 @@ ae_reac$graph$pw = all_pairwise(ae_reac$chars$direct,ae_reac$contrast_nodili, ou
 # Generate tables and graphs----------------------------------------------------------------------------------------------------------------------------------------------
 ae_recov = NULL
 
-(ae_recov$overview = rop_data_arm %>% filter(outcome %in% c("any.ae","02 desat <85%","tachy >180bpm","brady < 100bpm","02 desat > 10%","02 desat >10% on PIPP points",
+(ae_recov$overview = rop_data_arm %>% filter(outcome %in% c("any_ae","02 desat <85%","tachy >180bpm","brady < 100bpm","02 desat > 10%","02 desat >10% on PIPP points",
                                                           "brady and desat","Apnea in 24h","02 < 88% in 24h",
                                                           "desat < 80%"), timepoint_group == "recovery")) #No variability data for saunders, mehta is presence/absence
 
@@ -104,7 +108,7 @@ ae_recov = NULL
 
 # As per cochrane, we can analyse change cores and raw scores together. 
 
-(ae_recov$data = ae_recov$overview %>% filter(outcome %in% c("any.ae"))) 
+(ae_recov$data = ae_recov$overview %>% filter(outcome %in% c("any_ae"))) 
 
 ### converts data to correct format to allow for assessment of connectivity 
 ae_recov$contrast = pairwise(data = ae_recov$data,treat = trt_group, n= sample_size, 

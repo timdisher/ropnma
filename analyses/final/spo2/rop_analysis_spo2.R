@@ -57,6 +57,15 @@ os_reac$bugs$pa = nma_cont(os_reac$bugs$data$wide,os_reac$bugs$data$wb,os_reac$b
                            bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 16, FE = FALSE,debug =F,inc = TRUE)
 
 
+#====
+# Informative priors = 3 points large diff = 1/3^2 = 0.11
+
+os_reac$sa1= prep_wb(data = os_reac$data,smd = FALSE)
+
+
+os_reac$sa1 = nma_cont(os_reac$data, os_reac$sa1$wb, os_reac$sa1$treatments,params = params.re, model = "re_normal_gaus_2arm_spo2_inf.txt",
+                        bugsdir = bugsdir, n.iter = 40000, n.burnin = 20000,n.thin = 1, FE = FALSE)
+
 
 save(os_reac, file = "./cache/spo2_reac.rda")
 

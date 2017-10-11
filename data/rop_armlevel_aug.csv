@@ -157,24 +157,24 @@ number of study,study auhor and year,treatment name,treatment class,type of outc
 23,Zeraati 2016,sensorial.sat,drops_mult,PIPP,NA,reactivity,6.4,1.7,NA,no,no,NA,NA,40,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,30.4,35.1,35.41428571,yes,1385.8,NA
 23,Zeraati 2016,drops,drops,PIPP,NA,recovery,10.6,1.7,NA,no,no,NA,NA,40,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,30.6,34.9,35.58571429,yes,1355.8,NA
 23,Zeraati 2016,sensorial.sat,drops_mult,PIPP,NA,recovery,7.1,1.8,NA,no,no,NA,NA,40,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,30.4,35.1,35.41428571,yes,1385.8,NA
-24,ŞenerTaplak 2017,nns.drops,drops_nns,PIPP,during exam (first eye),reactivity,15.88,1.66,NA,NA,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.ebm.drops,ebm_mult,PIPP,during exam (first eye),reactivity,16.06,2.41,NA,NA,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.sweet.drops,sweet_mult,PIPP,during exam (first eye),reactivity,15.58,2.02,NA,NA,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.drops,drops_nns,PIPP,5 min post,recovery,5.9,1.61,NA,NA,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.ebm.drops,ebm_mult,PIPP,5 min post,recovery,3.2,1.36,NA,NA,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.sweet.drops,sweet_mult,PIPP,5 min post,recovery,3.65,1.78,NA,NA,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.drops,drops_nns,hr,during exam (first eye),reactivity,174.94,12.41,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.ebm.drops,ebm_mult,hr,during exam (first eye),reactivity,176.59,18.18,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.sweet.drops,sweet_mult,hr,during exam (first eye),reactivity,183.42,21.71,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.drops,drops_nns,hr,5 min post,recovery,160.5,9.4,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.ebm.drops,ebm_mult,hr,5 min post,recovery,159.7,12.86,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.sweet.drops,sweet_mult,hr,5 min post,recovery,165.7,9.99,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.drops,drops_nns,O2 sat,during exam (first eye),reactivity,90,5.07,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.ebm.drops,ebm_mult,O2 sat,during exam (first eye),reactivity,89.88,7.72,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.sweet.drops,sweet_mult,O2 sat,during exam (first eye),reactivity,88.93,6.57,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.drops,drops_nns,O2 sat,5 min post,recovery,9.25,5.81,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.ebm.drops,ebm_mult,O2 sat,5 min post,recovery,91.05,7.88,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
-24,ŞenerTaplak 2017,nns.sweet.drops,sweet_mult,O2 sat,5 min post,recovery,88.3,8.73,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.drops,drops_nns,PIPP,during exam (first eye),reactivity,15.88,1.66,NA,NA,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.ebm.drops,ebm_mult,PIPP,during exam (first eye),reactivity,16.06,2.41,NA,NA,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.sweet.drops,sweet_mult,PIPP,during exam (first eye),reactivity,15.58,2.02,NA,NA,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.drops,drops_nns,PIPP,5 min post,recovery,5.9,1.61,NA,NA,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.ebm.drops,ebm_mult,PIPP,5 min post,recovery,3.2,1.36,NA,NA,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.sweet.drops,sweet_mult,PIPP,5 min post,recovery,3.65,1.78,NA,NA,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.drops,drops_nns,hr,during exam (first eye),reactivity,174.94,12.41,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.ebm.drops,ebm_mult,hr,during exam (first eye),reactivity,176.59,18.18,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.sweet.drops,sweet_mult,hr,during exam (first eye),reactivity,183.42,21.71,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.drops,drops_nns,hr,5 min post,recovery,160.5,9.4,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.ebm.drops,ebm_mult,hr,5 min post,recovery,159.7,12.86,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.sweet.drops,sweet_mult,hr,5 min post,recovery,165.7,9.99,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.drops,drops_nns,O2 sat,during exam (first eye),reactivity,90,5.07,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.ebm.drops,ebm_mult,O2 sat,during exam (first eye),reactivity,89.88,7.72,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.sweet.drops,sweet_mult,O2 sat,during exam (first eye),reactivity,88.93,6.57,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.drops,drops_nns,O2 sat,5 min post,recovery,9.25,5.81,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.ebm.drops,ebm_mult,O2 sat,5 min post,recovery,91.05,7.88,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
+24,SenerTaplak 2017,nns.sweet.drops,sweet_mult,O2 sat,5 min post,recovery,88.3,8.73,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
 25,Benzer 2015,no.treatment,plac,PIPP,first eye 30 sec,reactivity,9.4,2.7,NA,NA,no,NA,NA,21,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
 25,Benzer 2015,sweet.rep,sweet_rep,PIPP,first eye 30 sec,reactivity,7,2.5,NA,NA,no,NA,NA,22,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
 25,Benzer 2015,sweet.sing,sweet_sing,PIPP,first eye 30 sec,reactivity,7.2,2.8,NA,NA,no,NA,NA,21,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,no,ND,NA
@@ -240,8 +240,8 @@ sweet.nns.drops vs drops.sweet 0.014"
 29,Xin 2016,drops.sweet,drops_sweet,PIPP,During exam,reactivity,12.6,1,NA,NA,no,NA,NA,45,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,NA
 29,Xin 2016,drops,drops,hr,During exam,reactivity,173.3,6.8,NA,NA,,NA,NA,50,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,NA
 29,Xin 2016,drops.sweet,drops_sweet,hr,During exam,reactivity,149.6,5,NA,NA,,NA,NA,45,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,NA
-29,Xin 2016,drops,drops,02 Sat,During exam,reactivity,90.1,1.2,NA,NA,,NA,NA,50,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,NA
-29,Xin 2016,drops.sweet,drops_sweet,02 Sat,During exam,reactivity,94.7,0.9,NA,NA,,NA,NA,45,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,NA
+29,Xin 2016,drops,drops,02 sat,During exam,reactivity,90.1,1.2,NA,NA,,NA,NA,50,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,NA
+29,Xin 2016,drops.sweet,drops_sweet,02 sat,During exam,reactivity,94.7,0.9,NA,NA,,NA,NA,45,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ND,ND,ND,ND,ND,NA
 30,Zeraati 2015a,drops,drops,02 sat,During exam,reactivity,90.1,2,NA,NA,,NA,NA,40,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,30.6,34.9,35.58571429,yes,1355.8,NA
 30,Zeraati 2015a,drops.ss,drops_mult,02 sat,During exam,reactivity,92.6,3.5,NA,NA,,NA,NA,40,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,30.4,35.1,35.41428571,yes,1385.8,NA
 30,Zeraati 2015b,drops,drops,face status,During exam,reactivity,sn,sn,NA,NA,,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,30.6,34.9,35.58571429,yes,1355.8,NA

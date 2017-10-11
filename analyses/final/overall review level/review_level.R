@@ -57,3 +57,94 @@ stacked %>% ggplot(aes(x = domain, y = prop, fill = risk)) +
         plot.margin = unit(c(0.3,0.6,0.3,0.3),"cm")) + coord_flip()
 
 ggsave("./figs/rob_table_stacked.pdf", height = 2.5, width = 8.5)
+
+
+
+#===========================================
+# Excluded trials with reasons and n
+#===========================================
+
+excluded_from_ma = list(hr_reac = hr_reac_excluded,
+                        hr_recov = hr_recov_excluded,
+                        spo2_reac = os_reac_excluded,
+                        spo2_recov = os_recov_excluded,
+                        ae_reac = ae_reac_excluded)
+
+
+#=============================================
+# Rank heatplot
+#=============================================
+# install.packages("fields")
+# install.packages("RColorBrewer")
+# install.packages("circlize")
+
+library(fields)
+library(RColorBrewer)
+library(circlize)
+source("./functions/rankheat-plot-function.r")
+
+netheat_extract = function(sucra_loc = ae_reac$bugs$pa$rr,outcome = "adverse_events"){
+ temp = as.data.frame(sucra_loc) %>% rownames_to_column() %>% select(rowname, `Mean SUCRA`)
+ colnames(temp) = c("treatment",outcome)
+ temp[outcome] = round(as.numeric(as.character(temp[[outcome]])),0)
+ temp
+}
+
+pa_recov_sucra$pa_recov_sucra = round(pa_recov_sucra$pa_recov_sucra*100,0)
+
+netheat_data = data.frame(pa_reac = round(pa_reac_sucra*100,0)) %>% rownames_to_column("treatment") %>%
+  left_join(pa_recov_sucra, by = "treatment") %>% 
+  left_join(netheat_extract(sucra_loc = ae_reac$bugs$pa$rr , outcome = "adverse_events"), by = "treatment") %>%
+  left_join(netheat_extract(sucra_loc = cry_reac$bugs$pa$rr, outcome = "cry_time"), by = "treatment") %>%            
+  left_join(netheat_extract(sucra_loc = hr_recov$bugs$pa$rr, outcome = "hr_recov"), by = "treatment") %>%  
+  left_join(netheat_extract(sucra_loc = os_reac$bugs$pa$rr, outcome = "spo2_reac"), by = "treatment") %>%
+  mutate(hr_reac = NA,
+         spo2_recov = NA) %>% select(treatment,pa_reac,pa_recov_sucra,adverse_events,cry_time,hr_reac,hr_recov,
+                                     spo2_reac,spo2_recov)
+
+vector.outcome.names = c("PIPP reactivity",
+                         "PIPP recovery",
+                         "Adverse events",
+                         "Crying time",
+                         "Heart rate reactivity",
+                         "Heart rate recovery",
+                         "SpO2 reactivity",
+                         "SpO2 recovery")
+
+
+png("./figs/final/rop_heat_plot.png",res = 300,width = 2300,height = 2000)
+rankheatplot(data = netheat_data,title.name ="Pain from ROP eye exams - Rank-heat plot based on SUCRA",
+             cex = 0.65,
+             pos.outcome.label = c(0.8,-0.1),
+             show.numbers = TRUE,
+             vector.outcomes = "vector.outcome.names")
+dev.off()
+chars
+
+
+#Probability of 2 point or greater difference
+prob_grt2 = relative.effect(pa_reac_data$sa1$results,t1 = "drops_sweet", t2 = "drops_sweet_mult",preserve.extra = F)
+summary(prob_grt2)
+extracted = as.matrix(prob_grt2[[1]])
+
+
+sum(extracted <= -2)/length(extracted)*100
+
+
+recov_prob_grt2 = relative.effect(pa_recov_data$sa1$results,t1 = "drops_sweet_mult", t2 = "drops_ebm_mult",preserve.extra = F)
+summary(recov_prob_grt2)
+recov_extracted = as.matrix(recov_prob_grt2[[1]])
+
+
+sum(recov_extracted <= -2)/length(extracted)*100
+
+
+#Outcome tables
+
+results = summary(pa_reac_data$pa$results)
+rel_effects = t(as.data.frame(round(relative.effect.table(pa_reac_data$pa$results),2))[1,-(1:2)] )
+rel_effects = as.data.frame(rel_effects) %>% rownames_to_column("treatment") %>% rename(pa = drops)
+
+
+as.data.frame(results$summaries$quantiles) %>% rownames_to_column("treatment") %>% filter(treatment == "sd.d") %>% 
+  select(treatment,`2.5%`,`50%`,`97.5%`) %>% mutate(cri = paste(round(`50%`,2)," (",round(`2.5%`,2)," to ",round(`97.5%`,2),")",sep = "")) %>% select(treatment,cri)

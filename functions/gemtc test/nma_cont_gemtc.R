@@ -54,11 +54,25 @@ list(input = input,data = data)
 #===================================================================================================
 
 
+#Calculate SUCRA----
+# Adapted from Dias WinBUGS codes
 
-
-
-
-
+sucra = function(results,direction){
+  rank = rank.probability(results, preferredDirection = direction)
+  rank = rank[,1:length(rank[1,])]
+  cumeffectiveness = rank
+  SUCRA = rank[,1]
+  for(k in seq_along(rank[,1])){
+    for(h in seq_along(rank[1,])){
+      cumeffectiveness[k,h] = sum(rank[k,1:h])
+    }
+  }
+  
+  for(i in seq_along(cumeffectiveness[,1])){
+    SUCRA[i] = sum(cumeffectiveness[i, 1:(length(cumeffectiveness[,1]) - 1)])/(length(cumeffectiveness[,1]) - 1)
+  }
+  SUCRA
+}
 
 
 

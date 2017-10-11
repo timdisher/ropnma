@@ -47,19 +47,25 @@ source("./functions/nma_utility_functions.R")
 # --------- Vague priors on sigma
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
-bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
+# bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
+bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
 model = normal_models()
+
+#no elligible studies for meta analysis
+hr_reac_excluded
 
 
 hr_reac$bugs$data= prep_wb(data = hr_reac$data,smd = FALSE)
-hr_reac$bugs$pa = nma_cont(hr_reac$bugs$data$wide,hr_reac$bugs$data$wb,hr_reac$bugs$data$treatments,params = params.re, model = list(model$re2,model$re2_inc),
-                            bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 16, FE = FALSE,debug =F,inc = TRUE)
+hr_reac$bugs$pa = nma_cont(hr_reac$bugs$data$wide,hr_reac$bugs$data$wb,hr_reac$bugs$data$treatments,params = params.re, model = list(model$re3,model$re3_inc),
+                            bugsdir = bugsdir, n.iter = 40000, n.burnin = 20000,n.thin = 1, FE = FALSE,debug =F,inc = TRUE)
+
 
 
 # save(hr_reac,file = "./cache/hr_reac.rda")
 
+#Informative prior
+#Large difference is 5 = 1/25... DIC = 2 so we will use original model
 
-##==== See pairwise meta analysis, no network to analyze
 
 # #========================================================================================
 # 
@@ -88,7 +94,17 @@ hr_recov$bugs$data= prep_wb(data = hr_recov$data,smd = FALSE)
 
 
 hr_recov$bugs$pa = nma_cont(hr_recov$bugs$data$wide,hr_recov$bugs$data$wb,hr_recov$bugs$data$treatments,params = params.re, model = list(model$re3,model$re3_inc),
-                           bugsdir = bugsdir, n.iter = 200000, n.burnin = 40000,n.thin = 16, FE = FALSE,debug =F,inc = TRUE)
+                           bugsdir = bugsdir, n.iter = 40000, n.burnin = 20000,n.thin = 1, FE = FALSE,debug =F,inc = TRUE)
+
+
+#Informative priors - put too much weight on high values
+
+hr_recov$sa1= prep_wb(data = hr_recov$data,smd = FALSE)
+
+
+
+hr_recov$sa1 = nma_cont(hr_recov$data, hr_recov$sa1$wb, hr_recov$sa1$treatments,params = params.re, model = "re_normal_gaus_3arm_hr_inf.txt",
+                       bugsdir = bugsdir, n.iter = 40000, n.burnin = 20000,n.thin = 1, FE = FALSE)
 
 
 # save(hr_recov,file = "./cache/hr_recov.rda")

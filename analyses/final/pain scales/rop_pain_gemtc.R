@@ -516,11 +516,14 @@ pa_recov_data$pa$results = mtc.run(pa_recov_data$pa$results)
 
 summary(pa_recov_data$pa$results)
 
+pa_recov_sucra = sucra(pa_recov_data$pa$results, direction = -1)
+pa_recov_sucra = as.data.frame(pa_recov_sucra) %>% rownames_to_column("treatment")
 
 pa_recov_data$pa$anohe = mtc.anohe(pa_recov_data$pa$network)
 # plot(summary(pa_recov_data$pa$anohe))
 
 forest(relative.effect.table(pa_recov_data$pa$results),"drops")
+
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
@@ -535,8 +538,7 @@ pa_recov_data$sa1$results = mtc.model(pa_recov_data$pa$network, type = "consiste
 
 pa_recov_data$sa1$results = mtc.run(pa_recov_data$sa1$results)
 
-pa_recov_sucra = sucra(pa_recov_data$sa1$results, direction = -1)
-pa_recov_sucra = as.data.frame(pa_recov_sucra) %>% rownames_to_column("treatment")
+
 
 forest(relative.effect.table(pa_recov_data$sa1$results),"drops")
 summary(pa_recov_data$sa1$results)
@@ -561,6 +563,28 @@ pa_recov_data$sa2$results = mtc.run(pa_recov_data$sa2$results)
 summary(pa_recov_data$sa2$results)
 forest(relative.effect.table(pa_recov_data$sa2$results),"drops")
 
+
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+# Sensitivity 3 
+# ----- Meta-regression on timing
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+sa3_regressor = list(coefficient = "shared",
+                     variable = "actual_timepoint",
+                     control = "drops")
+
+
+
+pa_recov_data$sa3$results = mtc.model(pa_recov_data$pa$network, type = "regression",
+                                     linearModel = "random",likelihood = "normal",
+                                     regressor = sa3_regressor,
+                                     link = "identity")
+
+pa_recov_data$sa3$results = mtc.run(pa_recov_data$sa3$results)
+
+summary(pa_recov_data$sa3$results)
 
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -803,7 +827,7 @@ pa_recov_table_data$gelman_n = round(pa_recov_table_data$gelman_n,0)
 pa_recov_table_data$gelman_m = round(pa_recov_table_data$gelman_m,2)
 pa_recov_table_data$gelman_power = round(pa_recov_table_data$gelman_power,2)
 
-pa_recov_table_data = pa_recov_table_data %>%  mutate(sig = c("yes","yes","no","no","yes",rep("no",5)),
+pa_recov_table_data = pa_recov_table_data %>%  mutate(sig = c("yes",rep("no",9)),
                                                       gelman_m = ifelse(sig == "yes",gelman_m,"NA"))  %>% select(comp,ntot,indirect_n,gelman_n,gelman_power,gelman_m,mean_cri)
 
 

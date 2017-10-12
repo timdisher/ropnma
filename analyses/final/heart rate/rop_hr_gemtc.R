@@ -93,6 +93,8 @@ hr_recov_data$pa$gemtc$data = hr_recov_data$pa$gemtc$data %>% left_join(rop_data
 hr_recov_data$pa$network = mtc.network(data.re =hr_recov_data$pa$gemtc$data[,1:4],
                                        studies =hr_recov_data$pa$gemtc$data[,c(1,5:10)])
 
+
+
 hr_recov_data$pa$results = mtc.model(hr_recov_data$pa$network, type = "consistency",
                                      linearModel = "fixed",likelihood = "normal",
                                      link = "identity")

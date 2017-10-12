@@ -34,17 +34,15 @@ long_gemtc = function(data = pa_reac,studlab = "studlab", trt = "trt_group",mean
 data = input %>% group_by(studlab) %>% mutate(y = y - first(y)) %>% mutate(y = ifelse(arm == 1,NA,y)) %>%
     mutate(std.err = ifelse(arm == 1, round(sd/sqrt(n),2),
                             se_md(first(sd),sd,first(n),n))) %>% left_join(studylevel %>% select(studlab,design), by = studlab) %>%
-  mutate(std.err = ifelse(design == "Crossover" & arm != 1,se_paired(y,p_value,first(n)),std.err)) %>%
+  mutate(std.err = ifelse(design == "Crossover" & arm != 1 & !is.na(p_value),se_paired(y,p_value,first(n)),std.err)) %>% mutate(narm = max(arm)) %>%
+  mutate(std.err = ifelse(narm == 2 & arm == 1, NA, std.err)) %>%
   rename(diff = y,
-         study = studlab) %>% select(study,treatment,diff,std.err) %>% as.data.frame()##Did not take square of V as in netmeta xl, revisit if issues
+         study = studlab) %>% select(study,treatment,diff,std.err) %>% as.data.frame()
     
   ###Output a list
   
 list(input = input,data = data)
 }
-
-
-
 
 
 

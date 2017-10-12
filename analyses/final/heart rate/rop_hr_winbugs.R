@@ -55,9 +55,9 @@ model = normal_models()
 hr_reac_excluded
 
 
-hr_reac$bugs$data= prep_wb(data = hr_reac$data,smd = FALSE)
-hr_reac$bugs$pa = nma_cont(hr_reac$bugs$data$wide,hr_reac$bugs$data$wb,hr_reac$bugs$data$treatments,params = params.re, model = list(model$re3,model$re3_inc),
-                            bugsdir = bugsdir, n.iter = 40000, n.burnin = 20000,n.thin = 1, FE = FALSE,debug =F,inc = TRUE)
+# hr_reac$bugs$data= prep_wb(data = hr_reac$data,smd = FALSE)
+# hr_reac$bugs$pa = nma_cont(hr_reac$bugs$data$wide,hr_reac$bugs$data$wb,hr_reac$bugs$data$treatments,params = params.re, model = list(model$re3,model$re3_inc),
+#                             bugsdir = bugsdir, n.iter = 40000, n.burnin = 20000,n.thin = 1, FE = FALSE,debug =F,inc = TRUE)
 
 
 

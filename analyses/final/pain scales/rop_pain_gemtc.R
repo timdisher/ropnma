@@ -98,7 +98,7 @@ forest(relative.effect.table(pa_reac_data$pa$results),"drops")
 
 pa_reac_data$sa1$results = mtc.model(pa_reac_data$pa$network, type = "consistency",
                                      linearModel = "random",likelihood = "normal",
-                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.0625), 
+                                     hy.prior = mtc.hy.prior("std.dev","dhnorm",0,0.0625), 
                                      link = "identity")
 
 pa_reac_data$sa1$results = mtc.run(pa_reac_data$sa1$results)
@@ -122,7 +122,7 @@ sa2_regressor = list(coefficient = "shared",
 pa_reac_data$sa2$results = mtc.model(pa_reac_data$pa$network, type = "regression",
                                     linearModel = "random",likelihood = "normal",
                                     regressor = sa2_regressor,
-                                    hy.prior = mtc.hy.prior("prec","dhnorm",0,0.0625),
+                                    hy.prior = mtc.hy.prior("std.dev","dhnorm",0,0.0625),
                                     link = "identity")
 
 
@@ -149,7 +149,7 @@ sa3_regressor = list(coefficient = "shared",
 pa_reac_data$sa3$results = mtc.model(pa_reac_data$pa$network, type = "regression",
                                      linearModel = "random",likelihood = "normal",
                                      regressor = sa3_regressor,
-                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.0625),
+                                     hy.prior = mtc.hy.prior("std.dev","dhnorm",0,0.0625),
                                      link = "identity")
 
 
@@ -173,7 +173,7 @@ forest(relative.effect.table(pa_reac_data$sa3$results),"drops")
 # 
 # pa_reac_data$sa3_drop$results = mtc.model(pa_reac_data$sa3_drop$network, type = "consistency",
 #                                      linearModel = "random",likelihood = "normal",
-#                                      hy.prior = mtc.hy.prior("prec","dhnorm",0,0.625),
+#                                      hy.prior = mtc.hy.prior("std.dev","dhnorm",0,0.625),
 #                                      link = "identity")
 # 
 # pa_reac_data$sa3_drop$results = mtc.run(pa_reac_data$sa3_drop$results)
@@ -195,7 +195,7 @@ pa_reac_data$sa4$network = mtc.network(data.re =pa_reac_data$sa4$gemtc$data)
 
 pa_reac_data$sa4$results = mtc.model(pa_reac_data$sa4$network, type = "consistency",
                                      linearModel = "random",likelihood = "normal",
-                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.0625),
+                                     hy.prior = mtc.hy.prior("std.dev","dhnorm",0,0.0625),
                                      link = "identity")
 
 pa_reac_data$sa4$results = mtc.run(pa_reac_data$sa4$results)
@@ -215,7 +215,7 @@ pa_reac_data$sa5$network = mtc.network(data.re =pa_reac_data$sa5$gemtc$data)
 
 pa_reac_data$sa5$results = mtc.model(pa_reac_data$sa5$network, type = "consistency",
                                      linearModel = "random",likelihood = "normal",
-                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.0625),
+                                     hy.prior = mtc.hy.prior("std.dev","dhnorm",0,0.0625),
                                      link = "identity")
 
 pa_reac_data$sa5$results = mtc.run(pa_reac_data$sa5$results)
@@ -236,7 +236,7 @@ sa6_regressor = list(coefficient = "shared",
 
 pa_reac_data$sa6$results = mtc.model(pa_reac_data$pa$network, type = "regression",
                                      linearModel = "random",likelihood = "normal",
-                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.625),
+                                     hy.prior = mtc.hy.prior("std.dev","dhnorm",0,0.625),
                                      regressor = sa6_regressor,
                                      link = "identity")
 
@@ -430,7 +430,7 @@ pa_reac_table_data$gelman_n = round(pa_reac_table_data$gelman_n,0)
 pa_reac_table_data$gelman_m = round(pa_reac_table_data$gelman_m,2)
 pa_reac_table_data$gelman_power = round(pa_reac_table_data$gelman_power,2)
 
-pa_reac_table_data = pa_reac_table_data %>%  mutate(sig = c("yes","yes","no","yes","no","yes",rep("no",5),"yes"),
+pa_reac_table_data = pa_reac_table_data %>%  mutate(sig = c("yes","yes","no","yes","no","yes",rep("no",6)),
                                                     gelman_m = ifelse(sig == "yes",gelman_m,"NA"))  %>% select(comp,ntot,indirect_n,gelman_n,gelman_power,gelman_m,mean_cri)
 
 
@@ -530,7 +530,7 @@ forest(relative.effect.table(pa_recov_data$pa$results),"drops")
 
 pa_recov_data$sa1$results = mtc.model(pa_recov_data$pa$network, type = "consistency",
                                       linearModel = "random",likelihood = "normal",
-                                      hy.prior = mtc.hy.prior("prec","dhnorm",0,0.0625), 
+                                      hy.prior = mtc.hy.prior("std.dev","dhnorm",0,0.0625), 
                                       link = "identity")
 
 pa_recov_data$sa1$results = mtc.run(pa_recov_data$sa1$results)
@@ -539,7 +539,7 @@ pa_recov_sucra = sucra(pa_recov_data$sa1$results, direction = -1)
 pa_recov_sucra = as.data.frame(pa_recov_sucra) %>% rownames_to_column("treatment")
 
 forest(relative.effect.table(pa_recov_data$sa1$results),"drops")
-
+summary(pa_recov_data$sa1$results)
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
@@ -553,7 +553,7 @@ sa2_regressor = list(coefficient = "shared",
 pa_recov_data$sa2$results = mtc.model(pa_recov_data$pa$network, type = "regression",
                                      linearModel = "random",likelihood = "normal",
                                      regressor = sa2_regressor,
-                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.625),
+                                     hy.prior = mtc.hy.prior("std.dev","dhnorm",0,0.625),
                                      link = "identity")
 
 pa_recov_data$sa2$results = mtc.run(pa_recov_data$sa2$results)
@@ -640,7 +640,7 @@ sa6_regressor = list(coefficient = "shared",
 
 pa_recov_data$sa6$results = mtc.model(pa_recov_data$pa$network, type = "regression",
                                      linearModel = "random",likelihood = "normal",
-                                     hy.prior = mtc.hy.prior("prec","dhnorm",0,0.625),
+                                     hy.prior = mtc.hy.prior("std.dev","dhnorm",0,0.625),
                                      regressor = sa6_regressor,
                                      link = "identity")
 

@@ -1,4 +1,11 @@
+library(metafor)
+library(fields)
+library(RColorBrewer)
+library(circlize)
+
 source("./analyses/final/rop_import.R")
+source("./functions/rankheat-plot-function.r")
+
 
 rob = rop_data_study %>% select(studlab,rob_sg,rob_ac,rob_bp,rob_bo_ob,rob_bo_sub,rob_io,rob_sr,rob_other)
 
@@ -78,10 +85,7 @@ excluded_from_ma = list(hr_reac = hr_reac_excluded,
 # install.packages("RColorBrewer")
 # install.packages("circlize")
 
-library(fields)
-library(RColorBrewer)
-library(circlize)
-source("./functions/rankheat-plot-function.r")
+
 
 netheat_extract = function(sucra_loc = ae_reac$bugs$pa$rr,outcome = "adverse_events"){
  temp = as.data.frame(sucra_loc) %>% rownames_to_column() %>% select(rowname, `Mean SUCRA`)
@@ -148,3 +152,39 @@ rel_effects = as.data.frame(rel_effects) %>% rownames_to_column("treatment") %>%
 
 as.data.frame(results$summaries$quantiles) %>% rownames_to_column("treatment") %>% filter(treatment == "sd.d") %>% 
   select(treatment,`2.5%`,`50%`,`97.5%`) %>% mutate(cri = paste(round(`50%`,2)," (",round(`2.5%`,2)," to ",round(`97.5%`,2),")",sep = "")) %>% select(treatment,cri)
+
+
+#Prob treatment mean < 6 points on the PIPP
+
+#----Meta-analysis of baseline mean
+ma = pa_reac %>% filter(trt_group == "drops") %>% select(studlab,mean,sample_size,std_dev) %>% arrange(-sample_size) %>% mutate(std.err = std_dev/sqrt(sample_size))
+
+baseline_pipp = rma(yi = mean,vi = std.err, data= ma)
+
+
+#----Use mean and std err from above to create distribution of 
+#baseline scores with uncertainty
+post = as.data.frame(as.matrix(pa_reac_data$pa$results$samples))
+
+n.sims = length(post$sd.d)
+
+pipp_sim = rnorm(n.sims,baseline_pipp$b[[1]],baseline_pipp$se)
+
+
+#----Get basic parameters for outcomes that have two steps to get to drops (weird gemtc output quirk)
+post = post %>% select(-d.drops_sweet.drops_N2O_sweet,-d.placebo.sweet_rep,-d.placebo.sweet_sing,-sd.d)
+
+basic_par = as.data.frame(as.matrix((relative.effect(pa_reac_data$pa$results, t1 = "drops",t2 = c("drops_N2O_sweet","sweet_rep","sweet_sing"),preserve.extra = F))$samples))
+
+post = bind_cols(post,basic_par)
+
+#Baseline pipp + treatment effect
+post = map_df(post,function(x) pipp_sim + x)
+
+#Negative numbers not allowed
+post[post < 0] = 0
+
+#Get probability less than 6 + quantiles
+map(post, function(x) (sum(x < 6)/n.sims)*100)
+
+map(post,quantile)

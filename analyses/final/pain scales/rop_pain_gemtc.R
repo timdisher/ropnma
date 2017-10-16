@@ -37,8 +37,8 @@ source("./functions/nma_utility_functions.R")
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
 model = normal_models()
-bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
-# bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
+# bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
+bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
 
 
 # #========================================================================================

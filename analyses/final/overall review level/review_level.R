@@ -68,7 +68,7 @@ ggsave("./figs/rob_table_stacked.pdf", height = 2.5, width = 8.5)
 
 
 #===========================================
-# Excluded trials with reasons and n
+# Excluded trials with reasons and n =======
 #===========================================
 
 excluded_from_ma = list(hr_reac = hr_reac_excluded,
@@ -79,7 +79,7 @@ excluded_from_ma = list(hr_reac = hr_reac_excluded,
 
 
 #=============================================
-# Rank heatplot
+# Rank heatplot ==============================
 #=============================================
 # install.packages("fields")
 # install.packages("RColorBrewer")
@@ -125,8 +125,9 @@ rankheatplot(data = netheat_data,title.name ="Pain from ROP eye exams - Rank-hea
 dev.off()
 chars
 
-
-#Probability of 2 point or greater difference
+#================================================
+#Probability of 2 point or greater difference====
+#================================================
 prob_grt2 = relative.effect(pa_reac_data$sa1$results,t1 = "drops_sweet", t2 = "drops_sweet_mult",preserve.extra = F)
 summary(prob_grt2)
 extracted = as.matrix(prob_grt2[[1]])
@@ -142,19 +143,67 @@ recov_extracted = as.matrix(recov_prob_grt2[[1]])
 
 sum(recov_extracted <= -2)/length(extracted)*100
 
-
-#Outcome tables
-
-results = summary(pa_reac_data$pa$results)
-rel_effects = t(as.data.frame(round(relative.effect.table(pa_reac_data$pa$results),2))[1,-(1:2)] )
-rel_effects = as.data.frame(rel_effects) %>% rownames_to_column("treatment") %>% rename(pa = drops)
+#================================================
+#Outcome tables=================================
+#================================================
 
 
-as.data.frame(results$summaries$quantiles) %>% rownames_to_column("treatment") %>% filter(treatment == "sd.d") %>% 
-  select(treatment,`2.5%`,`50%`,`97.5%`) %>% mutate(cri = paste(round(`50%`,2)," (",round(`2.5%`,2)," to ",round(`97.5%`,2),")",sep = "")) %>% select(treatment,cri)
+sa_tables = function(data = pa_reac_data,names = c("pa","sa1","sa2","sa7"),n_wb = 1,pa_mr = F){
+tables = NULL
+
+ for(i in 1:(length(data)-n_wb)){
+   results = summary(data[[i]]$results)
+   rel_effects = t(as.data.frame(round(relative.effect.table(data[[i]]$results),2))[1,-(1:2)])
+   rel_effects = as.data.frame(rel_effects) %>% rownames_to_column("treatment") %>% rename(cri = drops)
+   
+   sd = as.data.frame(results$summaries$quantiles) %>% rownames_to_column("treatment") %>% filter(treatment == "sd.d" | treatment == "B") %>% 
+     select(treatment,`2.5%`,`50%`,`97.5%`) %>% mutate(cri = paste(round(`50%`,2)," (",round(`2.5%`,2)," to ",round(`97.5%`,2),")",sep = "")) %>% select(treatment,cri)
+   
+   bind = bind_rows(rel_effects,sd)
+   
+   tables[[i]] = as.data.frame(bind)
+   
+   names(tables)[[i]] = names[[i]]
+ }
+
+if(pa_mr == F){
+tables[[1]] = tables[[1]] %>% add_row(treatment = "B", cri = NA)}
+
+ for(i in (length(data)-n_wb+1):length(data)){
+rel_effects = as.data.frame(data[[i]]$bugs$comp[grep("drops$",data[[i]]$bugs$comp[,1]),c(1:3)]) %>%
+  rename(trt = `Comparison (Trt A vs. Trt B)`,
+         mean = `Mean Difference of Trt A vs. Trt B`,
+         cri = `95% CrI of Mean Difference`) %>% separate(trt,c("treatment","d"),sep = " vs. ") %>%
+  mutate(cri = paste(mean," (",cri,")",sep = ""))  %>% select(-d,-mean)
+
+sd = data.frame(treatment = c("sd.d","B"),
+  cri = c(paste(round(data[[i]]$bugs$sd[5],2)," (",round(data[[i]]$bugs$sd[3],2)," to ",
+           round(data[[i]]$bugs$sd[7],2),")",sep = ""),
+          
+          paste(round(data[[i]]$bugs$B[5],2)," (",round(data[[i]]$bugs$B[3],2)," to ",
+                round(data[[i]]$bugs$B[7],2),")",sep = "")))
+  
+bind = bind_rows(rel_effects,sd)
+
+tables[[i]] = as.data.frame(bind)
+
+names(tables)[[i]] = names[[i]]
+}
+
+#tables = tables %>% Reduce(function(dtf1,dtf2) left_join(dtf1,dtf2,by="treatment",suffix = c(".1",".2")), .)
+
+#colnames(tables) = c("treatment",names)
 
 
-#Prob treatment mean < 6 points on the PIPP
+
+tables
+}
+
+t = sa_tables()
+
+#================================================
+#Prob treatment mean < 6 points on the PIPP======
+#================================================
 
 #----Meta-analysis of baseline mean
 ma = pa_reac %>% filter(trt_group == "drops") %>% select(studlab,mean,sample_size,std_dev) %>% arrange(-sample_size) %>% mutate(std.err = std_dev/sqrt(sample_size))

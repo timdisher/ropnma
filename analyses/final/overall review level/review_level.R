@@ -2,9 +2,11 @@ library(metafor)
 library(fields)
 library(RColorBrewer)
 library(circlize)
-
+library(tidyverse)
+library(personograph)
 source("./analyses/final/rop_import.R")
 source("./functions/rankheat-plot-function.r")
+
 
 
 rob = rop_data_study %>% select(studlab,rob_sg,rob_ac,rob_bp,rob_bo_ob,rob_bo_sub,rob_io,rob_sr,rob_other)
@@ -208,8 +210,12 @@ t = sa_tables()
 #----Meta-analysis of baseline mean
 ma = pa_reac %>% filter(trt_group == "drops") %>% select(studlab,mean,sample_size,std_dev) %>% arrange(-sample_size) %>% mutate(std.err = std_dev/sqrt(sample_size))
 
-baseline_pipp = rma(yi = mean,vi = std.err, data= ma)
+#If using meta-analysis (hard to justify given heterogeneity)
+# baseline_pipp = rma(yi = mean,vi = std.err, data= ma)
 
+#If using largest study
+baseline_pipp = ma %>% filter(sample_size == max(sample_size)) %>% rename(se = std.err,
+                                                                          b = mean)
 
 #----Use mean and std err from above to create distribution of 
 #baseline scores with uncertainty
@@ -234,6 +240,32 @@ post = map_df(post,function(x) pipp_sim + x)
 post[post < 0] = 0
 
 #Get probability less than 6 + quantiles
-map(post, function(x) (sum(x < 6)/n.sims)*100)
+prob_nopain = purrr::map(post, function(x) (sum(x < 6)/n.sims)*100)
 
-map(post,quantile)
+
+
+
+
+#Get babies with scores less than six
+absolute_graph = purrr::map(post,base::mean) %>% as.data.frame() %>% gather(treatment, score) %>%
+  mutate(below_six = pnorm(6,score,baseline_pipp$std_dev),
+         six_thirteen = pnorm(c(13),score,baseline_pipp$std_dev) - below_six,
+         high = 1-below_six - six_thirteen)
+
+
+data_graph = purrr::map(absolute_graph[,3:5],as.numeric) 
+treats = absolute_graph[,1]
+
+test = list(low = data_graph[[1]][1], moderate = data_graph[[2]][1], high = data_graph[[3]][1])
+personograph(test, colors = list(low = colours[1], moderate = colours[2], high = colours[3]))
+
+colours = c("#00CD00", "#FFD700", "#CD2626")
+
+
+absolute_graph %>% slice(1) %>% select(treatment,score)
+
+t = data.frame(id = c("pipp","pipp","pipp"),
+           pain = c("low","moderate","high"),
+           score = c(6,13,22))
+
+t %>% ggplot(aes(y = score,colour = pain)) + geom_bar()

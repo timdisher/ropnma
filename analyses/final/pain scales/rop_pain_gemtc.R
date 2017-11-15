@@ -37,8 +37,8 @@ source("./functions/nma_utility_functions.R")
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
 model = normal_models()
-# bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
-bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
+bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
+# bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
 
 
 # #========================================================================================
@@ -131,7 +131,6 @@ pa_reac_data$sa2$results = mtc.run(pa_reac_data$sa2$results)
 summary(pa_reac_data$sa2$results)
 
 forest(relative.effect.table(pa_reac_data$sa2$results),"drops")
-
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
@@ -264,13 +263,12 @@ pa_reac_data$sa7$meta_cr = pa_reac_data$sa7$arm_wide %>% mutate(
 pa_reac_data$sa7$list$mx = as.vector(pa_reac_data$sa7$meta_cr %>% filter(t_1 == 1) %>% summarise(mx = mean(y_1)))[[1]]
 
 
-pa_reac_data$sa7$bugs = bugs(pa_reac_data$sa7$list,NULL,params_mr,model.file = "re_normal_armdata_meta.txt",
-                             n.chains = 3, n.iter = 40000, n.burnin = 20000, n.thin = 1,
-                             bugs.directory = bugsdir, debug = F)
+pa_reac_data$sa7$bugs = jags(pa_reac_data$sa7$list, NULL, params_mr,model.file = "./jags_models/re_normal_armdata_meta_jags.txt",
+                             n.chains = 3, n.iter = 40000, n.burnin = 20000, n.thin = 1)
 
 
 
-pa_reac_data$sa7$bugs = nma_outputs(model = pa_reac_data$sa7$bugs,pa_reac_data$sa7$treatments)
+pa_reac_data$sa7$bugs = nma_outputs(model = pa_reac_data$sa7$bugs$BUGSoutput,pa_reac_data$sa7$treatments)
 
 pa_reac_data$sa7$bugs$B = pa_reac_data$sa7$bugs$bugs[grep("^B$", rownames(pa_reac_data$sa7$bugs$bugs)),]
 
@@ -684,18 +682,17 @@ pa_recov_data$sa7$meta_cr = pa_recov_data$sa7$arm_wide %>% mutate(
   se_2 = sd_2/sqrt(n_2),
   se_3 = sd_3/sqrt(n_3)) %>% select(matches("t_"),matches("y_"),matches("se_"),na) %>% arrange(na)
 
-(pa_recov_data$sa7$list = nma_winbugs_datalist(pa_recov_data$sa7$meta_cr,pa_recov_data$sa7$treatments,contrast = FALSE))
+(pa_recov_data$sa7$list = nma_winbugs_datalist(pa_recov_data$sa7$meta_cr,pa_recov_data$sa7$treatments, contrast = FALSE))
 
 pa_recov_data$sa7$list$mx = as.vector(pa_recov_data$sa7$meta_cr %>% filter(t_1 == 1) %>% summarise(mx = mean(y_1)))[[1]]
 
 
-pa_recov_data$sa7$bugs = bugs(pa_recov_data$sa7$list,NULL,params_mr,model.file = "re_normal_armdata_meta.txt",
-                             n.chains = 3, n.iter = 100000, n.burnin = 40000, n.thin = 10,
-                             bugs.directory = bugsdir, debug = F)
+pa_recov_data$sa7$bugs = jags(pa_recov_data$sa7$list,NULL,params_mr,model.file = "./jags_models/re_normal_armdata_meta_jags.txt",
+                             n.chains = 3, n.iter = 100000, n.burnin = 40000, n.thin = 10)
 
 
 
-pa_recov_data$sa7$bugs = nma_outputs(model = pa_recov_data$sa7$bugs,pa_recov_data$sa7$treatments)
+pa_recov_data$sa7$bugs = nma_outputs(model = pa_recov_data$sa7$bugs$BUGSoutput,pa_recov_data$sa7$treatments)
 
 pa_recov_data$sa7$bugs$B = pa_recov_data$sa7$bugs$bugs[grep("^B$", rownames(pa_recov_data$sa7$bugs$bugs)),]
 
@@ -858,6 +855,6 @@ factor
 )
 dev.off()
 
-# save(pa_recov_data,file = "./cache/pa_recov.rda")
+save(pa_recov_data,file = "./cache/pa_recov.rda")
 
 

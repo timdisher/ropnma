@@ -14,7 +14,6 @@
 # install.packages('reshape2')
 
 library(coda)
-library(R2WinBUGS)
 library(tidyverse)
 library(netmeta)
 library(stargazer)
@@ -24,7 +23,7 @@ library(scales)
 library(forestplot)
 library(gemtc)
 library(reshape2)
-library(R2WinBUGS)
+library(R2jags)
 
 
 

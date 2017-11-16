@@ -4,6 +4,8 @@ library(RColorBrewer)
 library(circlize)
 library(tidyverse)
 library(personograph)
+library(gridExtra)
+library(gridBase)
 source("./analyses/final/rop_import.R")
 source("./functions/rankheat-plot-function.r")
 
@@ -231,41 +233,82 @@ post = post %>% select(-d.drops_sweet.drops_N2O_sweet,-d.placebo.sweet_rep,-d.pl
 
 basic_par = as.data.frame(as.matrix((relative.effect(pa_reac_data$pa$results, t1 = "drops",t2 = c("drops_N2O_sweet","sweet_rep","sweet_sing"),preserve.extra = F))$samples))
 
-post = bind_cols(post,basic_par)
+post = bind_cols(post,basic_par) 
 
 #Baseline pipp + treatment effect
-post = map_df(post,function(x) pipp_sim + x)
+post = map_df(post,function(x) pipp_sim + x) %>% add_column(drops = pipp_sim)
 
 #Negative numbers not allowed
 post[post < 0] = 0
+post[post > 21] = 21
 
 #Get probability less than 6 + quantiles
 prob_nopain = purrr::map(post, function(x) (sum(x < 6)/n.sims)*100)
 
 
-
-
-
 #Get babies with scores less than six
-absolute_graph = purrr::map(post,base::mean) %>% as.data.frame() %>% gather(treatment, score) %>%
-  mutate(below_six = pnorm(6,score,baseline_pipp$std_dev),
-         six_thirteen = pnorm(c(13),score,baseline_pipp$std_dev) - below_six,
-         high = 1-below_six - six_thirteen)
+(absolute_graph = purrr::map(post,~quantile(.,c(0.025,0.5,0.975))) %>% as.data.frame() %>% t() %>% as.data.frame() %>%
+  rownames_to_column("treatment") %>% gather(quantile, score,`2.5%`:`97.5%`) %>%
+  mutate(below_six = round(pnorm(6.4,score,baseline_pipp$std_dev),2),
+         six_thirteen = round(pnorm(c(12.4),score,baseline_pipp$std_dev) - below_six,2),
+         high = 1-below_six - six_thirteen))
 
 
-data_graph = purrr::map(absolute_graph[,3:5],as.numeric) 
-treats = absolute_graph[,1]
+pipp_abs_graphs = function(data = absolute_graph, person_data = person_data, colours = c("#00CD00", "#FFD700", "#CD2626")){
+  
+  fifty = filter(data, quantile == "50%")
+  lowcri = filter(data, quantile == "2.5%")
+  highcri = filter(data, quantile == "97.5%")
+  
+  
+  graphs = NULL
+  data_graph = data %>% filter(quantile == "50%")
+  
+  for(i in seq_along(fifty[,1])){
+    
+    
+    #Create Background scale
+    t = data.frame(id = c(1,1,1),
+                   pain = c("low","moderate","high"),
+                   score = c(6,6,9))
+    
+    
+    therm = t %>% ggplot(aes(x = id,y = score,fill = pain)) + geom_bar(stat = "identity") + 
+      scale_fill_manual(values = rev(colours)) + 
+      scale_x_discrete(expand = c(0,0)) + scale_y_continuous(expand = c(0,0), breaks = seq(1,21, by = 2)) +
+      theme_classic() +
+      theme(axis.title.x = element_blank(),
+            axis.title.y = element_blank(),
+            axis.text.y = element_text(size = 22)) + guides(fill = FALSE) +
+      
+      geom_hline(yintercept = fifty[i,3][[1]], size = 2) +
+      geom_hline(yintercept = lowcri[i,3][[1]], size = 1, linetype = "dashed") + 
+      geom_hline(yintercept = highcri[i,3][[1]], size = 1, linetype = "dashed") +
+      theme(plot.margin = unit(c(1.5,0,1.5,0.5),"cm"))
+    
+    #Create icon array
+    person_data = list(low = data_graph[i,4][[1]], moderate = data_graph[i,5][[1]], high = data_graph[i,6][[1]])
+    personograph(rev(person_data), plot.width = 1, 
+                 colors = list(low = colours[1], moderate = colours[2], high = colours[3]),
+                 icon.style = 6,
+                 draw.legend = T, dimensions = c(6,18))
+    a <- grid.grab()
+    
+    grid.arrange(therm,a,ncol =2, widths = c(1/8,7/8), top = textGrob(paste(fifty[i,1]), gp=gpar(fontsize = 15)))
+    
+    temp = grid.grab()
+    
+    graphs[[paste(filter(data,quantile == "50%")[i,1])]] = temp
+    
+  }
+  graphs
+}
 
-test = list(low = data_graph[[1]][1], moderate = data_graph[[2]][1], high = data_graph[[3]][1])
-personograph(test, colors = list(low = colours[1], moderate = colours[2], high = colours[3]))
+test_graphs = pipp_abs_graphs()
 
-colours = c("#00CD00", "#FFD700", "#CD2626")
+graphs_pub = absolute_graph %>% filter(quantile == "50%") %>% top_n(-3,score) %>% arrange(score)
 
+png("absolute_plot_panel.png", width= 20, height = 13, units = "in", res = 300)
+grid.arrange(test_graphs[["drops"]],test_graphs[[graphs_pub[1,1]]],test_graphs[[graphs_pub[2,1]]],test_graphs[[graphs_pub[3,1]]], left = "PIPP score")
+dev.off()
 
-absolute_graph %>% slice(1) %>% select(treatment,score)
-
-t = data.frame(id = c("pipp","pipp","pipp"),
-           pain = c("low","moderate","high"),
-           score = c(6,13,22))
-
-t %>% ggplot(aes(y = score,colour = pain)) + geom_bar()

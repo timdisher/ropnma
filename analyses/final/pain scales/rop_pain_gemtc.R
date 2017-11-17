@@ -87,7 +87,7 @@ pa_reac_data$pa$anohe = mtc.anohe(pa_reac_data$pa$network)
 # plot(summary(pa_reac_data$pa$anohe))
 forest(relative.effect.table(pa_reac_data$pa$results),"drops")
 
-
+pa_reac_sucra = sucra(pa_reac_data$pa$results, direction = -1)
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #
 # Sensitivity 1

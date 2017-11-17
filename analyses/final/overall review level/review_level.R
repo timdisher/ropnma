@@ -1,15 +1,15 @@
-library(metafor)
+# library(metafor)
 library(fields)
 library(RColorBrewer)
 library(circlize)
-library(tidyverse)
+library(tidyverse) #fields loads a map function which interferes with this
 library(personograph)
 library(gridExtra)
 library(gridBase)
 source("./analyses/final/rop_import.R")
 source("./functions/rankheat-plot-function.r")
 
-
+load("./cache/pa_reac.rda")
 
 rob = rop_data_study %>% select(studlab,rob_sg,rob_ac,rob_bp,rob_bo_ob,rob_bo_sub,rob_io,rob_sr,rob_other)
 
@@ -236,14 +236,10 @@ basic_par = as.data.frame(as.matrix((relative.effect(pa_reac_data$pa$results, t1
 post = bind_cols(post,basic_par) 
 
 #Baseline pipp + treatment effect
-post = map_df(post,function(x) pipp_sim + x) %>% add_column(drops = pipp_sim)
-
-#Negative numbers not allowed
-post[post < 0] = 0
-post[post > 21] = 21
+post = map_df(post,~pipp_sim + .) %>% add_column(drops = pipp_sim)
 
 #Get probability less than 6 + quantiles
-prob_nopain = purrr::map(post, function(x) (sum(x < 6)/n.sims)*100)
+prob_nopain = map(post, ~(sum(. < 6)/n.sims)*100)
 
 
 #Get babies with scores less than six
@@ -306,9 +302,15 @@ pipp_abs_graphs = function(data = absolute_graph, person_data = person_data, col
 
 test_graphs = pipp_abs_graphs()
 
-graphs_pub = absolute_graph %>% filter(quantile == "50%") %>% top_n(-3,score) %>% arrange(score)
+#Select top three treat by sucra
+graphs_pub = as.data.frame(pa_reac_sucra) %>% rownames_to_column("treatment") %>% top_n(3,pa_reac_sucra) %>% 
+  arrange(-pa_reac_sucra) %>% mutate(treatment = paste("d.drops.",treatment,sep=""))
+graphs_pub = absolute_graph %>% filter(quantile == "50%") %>% top_n(-3,score) %>% arrange(-score)
 
 png("absolute_plot_panel.png", width= 20, height = 13, units = "in", res = 300)
 grid.arrange(test_graphs[["drops"]],test_graphs[[graphs_pub[1,1]]],test_graphs[[graphs_pub[2,1]]],test_graphs[[graphs_pub[3,1]]], left = "PIPP score")
 dev.off()
+
+
+
 

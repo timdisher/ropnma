@@ -82,6 +82,13 @@ excluded_from_ma = list(hr_reac = hr_reac_excluded,
                         ae_reac = ae_reac_excluded)
 
 
+#===========================================
+# Additional explainations           =======
+#===========================================
+explanations = tibble(trial = c("Kleberg 2008"),
+                      note = c("GA,BW,PMA presented as medians by site. Mean of medians used"))
+
+
 #=============================================
 # Rank heatplot ==============================
 #=============================================
@@ -129,23 +136,6 @@ rankheatplot(data = netheat_data,title.name ="Pain from ROP eye exams - Rank-hea
 dev.off()
 chars
 
-#================================================
-#Probability of 2 point or greater difference====
-#================================================
-prob_grt2 = relative.effect(pa_reac_data$sa1$results,t1 = "drops_sweet", t2 = "drops_sweet_mult",preserve.extra = F)
-summary(prob_grt2)
-extracted = as.matrix(prob_grt2[[1]])
-
-
-sum(extracted <= -2)/length(extracted)*100
-
-
-recov_prob_grt2 = relative.effect(pa_recov_data$sa1$results,t1 = "drops_sweet_mult", t2 = "drops_ebm_mult",preserve.extra = F)
-summary(recov_prob_grt2)
-recov_extracted = as.matrix(recov_prob_grt2[[1]])
-
-
-sum(recov_extracted <= -2)/length(extracted)*100
 
 #================================================
 #Outcome tables=================================
@@ -312,5 +302,30 @@ grid.arrange(test_graphs[["drops"]],test_graphs[[graphs_pub[1,1]]],test_graphs[[
 dev.off()
 
 
+
+##### Study characteristics
+
+(n_reports = length(rop_data_study$studlab))
+studies = n_reports - as.numeric(rop_data_study %>% filter(connected == "yes") %>% summarise(n()-1))
+
+(rcts = (rop_data_study %>% filter(design == "Parallel") %>% select(studlab))[[1]] %>% length())
+(xover = (rop_data_study %>% filter(design == "Crossover") %>% select(studlab))[[1]] %>% length())
+
+treats = rop_data_arm %>% select(studlab,treatment,trt_group)
+trtnames = treats$trt_group %>% unique()
+
+proc = rop_data_study %>% select(studlab,speculum,scleral_dep,con_swad)
+
+summary(proc)
+proc %>% filter(con_swad == "Swaddle")
+
+study_chars = rop_data_study %>% select(studlab,design,pub_type,control:trt3,method,speculum,scleral_dep,avg_pma,avg_bw) %>%
+  mutate(trts = ifelse(!is.na(trt3),paste(control,"vs",trt1,"vs",trt2,"vs",trt3,sep = " "),
+                       ifelse(!is.na(trt2),paste(control,"vs",trt1,"vs",trt2,sep = " "),
+                              paste(control,"vs",trt1,sep = " ")
+                              )
+                       )
+         ) %>% select(-c(trt1:trt3))
+write.csv(file = "./tables/final/rop_studychars.csv",study_chars)
 
 

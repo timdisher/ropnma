@@ -12,13 +12,6 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 source("./analyses/final/rop_import.R")
-library(netmeta)
-library(forcats)
-library(stargazer)
-library(stringr)
-library(grid)
-
-
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

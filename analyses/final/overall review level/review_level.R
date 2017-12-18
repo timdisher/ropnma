@@ -92,51 +92,51 @@ explanations = tibble(trial = c("Kleberg 2008"),
 #=============================================
 # Rank heatplot ==============================
 #=============================================
-# install.packages("fields")
-# install.packages("RColorBrewer")
-# install.packages("circlize")
+
+#HR Reac needs to be row of NAs
+#OS recov needs to be row of NAs
 
 
+pa_reac_data$sa5$mod$suc = pa_reac_data$sa5$mod$suc %>% add_row(treat = c("d.drops.phys","d.drops.drops_acet60", "d.drops.drops_morph"),
+                                     sucra = c(NA,NA,NA))
 
-netheat_extract = function(sucra_loc = ae_reac$bugs$pa$rr,outcome = "adverse_events"){
- temp = as.data.frame(sucra_loc) %>% rownames_to_column() %>% select(rowname, `Mean SUCRA`)
- colnames(temp) = c("treatment",outcome)
- temp[outcome] = round(as.numeric(as.character(temp[[outcome]])),0)
- temp
-}
+all_out_list = list(pa_reac = pa_reac_data$sa5$mod$suc, pa_recov = pa_recov_data$pa$mod$suc,
+                    hr_recov = hr_recov_data$pa$mod$suc, os_reac = os_sucra,
+                    cry = cry_reac_data$pa$mod$suc, ae = ae_sucra)
 
-pa_recov_sucra$pa_recov_sucra = round(pa_recov_sucra$pa_recov_sucra*100,0)
-
-netheat_data = data.frame(pa_reac = round(pa_reac_sucra*100,0)) %>% rownames_to_column("treatment") %>%
-  left_join(pa_recov_sucra, by = "treatment") %>% 
-  left_join(netheat_extract(sucra_loc = ae_reac$bugs$pa$rr , outcome = "adverse_events"), by = "treatment") %>%
-  left_join(netheat_extract(sucra_loc = cry_reac$bugs$pa$rr, outcome = "cry_time"), by = "treatment") %>%            
-  left_join(netheat_extract(sucra_loc = hr_recov$bugs$pa$rr, outcome = "hr_recov"), by = "treatment") %>%  
-  left_join(netheat_extract(sucra_loc = os_reac$bugs$pa$rr, outcome = "spo2_reac"), by = "treatment") %>%
-  mutate(hr_reac = NA,
-         spo2_recov = NA) %>% select(treatment,pa_reac,pa_recov_sucra,adverse_events,cry_time,hr_reac,hr_recov,
-                                     spo2_reac,spo2_recov)
-
-vector.outcome.names = c("PIPP reactivity",
-                         "PIPP recovery",
-                         "Adverse events",
-                         "Crying time",
-                         "Heart rate reactivity",
-                         "Heart rate recovery",
-                         "SpO2 reactivity",
-                         "SpO2 recovery")
+names = c("Pain \n reactivity","Pain \n regulation",
+          "Heart Rate \n regulation",
+          "SpO2 \n reactivity",
+          "Cry",
+          "Adverse \n events")
 
 
-png("./figs/final/rop_heat_plot.png",res = 300,width = 2300,height = 2000)
-rankheatplot(data = netheat_data,title.name ="Pain from ROP eye exams - Rank-heat plot based on SUCRA",
-             cex = 0.65,
-             pos.outcome.label = c(0.8,-0.1),
-             show.numbers = TRUE,
-             vector.outcomes = "vector.outcome.names")
-dev.off()
-chars
+order =  c("Treatment",
+           "Pain \n reactivity","Pain \n regulation",
+           "Heart Rate \n reactivity",
+           "Heart Rate \n regulation",
+           "SpO2 \n reactivity",
+           "SpO2 \n regulation",
+           "Cry",
+           "Adverse \n events")
+
+treat_names = c("Sweet taste multisensory + TA","Sweet taste + TA",
+                "Sweet taste + N2O + TA","EBM multisensory + TA",
+                "NNS + TA","Sweet taste alone","Repeated sweet taste","WFDRI + TA","Sweet taste + singing","Topical Anesthetic (TA)","Acetaminophen 30min + TA",
+                "No treatment","NNS alone","Acetaminophen 60min + TA","Morphine + TA")
 
 
+all_out_heat = all_out_list %>% Reduce(function(dtf1,dtf2) left_join(dtf1,dtf2,by="treat"), .)
+  
+names(all_out_heat) = c("Treatment",names)
+
+all_out_heat = all_out_heat %>% mutate(`Heart Rate \n reactivity` = NA,
+                        `SpO2 \n regulation` = NA)
+
+all_out_heat$Treatment = treat_names
+
+windows()
+heatplot(all_out_heat %>% select(order))
 #================================================
 #Outcome tables=================================
 #================================================
@@ -328,4 +328,20 @@ study_chars = rop_data_study %>% select(studlab,design,pub_type,control:trt3,met
          ) %>% select(-c(trt1:trt3))
 write.csv(file = "./tables/final/rop_studychars.csv",study_chars)
 
+
+
+####====PRISMA Included in meta-analysis currently need to subtract 1 because
+# os_reac done quickly and includes zeraati 2015 instead of 2016
+length(c(as.character(pa_reac$studlab),
+  as.character(pa_recov$studlab),
+  
+  as.character(ae_reac$data$studlab),
+  as.character(cry_reac$data$studlab),
+  
+  as.character(os_reac$data$studlab),
+  as.character(os_recov$data$studlab),
+  
+  as.character(hr_reac$data$studlab),
+  as.character(hr_recov$data$studlab)) %>% unique()
+)
 

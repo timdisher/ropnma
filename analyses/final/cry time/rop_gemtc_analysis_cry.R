@@ -8,32 +8,9 @@
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
-library(coda)
-library(R2WinBUGS)
-library(tidyverse)
-library(netmeta)
-library(stargazer)
-library(reshape2)
-library(forcats)
-library(scales)
-library(forestplot)
-library(gemtc)
-library(reshape2)
-library(R2WinBUGS)
-library(coda)
-
-
 source("./analyses/final/cry time/rop_explore_cry.R")
-source("./functions/nma_cont.R")
 source("./functions/gemtc test/nma_cont_gemtc.R")
-source("./functions/nma_utility_functions.R")
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-# Winbugs stuff
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
-model = normal_models()
-bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
-# bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
+
 
 # #========================================================================================
 # 
@@ -42,18 +19,6 @@ bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
 # 
 # #========================================================================================
 
-
-
-
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-#
-# Primary Analysis
-# --------- Include crossovers
-# --------- Mean difference outcome
-# --------- Include imputed means
-# --------- include scaled scores
-# --------- Vague priors on sigma
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 cry_reac_data = NULL
 
 cry_reac_data$pa$gemtc = prep_gem(cry_reac$data)
@@ -68,22 +33,31 @@ cry_reac_data$pa$gemtc$data = cry_reac_data$pa$gemtc$data %>% left_join(rop_data
          actual_timepoint = ifelse(actual_timepoint == "5 min post",0,1)) %>% replace_na(list(actual_timepoint = 0))
 
 
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+# Primary Analysis
+# --------- Include crossovers
+# --------- Mean difference outcome
+# --------- Include imputed means
+# --------- include scaled scores
+# --------- Vague priors on sigma
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-cry_reac_data$pa$network = mtc.network(data.re =cry_reac_data$pa$gemtc$data[,1:4],
-                                       studies =cry_reac_data$pa$gemtc$data[,c(1,5:10)])
-
-cry_reac_data$pa$results = mtc.model(cry_reac_data$pa$network, type = "consistency",
-                                     linearModel = "random",likelihood = "normal",
-                                     link = "identity")
-cry_reac_data$pa$results = mtc.run(cry_reac_data$pa$results)
-
-summary(cry_reac_data$pa$results)
 
 
-cry_reac_data$pa$anohe = mtc.anohe(cry_reac_data$pa$network)
-plot(summary(cry_reac_data$pa$anohe))
+cry_reac_data$pa$mod = set_net(cry_reac_data$pa$gemtc$data)
 
-forest(relative.effect.table(cry_reac_data$pa$results),"drops")
+calc_n(data = cry_reac_data$pa$gemtc$data,input = cry_reac_data$pa$gemtc$input)
+
+
+gemtc_diag(cry_reac_data$pa$mod$results)
+
+summary(cry_reac_data$pa$mod$results)
+
+#No loops
+plot(cry_reac_data$pa$mod$network)
+
+
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #

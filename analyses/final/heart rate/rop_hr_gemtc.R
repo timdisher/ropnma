@@ -1,29 +1,8 @@
-library(coda)
-library(R2WinBUGS)
-library(tidyverse)
-library(netmeta)
-library(stargazer)
-library(reshape2)
-library(forcats)
-library(scales)
 library(forestplot)
-library(gemtc)
-library(reshape2)
-library(R2WinBUGS)
-
-
+library(personograph)
 
 source("./analyses/final/heart rate/rop_explore_hr.R")
-source("./functions/nma_cont.R")
 source("./functions/gemtc test/nma_cont_gemtc.R")
-source("./functions/nma_utility_functions.R")
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-# Load data in WInBugs Format
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-params.re = c("meandif", 'SUCRA', 'best', 'totresdev', 'rk', 'dev', 'resdev', 'prob', "better","sd")
-model = normal_models()
-# bugsdir = "C:/Users/dishtc/Desktop/WinBUGS14"
-bugsdir = "C:/Users/TheTimbot/Desktop/WinBUGS14"
 
 
 
@@ -64,17 +43,6 @@ hr_reac_excluded
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # Load data in WInBugs Format
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-#
-# Primary Analysis ----
-# --------- Include crossovers
-# --------- Mean difference outcome
-# --------- Include imputed means
-# --------- include scaled scores
-# --------- Vague priors on sigma
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
 hr_recov_data = NULL
 
 hr_recov_data$pa$gemtc = prep_gem(hr_recov$data)
@@ -87,22 +55,29 @@ hr_recov_data$pa$gemtc$data = hr_recov_data$pa$gemtc$data %>% left_join(rop_data
          imputed_mean = ifelse(imputed_mean == "no",0,1),
          scaled_score = ifelse(scaled_score == "no",0,1),
          actual_timepoint = ifelse(actual_timepoint == "5 min post",0,1)) %>% replace_na(list(actual_timepoint = 0))
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+# Primary Analysis ----
+# --------- Include crossovers
+# --------- Mean difference outcome
+# --------- Include imputed means
+# --------- include scaled scores
+# --------- Vague priors on sigma
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
 
-hr_recov_data$pa$network = mtc.network(data.re =hr_recov_data$pa$gemtc$data[,1:4],
-                                       studies =hr_recov_data$pa$gemtc$data[,c(1,5:10)])
+hr_recov_data$pa$mod =  set_net(hr_recov_data$pa$gemtc$data)
+
+calc_n(data = hr_recov_data$pa$gemtc$data,input = hr_recov_data$pa$gemtc$input)
 
 
+gemtc_diag(hr_recov_data$pa$mod$results)
 
-hr_recov_data$pa$results = mtc.model(hr_recov_data$pa$network, type = "consistency",
-                                     linearModel = "fixed",likelihood = "normal",
-                                     link = "identity")
-hr_recov_data$pa$results = mtc.run(hr_recov_data$pa$results)
+summary(hr_recov_data$pa$mod$results)
 
-summary(hr_recov_data$pa$results)
+plot(hr_recov_data$pa$mod$network)
 
+#Only loop comes from 3arm trial, consistent by default
 
-forest(relative.effect.table(hr_recov_data$pa$results),"drops")
-
-
+hr_recov_data$pa$mod$suc

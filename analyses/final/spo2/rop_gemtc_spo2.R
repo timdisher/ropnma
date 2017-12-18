@@ -8,29 +8,9 @@
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
-# install.packages('coda')
-# install.packages('R2WinBUGS')
-# install.packages('netmeta')
-# install.packages('reshape2')
-
-library(coda)
-library(R2WinBUGS)
-library(tidyverse)
-library(netmeta)
-library(stargazer)
-library(reshape2)
-library(forcats)
-library(scales)
-library(forestplot)
-library(gemtc)
-library(reshape2)
-library(R2WinBUGS)
-
 source("./analyses/final/spo2/rop_explore_spo2.R")
-
-source("./functions/nma_cont.R")
 source("./functions/gemtc test/nma_cont_gemtc.R")
-source("./functions/nma_utility_functions.R")
+
 # #========================================================================================
 # 
 # 
@@ -38,18 +18,6 @@ source("./functions/nma_utility_functions.R")
 # 
 # #========================================================================================
 
-
-
-
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-#
-# Primary Analysis
-# --------- Include crossovers
-# --------- Mean difference outcome
-# --------- Include imputed means
-# --------- include scaled scores
-# --------- Vague priors on sigma
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 os_reac_data = NULL
 
 os_reac_data$pa$gemtc = prep_gem(os_reac$data)
@@ -64,39 +32,45 @@ os_reac_data$pa$gemtc$data = os_reac_data$pa$gemtc$data %>% left_join(rop_data_s
          actual_timepoint = ifelse(actual_timepoint == "5 min post",0,1)) %>% replace_na(list(actual_timepoint = 0))
 
 
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#
+# Primary Analysis
+# --------- Include crossovers
+# --------- Mean difference outcome
+# --------- Include imputed means
+# --------- include scaled scores
+# --------- Vague priors on sigma
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-os_reac_data$pa$network = mtc.network(data.re =os_reac_data$pa$gemtc$data[,1:4],
-                                       studies =os_reac_data$pa$gemtc$data[,c(1,5:10)])
 
 
 
-os_reac_data$pa$results = mtc.model(os_reac_data$pa$network, type = "consistency",
-                                     linearModel = "random",likelihood = "normal",
-                                     link = "identity")
-os_reac_data$pa$results = mtc.run(os_reac_data$pa$results)
+os_reac_data$pa$mod = set_net(os_reac_data$pa$gemtc$data)
 
-summary(os_reac_data$pa$results)
+calc_n(data = os_reac_data$pa$gemtc$data,input = os_reac_data$pa$gemtc$input)
 
+
+
+gemtc_diag(os_reac_data$pa$mod$results)
+
+summary(os_reac_data$pa$mod$results)
+
+
+summary(os_reac_data$pa$mod$results)
+
+
+os_sucra = sucra(os_reac_data$pa$mod$results, direction = 1)
+
+os_sucra = as.data.frame(os_sucra) %>% rownames_to_column("treat") %>% mutate(treat = paste("d.drops.",treat,sep = "")) %>% rename(sucra = os_sucra)
+
+
+#No closed loops
+
+plot(os_reac_data$pa$mod$network)
 
 forest(relative.effect.table(os_reac_data$pa$results),"drops")
 
 
-#====
-# Informative priors = 3 points large diff = 1/3^2 = 0.11
-
-os_reac_data$sa1$results = mtc.model(os_reac_data$pa$network, type = "consistency",
-                                    linearModel = "random",likelihood = "normal",
-                                    link = "identity",
-                                    hy.prior = mtc.hy.prior("std.dev","dhnorm",0,0.11))
-os_reac_data$sa1$results = mtc.run(os_reac_data$sa1$results)
-
-summary(os_reac_data$sa1$results)
-
-
-forest(relative.effect.table(os_reac_data$sa1$results),"drops")
-
-
-save(os_reac, file = "./cache/spo2_reac.rda")
 
 
 # #========================================================================================

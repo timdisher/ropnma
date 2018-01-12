@@ -45,7 +45,7 @@ cry_reac_data$pa$gemtc$data = cry_reac_data$pa$gemtc$data %>% left_join(rop_data
 
 
 
-cry_reac_data$pa$mod = set_net(cry_reac_data$pa$gemtc$data)
+cry_reac_data$pa$mod = set_net(cry_reac_data$pa$gemtc$data, type = "random")
 
 calc_n(data = cry_reac_data$pa$gemtc$data,input = cry_reac_data$pa$gemtc$input)
 
@@ -57,25 +57,15 @@ summary(cry_reac_data$pa$mod$results)
 #No loops
 plot(cry_reac_data$pa$mod$network)
 
+cry_reac_data$pa$mod$suc
+cry_reac_panames = c("Sweet taste \n multisensory + \n TA","Topical \n Anesthetic (TA)","NNS + TA",
+                     "Acetimanophen 60min \n +TA")
 
 
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-#
-# Sensitivity 1
-# ----- Informative priors on sigma, huge improvement
-# Large diff = 5 points = 1/25= 0.04
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+recov_basicp = relative.effect(cry_reac_data$pa$mod$results,t1 = c("drops"),preserve.extra = FALSE)
+recov_order = cry_reac_data$pa$mod$suc %>% mutate(pub_names = cry_reac_panames)
 
-cry_reac_data$sa1$results = mtc.model(cry_reac_data$pa$network, type = "consistency",
-                                      linearModel = "random",likelihood = "normal",
-                                      hy.prior = mtc.hy.prior("std.dev","dhnorm",0,0.04), 
-                                      link = "identity")
 
-cry_reac_data$sa1$results = mtc.run(cry_reac_data$sa1$results)
+windows()
+league_plot(results = as.data.frame(as.matrix(recov_basicp$samples)) %>% mutate(d.drops.drops = 0), order = recov_order, textsize = 3.5)
 
-cry_reac_sucra = sucra(cry_reac_data$sa1$results, direction = -1)
-cry_reac_sucra = as.data.frame(cry_reac_sucra) %>% rownames_to_column("treatment")
-
-summary(cry_reac_data$sa1$results)
-forest(relative.effect.table(cry_reac_data$sa1$results),"drops")
-# save(cry_reac,file = "./cache/cry_reac.rda")

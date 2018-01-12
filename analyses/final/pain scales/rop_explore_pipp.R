@@ -17,6 +17,7 @@ source("./functions/gemtc test/nma_cont_gemtc.R")
 
 
 
+
 # Generate tables and graphs----------------------------------------------------------------------------------------------------------------------------------------------
 
 pa_reac = rop_data_arm %>% filter(outcome == "PIPP" | outcome == "NIPS", timepoint_group == "reactivity") #O'sullivan only study with N-PASS score scaled to PIPP

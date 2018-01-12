@@ -120,14 +120,14 @@ number of study,study auhor and year,treatment name,treatment class,type of outc
 16,O'sullivan 2010,sweet.nns.drops,drops_mult,PIPP,During exam,reactivity,14.25,1.70568901,NA,yes,yes,NA,NA,20,7.5,NA,NA,1,8,NA,NA,NA,NA,NA,29.8,ND,33,no,1139,NA
 16,O'sullivan 2010,nns.drops,drops_phys,N-PASS,During exam,reactivity,8.75,1,NA,yes,yes,NA,NA,20,9.5,NA,NA,6,10,NA,NA,NA,NA,NA,29.5,ND,33.1,no,1140,NA
 16,O'sullivan 2010,sweet.nns.drops,drops_mult,N-PASS,During exam,reactivity,6,1.75,NA,yes,yes,NA,NA,20,7.5,NA,NA,1,8,NA,NA,NA,NA,NA,29.8,ND,33,no,1139,NA
-16,O'sullivan 2010,sweet.nns.drops,drops_phys,brady < 100bpm,study,recovery,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,29.5,ND,33.1,no,1140,NA
-16,O'sullivan 2010,nns.drops,drops_mult,brady < 100bpm,study,recovery,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,3,NA,29.8,ND,33,no,1139,NA
-16,O'sullivan 2010,sweet.nns.drops,drops_phys,desat < 80%,study,recovery,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,29.5,ND,33.1,no,1140,NA
-16,O'sullivan 2010,nns.drops,drops_mult,desat < 80%,study,recovery,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,3,NA,29.8,ND,33,no,1139,NA
-16,O'sullivan 2010,sweet.nns.drops,drops_phys,adverse event (brady or desat),study,recovery,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,29.5,ND,33.1,no,1140,NA
-16,O'sullivan 2010,nns.drops,drops_mult,adverse event (brady or desat),study,recovery,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,3,NA,29.8,ND,33,no,1139,NA
-16,O'sullivan 2010,sweet.nns.drops,drops_phys,any_ae,brady < 100bpm,recovery,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,29.5,ND,33.1,no,1140,NA
-16,O'sullivan 2010,nns.drops,drops_mult,any_ae,brady < 100bpm,recovery,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,3,NA,29.8,ND,33,no,1139,NA
+16,O'sullivan 2010,sweet.nns.drops,drops_phys,brady < 100bpm,study,reactivity,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,29.5,ND,33.1,no,1140,NA
+16,O'sullivan 2010,nns.drops,drops_mult,brady < 100bpm,study,reactivity,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,3,NA,29.8,ND,33,no,1139,NA
+16,O'sullivan 2010,sweet.nns.drops,drops_phys,desat < 80%,study,reactivity,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,29.5,ND,33.1,no,1140,NA
+16,O'sullivan 2010,nns.drops,drops_mult,desat < 80%,study,reactivity,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,3,NA,29.8,ND,33,no,1139,NA
+16,O'sullivan 2010,sweet.nns.drops,drops_phys,adverse event (brady or desat),study,reactivity,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,29.5,ND,33.1,no,1140,NA
+16,O'sullivan 2010,nns.drops,drops_mult,adverse event (brady or desat),study,reactivity,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,3,NA,29.8,ND,33,no,1139,NA
+16,O'sullivan 2010,sweet.nns.drops,drops_phys,any_ae,brady < 100bpm,reactivity,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,29.5,ND,33.1,no,1140,NA
+16,O'sullivan 2010,nns.drops,drops_mult,any_ae,brady < 100bpm,reactivity,NA,NA,NA,NA,,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,3,NA,29.8,ND,33,no,1139,NA
 17,Rosali 2015,ebm.drops,drops_mult,PIPP,During exam,reactivity,12.7,1.7,NA,no,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,31.5,23.4,34.84285714,yes,1426.7,NA
 17,Rosali 2015,drops,drops,PIPP,During exam,reactivity,15.3,1.78,NA,no,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,30.3,27.8,34.27142857,yes,1285.2,NA
 17,Rosali 2015,ebm.drops,drops_mult,PIPP,post-exam,recovery,6.2,1.98,NA,no,no,NA,NA,20,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,31.5,23.4,34.84285714,yes,1426.7,NA

@@ -36,18 +36,14 @@ hr_reac$data = hr_reac$overview %>% filter(studlab %in% c("Xin 2016"), outcome !
 hr_reac$contrast = pairwise(data = hr_reac$data,treat = trt_group, n= sample_size, 
                             mean = mean,sd = std_dev,studlab = studlab) 
 
-hr_reac$overview$studlab
-hr_reac_excluded = data.frame(study = c("Olsson 2011",
-                                        "Mehta 2005",
-                                        "SenerTaplak 2017",
-                                        "Dhaliwal 2010"),
-                              reason = c("no speculum",
-                                         "no variance",
-                                         "not connected to other treatments",
-                                         "hr max not an outcome of interest")
-                             ) %>% left_join(hr_reac$overview %>% select(studlab, sample_size,outcome) %>%
-                                                group_by(studlab,outcome) %>% summarise(n = sum(sample_size)),c("study" = "studlab"))
-
+(hr_reac_excluded = hr_reac$overview %>% filter(!studlab %in% c("Xin 2016") | outcome == "hr max") %>% group_by(studlab) %>% summarize(sample = sum(sample_size),
+                                                                                                                      treat = paste(trt_group,collapse=' vs ')) %>% 
+    mutate(reason = c("hr max not an outcome of interest",
+                      "no variance",
+                      "no speculum",
+                      "not connected to other treatments"
+    ))
+)
 
 
 
@@ -92,10 +88,8 @@ hr_recov = NULL
 
 hr_recov$overview = rop_data_arm %>% filter(grepl("hr",outcome), timepoint_group == "recovery") 
 
-# Challenge here as always is mix of outcomes. Hr max, change from baseline, and raw heart rate. Decision will be to use
-# standardized mean difference.Will have to report Mehta seperately because they provide no variance AND are a crossover.
+hr_recov$data = hr_recov$overview %>% filter(studlab != "Mehta 2005") #Drops Mehta
 
-hr_recov$data = hr_recov$overview %>% filter(studlab != "Mehta 2005", outcome != "hr max") #Drops Mehta and connects network. Will have to report taplak seperately.
 
 ### converts data to correct format to allow for assessment of connectivity
 hr_recov$contrast = pairwise(data = hr_recov$data,treat = trt_group, n= sample_size, 
@@ -110,6 +104,12 @@ hr_recov_excluded = data.frame(study_num = factor(c(27,24)),
   left_join(hr_recov$overview %>% select(study_num, sample_size,outcome) %>%
                   group_by(study_num,outcome) %>% summarise(n = sum(sample_size)),c("study_num")) %>% select(-study_num)
 
+
+
+(hr_recov_excluded = hr_recov$overview %>% filter(!studlab %in% hr_recov$data$studlab) %>% group_by(studlab) %>% summarize(sample = sum(sample_size),
+                                                                                                                                       treat = paste(trt_group,collapse=' vs ')) %>% 
+    mutate(reason = c("no variance"))
+)
 
 
 #- Assess whether network is connected -#

@@ -367,7 +367,7 @@ dev.off()
 summary(pa_reac_data$sa5$anohe$result.cons)
 
 
-
+windows()
 forest(relative.effect.table(pa_reac_data$sa5$mod$results),"drops")
 
 
@@ -446,8 +446,17 @@ reac_heatplot$plot
 #============================================== =
 ####League table
 #============================================== =
-pa_reac_sa5names = c("Sweet taste \n multisensory + \n TA","Sweet taste + \n TA","EBM \n multisensory + \n TA","Sweet taste + \n N2O + TA",
-                     "NNS + TA","Sweet taste \n alone","Repeated \n sweet taste","WFDRI + TA","Sweet taste + \n singing","Topical \n Anesthetic (TA)","Acetaminophen \n 30min + TA",
+pa_reac_sa5names = c("Sweet taste \n multisensory + \n TA",
+                     "Sweet taste + \n TA",
+                     "Sweet taste + \n N2O + TA",
+                     "EBM \n multisensory + \n TA",
+                     "NNS + TA",
+                     "Sweet taste \n alone",
+                     "Repeated \n sweet taste",
+                     "WFDRI + TA",
+                     "Acetaminophen \n 30min + TA",
+                     "Sweet taste + \n singing",
+                     "Topical \n Anesthetic (TA)",
                      "No treatment")
 reac_basicp = relative.effect(pa_reac_data$sa5$mod$results,t1 = c("drops"),preserve.extra = FALSE)
 reac_results = as.data.frame(as.matrix(reac_basicp$samples)) %>% mutate(d.drops.drops = 0)

@@ -840,6 +840,107 @@ league = function(results = pa_reac_basicp, order = pa_reac_sucra){
 }
 
 
+# League table plot =========================
+
+league_plot = function(results = pa_reac_basicp, order = pa_reac_sucra, pub = TRUE, colour = "#d2cee3", textsize = 3, exp = FALSE){
+  
+  t = results %>% select(order$treat)
+  
+ 
+  
+  df = data.frame(lwr=NA, med=NA, upr=NA, trt1=NA, trt2=NA)
+  
+  for(i in 1:length(t)){
+    
+    cons =  t[,i] - t 
+    
+    temp = purrr::map(cons, ~quantile(.,c(0.025,0.5,0.975))) %>% as.data.frame() %>% t() %>% as.data.frame() %>% rownames_to_column()
+    
+    trt1 = colnames(t[i])
+    temp = temp %>% filter(rowname != trt1)
+    
+    df = df %>% add_row(lwr = temp[,2],med = temp[,3],upr = temp[,4], trt1 = trt1, trt2 = temp$rowname)
+  }
+  
+  
+  
+  
+  if(pub == TRUE){
+    df["trt1"] = order[match(df[["trt1"]],order[["treat"]]),3]
+    df["trt2"] = order[match(df[["trt2"]],order[["treat"]]),3]
+    
+    df = df %>% mutate(trt1 = factor(df$trt1, levels = order[["pub_names"]]),
+                       trt2 = factor(df$trt2, levels = order[["pub_names"]]))
+    if(exp == TRUE){ 
+      df$val = ifelse(is.na(df$lwr),NA,paste(round(exp(df$med), 2), "\n (", round(exp(df$lwr), 2), " to ", round(exp(df$upr), 2),")", sep = ""))
+      
+      } else{
+    
+    df$val = ifelse(is.na(df$lwr),NA,paste(round(df$med, 2), "\n (", round(df$lwr, 2), " to ", round(df$upr, 2),")", sep = ""))
+    }
+    
+    df = df %>% mutate(val = ifelse(as.numeric(trt1) > as.numeric(trt2), NA, val)) %>% mutate(trt1 = factor(df$trt1, levels = order[["pub_names"]]),
+                                                                                              trt2 = factor(df$trt2, levels = rev(order[["pub_names"]]))) 
+    
+    ext = data_frame(lwr=NA, med=NA, upr=NA, trt1=order[["pub_names"]], trt2=order[["pub_names"]], val=order[["pub_names"]])
+    
+    df = rbind(df,ext) %>% slice(-1)
+  }  else{
+  
+  
+  df = df %>% mutate(trt1 = factor(df$trt1, levels = order$treat),
+                     trt2 = factor(df$trt2, levels = order$treat))
+  
+  
+  if(exp == TRUE){ 
+    df$val = ifelse(is.na(df$lwr),NA,paste(round(exp(df$med), 2), "\n (", round(exp(df$lwr), 2), " to ", round(exp(df$upr), 2),")", sep = ""))
+    
+  } else{
+    
+    df$val = ifelse(is.na(df$lwr),NA,paste(round(df$med, 2), "\n (", round(df$lwr, 2), " to ", round(df$upr, 2),")", sep = ""))
+    }
+  
+  
+
+  df = df %>% mutate(val = ifelse(as.numeric(trt1) > as.numeric(trt2), NA, val)) %>% mutate(trt1 = factor(df$trt1, levels = order$treat),
+                                                                                            trt2 = factor(df$trt2, levels = rev(order$treat))) 
+  ext <- data.frame(lwr=NA, med=NA, upr=NA, trt1=order$treat, trt2=order$treat, val=order$treat)
+  
+  df = rbind(df,ext) %>% slice(-1)
+  }
+  
+ 
+  #windows()
+ ggplot(df, aes(x = trt1, y = trt2)) +
+    geom_tile(aes(fill = med), colour = ifelse(is.na(df$val),"white","black"), show.legend = F) +
+    geom_text(aes(label = df$val), size = textsize) +
+    ggtitle("League Table") +
+    # add colour scale
+    scale_fill_gradient2(name="",
+                         # midpoint = 0.5,
+                         na.value = colour,
+                         low = NA,
+                         mid = NA,
+                         high = NA) +
+    # # move x-axis label to top
+    # scale_x_discrete(position = "top") + xlab("NMA Model") +
+    # use a white background, remove axis borders, labels, tickts
+    theme_bw() + xlab(" ") + ylab(" ") +
+    theme(panel.border=element_blank(),
+          axis.ticks.y = element_blank(),
+          axis.ticks.x = element_blank(),
+          panel.grid.major.y = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.text.y = element_blank(),
+          axis.text.x = element_blank(),
+          plot.title = element_text(hjust = 0.5)
+    )
+
+}
+
+
 ###=========================NMA heatplot====
 
 heatplot = function(data, border = "white", border_size = 2){

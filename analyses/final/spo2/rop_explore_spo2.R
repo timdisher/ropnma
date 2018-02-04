@@ -41,14 +41,17 @@ os_reac$data = os_reac$overview %>% filter(outcome %in% c("02 decrease","02 sat"
   mutate(mean = ifelse(outcome == "02 decrease",mean*-1,mean))#Drops Mehta and connects network. Will hgave to report taplak seperately.
 
 
-os_reac_excluded = os_reac$overview %>% filter(!(outcome %in% c("02 decrease","02 sat")) | studlab == "Olsson 2011") %>%
-  select(studlab,outcome,sample_size) %>% group_by(studlab,outcome) %>% summarise(n = sum(sample_size)) %>% ungroup() %>%
-  mutate(reason = c("not an outcome of interest",
-                    "analyzed with adverse events",
-                    "analyzed with adverse events",
-                    "not an outcome of interest",
-                    "no variance",
-                    "no speculum"))
+
+(os_reac_excluded = os_reac$overview %>% filter(!studlab %in% os_reac$data$studlab) %>% group_by(studlab) %>% summarize(sample = sum(sample_size),
+                                                                                                                           treat = paste(trt_group,collapse=' vs ')) %>% 
+    mutate(reason = c("Min 02 not an outcome of interest",
+                      "analyzed with adverse events",
+                      "analyzed with adverse events",
+                      "not an outcome of interest",
+                      "no variance",
+                      "no speculum"))
+)
+
 
 
 
@@ -102,12 +105,14 @@ os_recov$overview = rop_data_arm %>% filter(grepl("02",outcome), timepoint_group
 os_recov$data = os_recov$overview %>% filter(outcome %in% c("02 sat change","02 sat"), studlab != "Mehta 2005") 
 
 
-os_recov_excluded = os_recov$overview %>% filter(!(outcome %in% c("02 decrease","02 sat")) | studlab == "Mehta 2005") %>%
-  select(studlab,outcome,sample_size) %>% group_by(studlab,outcome) %>% summarise(n = sum(sample_size)) %>% ungroup() %>%
-  mutate(reason = c("analyzed with adverse events",
-                    "analyzed with adverse events",
-                    "not an outcome of interest",
-                    "no variance"))
+
+(os_recov_excluded = os_recov$overview %>% filter(!studlab %in% os_recov$data$studlab) %>% group_by(studlab) %>% summarize(sample = sum(sample_size),
+                                                                                                                           treat = paste(trt_group,collapse=' vs ')) %>% 
+    mutate(reason = c("analyzed with adverse events",
+                      "analyzed with adverse events",
+                      "not an outcome of interest",
+                      "no variance"))
+)
 
 ### converts data to correct format to allow for assessment of connectivity
 os_recov$contrast = pairwise(data = os_recov$data,treat = trt_group, n= sample_size, 

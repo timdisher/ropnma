@@ -67,7 +67,7 @@ hr_recov_data$pa$gemtc$data = hr_recov_data$pa$gemtc$data %>% left_join(rop_data
 
 
 
-hr_recov_data$pa$mod =  set_net(hr_recov_data$pa$gemtc$data)
+hr_recov_data$pa$mod =  set_net(hr_recov_data$pa$gemtc$data, type = "fixed")
 
 calc_n(data = hr_recov_data$pa$gemtc$data,input = hr_recov_data$pa$gemtc$input)
 
@@ -81,3 +81,21 @@ plot(hr_recov_data$pa$mod$network)
 #Only loop comes from 3arm trial, consistent by default
 
 hr_recov_data$pa$mod$suc
+
+
+#League table
+
+hr_recov_data$pa$mod$suc
+hr_recov_panames = c("EBM \n multisensory + \n TA",
+                      "NNS + TA",
+                     "Topical \n Anesthetic (TA)",
+                     "Sweet taste \n multisensory + \n TA")
+
+
+recov_basicp = relative.effect(hr_recov_data$pa$mod$results,t1 = c("drops"),preserve.extra = FALSE)
+recov_results = as.data.frame(as.matrix(recov_basicp$samples)) %>% mutate(d.drops.drops = 0)
+recov_order = hr_recov_data$pa$mod$suc %>% mutate(pub_names = hr_recov_panames)
+
+
+windows()
+league_plot(results = as.data.frame(as.matrix(recov_basicp$samples)) %>% mutate(d.drops.drops = 0), order = recov_order, textsize = 3.5)

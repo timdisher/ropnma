@@ -29,17 +29,17 @@ source("./functions/gemtc test/nma_cont_gemtc.R")
 #Create and run gemtc analyses====
 
 data = pa_recov_data$pa$gemtc$data
-set_net = function(data = pa_reac_data$pa$gemtc$data, model = "consistency",regressor = NULL){
+set_net = function(data = pa_reac_data$pa$gemtc$data, model = "consistency",regressor = NULL, type = "random"){
   network = mtc.network(data.re = data[,1:4],
                         studies = data[,c(1,5:8)])
   
   if(model == "consistency"){
   model = mtc.model(network, type = "consistency",
-                    linearModel = "random",likelihood = "normal",
+                    linearModel = type,likelihood = "normal",
                     link = "identity")
   } else{
     model = mtc.model(network, type = "regression",
-                      linearModel = "random",likelihood = "normal",
+                      linearModel = type,likelihood = "normal",
                       regressor = regressor,
                       link = "identity")
   }
@@ -228,14 +228,14 @@ summary(pa_reac_data$pa$mod$results)
 #Analysis of heterogeneity and rough plot of effects versus reference 
 # Nodeplit (primary)
 pa_reac_nodesplit = mtc.nodesplit(pa_reac_data$pa$mod$network)
-summary(pa_reac_nodesplit)
+as.data.frame(summary(pa_reac_nodesplit))
 
+plot(summary(pa_reac_nodesplit))
 #ANOHE - Fits a UME, USE, and Cons model... good visualization
 pa_reac_data$pa$anohe = mtc.anohe(pa_reac_data$pa$mod$network)
 
 pdf("./figs/pain scales reactivity/pa_reac_anohe.pdf", height = 11, width = 8.5)
 plot(summary(pa_reac_data$pa$anohe))
-gemtc::forest(relative.effect.table(pa_reac_data$pa$results),"drops")
 dev.off()
 
 
@@ -353,8 +353,20 @@ calc_n(data = pa_reac_data$pa$gemtc$data_nb %>% filter(imputed_mean == 0),input 
 
 gemtc_diag(pa_reac_data$sa5$mod$results)
 
+#Nodesplit
+pa_reac_data$sa5$nodesplit = mtc.nodesplit(pa_reac_data$sa5$mod$network)
 
-summary(pa_reac_data$sa5$mod$results)
+summary(pa_reac_data$sa5$nodesplit)
+#ANOHE
+pa_reac_data$sa5$anohe = mtc.anohe(pa_reac_data$sa5$mod$network)
+
+pdf("./figs/pain scales reactivity/pa_reac_anohe_sa5.pdf", height = 11, width = 8.5)
+plot(summary(pa_reac_data$sa5$anohe))
+dev.off()
+
+summary(pa_reac_data$sa5$anohe$result.cons)
+
+
 
 forest(relative.effect.table(pa_reac_data$sa5$mod$results),"drops")
 
@@ -409,6 +421,7 @@ momlinc_fp_p(data = pa_reac_sa5_power, names = comp_names_sa5, width = 7.5)
 
 
 
+
 #================================== =
 #================================== = 
 #====== Sensitivity analysis plot====
@@ -428,6 +441,23 @@ reac_heatplot = rop_heatplots(data = pa_reac_data,analyses_index = analyses,pub_
 
 windows()
 reac_heatplot$plot
+
+
+#============================================== =
+####League table
+#============================================== =
+pa_reac_sa5names = c("Sweet taste \n multisensory + \n TA","Sweet taste + \n TA","EBM \n multisensory + \n TA","Sweet taste + \n N2O + TA",
+                     "NNS + TA","Sweet taste \n alone","Repeated \n sweet taste","WFDRI + TA","Sweet taste + \n singing","Topical \n Anesthetic (TA)","Acetaminophen \n 30min + TA",
+                     "No treatment")
+reac_basicp = relative.effect(pa_reac_data$sa5$mod$results,t1 = c("drops"),preserve.extra = FALSE)
+reac_results = as.data.frame(as.matrix(reac_basicp$samples)) %>% mutate(d.drops.drops = 0)
+reac_order = pa_reac_data$sa5$mod$suc %>% mutate(pub_names = pa_reac_sa5names)
+
+order = reac_order
+
+windows()
+league_plot(results = as.data.frame(as.matrix(reac_basicp$samples)) %>% mutate(d.drops.drops = 0), order = reac_order, textsize = 3.5)
+
 #================================================
 #Probability of 2 point or greater difference====
 #================================================
@@ -478,6 +508,8 @@ post = map_df(post,~pipp_sim + .) %>% add_column(drops = pipp_sim)
 #Get probability less than 6 + quantiles
 prob_nopain = purrr::map(post, ~(sum(. < 6)/n.sims)*100)
 
+quantile(post$d.drops.drops_N2O_sweet, probs = c(0.025,0.5,0.975))
+
 
 #Get babies with scores less than six
 (absolute_graph = purrr::map(post,~quantile(.,c(0.025,0.5,0.975))) %>% as.data.frame() %>% t() %>% as.data.frame() %>%
@@ -486,7 +518,6 @@ prob_nopain = purrr::map(post, ~(sum(. < 6)/n.sims)*100)
            six_thirteen = round(pnorm(c(12.4),score,baseline_pipp$std_dev) - below_six,2),
            high = 1-below_six - six_thirteen))
 
-data = recov_absolute_graph
 pipp_abs_graphs = function(data = absolute_graph, colours = c("#00CD00", "#FFD700", "#CD2626")){
   
   fifty = filter(data, quantile == "50%")
@@ -524,7 +555,7 @@ pipp_abs_graphs = function(data = absolute_graph, colours = c("#00CD00", "#FFD70
     personograph(rev(person_data), plot.width = 1, 
                  colors = list(low = colours[1], moderate = colours[2], high = colours[3]),
                  icon.style = 6,
-                 draw.legend = T, dimensions = c(6,18))
+                 draw.legend = T, dimensions = c(5,20))
     a <- grid.grab()
     
     grid.arrange(therm,a,ncol =2, widths = c(1/8,7/8), top = textGrob(paste(fifty[i,1]), gp=gpar(fontsize = 15)))
@@ -538,7 +569,6 @@ pipp_abs_graphs = function(data = absolute_graph, colours = c("#00CD00", "#FFD70
 }
 
 
-test_graphs = pipp_abs_graphs()
 #Select top three treat by sucra
 graphs_pub = pa_reac_data$sa5$mod$suc %>% top_n(3,sucra) 
 
@@ -695,7 +725,28 @@ recov_comp_names = c("NNS + TA","Sweet multisensory + TA","Sweet + TA",  "EBM mu
 momlinc_fp_p(data = pa_recov_power, names = recov_comp_names, width = 7.5)
 
 
+#============================================== =
+####League table
+#============================================== =
+pa_recov_data$pa$mod$suc
+pa_recov_panames = c("EBM \n multisensory + \n TA",
+                     "Sweet taste \n multisensory + \n TA",
+                     "NNS + TA",
+                     "Morphine + TA",
+                     "Sweet taste + \n TA",
+                     "Acetaminophen \n 60min + TA",
+                     "NNS alone",
+                     "Acetaminophen \n 30min + TA",
+                     "Topical \n Anesthetic (TA)",
+                     "Sweet taste \n alone",
+                     "No treatment")
+recov_basicp = relative.effect(pa_recov_data$pa$mod$results,t1 = c("drops"),preserve.extra = FALSE)
+recov_results = as.data.frame(as.matrix(recov_basicp$samples)) %>% mutate(d.drops.drops = 0)
+recov_order = pa_recov_data$pa$mod$suc %>% mutate(pub_names = pa_recov_panames)
 
+
+windows()
+league_plot(results = as.data.frame(as.matrix(recov_basicp$samples)) %>% mutate(d.drops.drops = 0), order = recov_order, textsize = 3.5)
 
 #================================== =
 #================================== = 

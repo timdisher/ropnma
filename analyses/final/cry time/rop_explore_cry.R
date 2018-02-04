@@ -51,6 +51,15 @@ cry_excluded = data.frame(study = c("Mehta 2005",
                           reason = c("Outcome is presence/absence",
                                      "Diet is not in connected network",
                                      "No speculum used"))
+
+(cry_reac_excluded = cry_reac$overview %>% filter(!studlab %in% cry_reac$data$studlab) %>% group_by(studlab) %>% summarize(sample = sum(sample_size),
+                                                                                                                           treat = paste(trt_group,collapse=' vs ')) %>% 
+    mutate(reason = c("analyzed with adverse events",
+                      "analyzed with adverse events",
+                      "not an outcome of interest",
+                      "no variance"))
+)
+
 #- Assess whether network is connected -#
 (cry_reac$netconnect = netconnection(treat1,treat2,data = cry_reac$contrast) )
 
@@ -71,20 +80,3 @@ momlinc_netgraph(cry_reac$int,cry_reac$chars$int_char,2)
 
 (cry_reac$graph$pr_spec = plac_resp_graph(cry_reac$graph$data, ref = "drops", facet = TRUE, fv = "speculum"))
 
-
-# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-#
-#                    ----crying time recovery----
-#
-# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-# Generate tables and graphs----------------------------------------------------------------------------------------------------------------------------------------------
-cry_recov = NULL
-
-cry_recov$overview = rop_data_arm %>% filter(grepl("cry",outcome), timepoint_group == "recovery") #No variability data for saunders, mehta is presence/absence
-
-View(cry_recov$overview)
-
-#Only mehta

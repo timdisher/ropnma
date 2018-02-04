@@ -9,7 +9,6 @@ library(gridBase)
 source("./analyses/final/rop_import.R")
 source("./functions/rankheat-plot-function.r")
 
-load("./cache/pa_reac.rda")
 
 rob = rop_data_study %>% select(studlab,rob_sg,rob_ac,rob_bp,rob_bo_ob,rob_bo_sub,rob_io,rob_sr,rob_other)
 
@@ -97,18 +96,20 @@ explanations = tibble(trial = c("Kleberg 2008"),
 #OS recov needs to be row of NAs
 
 
+
 pa_reac_data$sa5$mod$suc = pa_reac_data$sa5$mod$suc %>% add_row(treat = c("d.drops.phys","d.drops.drops_acet60", "d.drops.drops_morph"),
                                      sucra = c(NA,NA,NA))
 
 all_out_list = list(pa_reac = pa_reac_data$sa5$mod$suc, pa_recov = pa_recov_data$pa$mod$suc,
                     hr_recov = hr_recov_data$pa$mod$suc, os_reac = os_sucra,
-                    cry = cry_reac_data$pa$mod$suc, ae = ae_sucra)
+                    cry = cry_reac_data$pa$mod$suc, ae_reac = ae_sucra, ae_recov = recov_ae_sucra)
 
 names = c("Pain \n reactivity","Pain \n regulation",
           "Heart Rate \n regulation",
           "SpO2 \n reactivity",
           "Cry",
-          "Adverse \n events")
+          "Adverse events \n reactivity",
+          "Adverse events \n regulation")
 
 
 order =  c("Treatment",
@@ -118,12 +119,24 @@ order =  c("Treatment",
            "SpO2 \n reactivity",
            "SpO2 \n regulation",
            "Cry",
-           "Adverse \n events")
+           "Adverse events \n reactivity",
+           "Adverse events \n regulation")
 
-treat_names = c("Sweet taste multisensory + TA","Sweet taste + TA",
-                "Sweet taste + N2O + TA","EBM multisensory + TA",
-                "NNS + TA","Sweet taste alone","Repeated sweet taste","WFDRI + TA","Sweet taste + singing","Topical Anesthetic (TA)","Acetaminophen 30min + TA",
-                "No treatment","NNS alone","Acetaminophen 60min + TA","Morphine + TA")
+treat_names = c("Sweet taste multisensory + TA",
+                "Sweet taste + TA",
+                "Sweet taste + N2O + TA",
+                "EBM multisensory + TA",
+                "NNS + TA",
+                "Sweet taste alone",
+                "Repeated sweet taste",
+                "WFDRI + TA",
+                "Acetaminophen 30min + TA",
+                "Sweet taste + singing",
+                "Topical Anesthetic (TA)",
+                "No treatment",
+                "NNS alone",
+                "Acetaminophen 60min + TA",
+                "Morphine + TA")
 
 
 all_out_heat = all_out_list %>% Reduce(function(dtf1,dtf2) left_join(dtf1,dtf2,by="treat"), .)
@@ -194,113 +207,6 @@ tables
 }
 
 t = sa_tables()
-
-#================================================
-#Prob treatment mean < 6 points on the PIPP======
-#================================================
-
-#----Meta-analysis of baseline mean
-ma = pa_reac %>% filter(trt_group == "drops") %>% select(studlab,mean,sample_size,std_dev) %>% arrange(-sample_size) %>% mutate(std.err = std_dev/sqrt(sample_size))
-
-#If using meta-analysis (hard to justify given heterogeneity)
-# baseline_pipp = rma(yi = mean,vi = std.err, data= ma)
-
-#If using largest study
-baseline_pipp = ma %>% filter(sample_size == max(sample_size)) %>% rename(se = std.err,
-                                                                          b = mean)
-
-#----Use mean and std err from above to create distribution of 
-#baseline scores with uncertainty
-post = as.data.frame(as.matrix(pa_reac_data$pa$results$samples))
-
-n.sims = length(post$sd.d)
-
-pipp_sim = rnorm(n.sims,baseline_pipp$b[[1]],baseline_pipp$se)
-
-
-#----Get basic parameters for outcomes that have two steps to get to drops (weird gemtc output quirk)
-post = post %>% select(-d.drops_sweet.drops_N2O_sweet,-d.placebo.sweet_rep,-d.placebo.sweet_sing,-sd.d)
-
-basic_par = as.data.frame(as.matrix((relative.effect(pa_reac_data$pa$results, t1 = "drops",t2 = c("drops_N2O_sweet","sweet_rep","sweet_sing"),preserve.extra = F))$samples))
-
-post = bind_cols(post,basic_par) 
-
-#Baseline pipp + treatment effect
-post = map_df(post,~pipp_sim + .) %>% add_column(drops = pipp_sim)
-
-#Get probability less than 6 + quantiles
-prob_nopain = map(post, ~(sum(. < 6)/n.sims)*100)
-
-
-#Get babies with scores less than six
-(absolute_graph = purrr::map(post,~quantile(.,c(0.025,0.5,0.975))) %>% as.data.frame() %>% t() %>% as.data.frame() %>%
-  rownames_to_column("treatment") %>% gather(quantile, score,`2.5%`:`97.5%`) %>%
-  mutate(below_six = round(pnorm(6.4,score,baseline_pipp$std_dev),2),
-         six_thirteen = round(pnorm(c(12.4),score,baseline_pipp$std_dev) - below_six,2),
-         high = 1-below_six - six_thirteen))
-
-
-pipp_abs_graphs = function(data = absolute_graph, person_data = person_data, colours = c("#00CD00", "#FFD700", "#CD2626")){
-  
-  fifty = filter(data, quantile == "50%")
-  lowcri = filter(data, quantile == "2.5%")
-  highcri = filter(data, quantile == "97.5%")
-  
-  
-  graphs = NULL
-  data_graph = data %>% filter(quantile == "50%")
-  
-  for(i in seq_along(fifty[,1])){
-    
-    
-    #Create Background scale
-    t = data.frame(id = c(1,1,1),
-                   pain = c("low","moderate","high"),
-                   score = c(6,6,9))
-    
-    
-    therm = t %>% ggplot(aes(x = id,y = score,fill = pain)) + geom_bar(stat = "identity") + 
-      scale_fill_manual(values = rev(colours)) + 
-      scale_x_discrete(expand = c(0,0)) + scale_y_continuous(expand = c(0,0), breaks = seq(1,21, by = 2)) +
-      theme_classic() +
-      theme(axis.title.x = element_blank(),
-            axis.title.y = element_blank(),
-            axis.text.y = element_text(size = 22)) + guides(fill = FALSE) +
-      
-      geom_hline(yintercept = fifty[i,3][[1]], size = 2) +
-      geom_hline(yintercept = lowcri[i,3][[1]], size = 1, linetype = "dashed") + 
-      geom_hline(yintercept = highcri[i,3][[1]], size = 1, linetype = "dashed") +
-      theme(plot.margin = unit(c(1.5,0,1.5,0.5),"cm"))
-    
-    #Create icon array
-    person_data = list(low = data_graph[i,4][[1]], moderate = data_graph[i,5][[1]], high = data_graph[i,6][[1]])
-    personograph(rev(person_data), plot.width = 1, 
-                 colors = list(low = colours[1], moderate = colours[2], high = colours[3]),
-                 icon.style = 6,
-                 draw.legend = T, dimensions = c(6,18))
-    a <- grid.grab()
-    
-    grid.arrange(therm,a,ncol =2, widths = c(1/8,7/8), top = textGrob(paste(fifty[i,1]), gp=gpar(fontsize = 15)))
-    
-    temp = grid.grab()
-    
-    graphs[[paste(filter(data,quantile == "50%")[i,1])]] = temp
-    
-  }
-  graphs
-}
-
-test_graphs = pipp_abs_graphs()
-
-#Select top three treat by sucra
-graphs_pub = as.data.frame(pa_reac_sucra) %>% rownames_to_column("treatment") %>% top_n(3,pa_reac_sucra) %>% 
-  arrange(-pa_reac_sucra) %>% mutate(treatment = paste("d.drops.",treatment,sep=""))
-graphs_pub = absolute_graph %>% filter(quantile == "50%") %>% top_n(-3,score) %>% arrange(-score)
-
-png("absolute_plot_panel.png", width= 20, height = 13, units = "in", res = 300)
-grid.arrange(test_graphs[["drops"]],test_graphs[[graphs_pub[1,1]]],test_graphs[[graphs_pub[2,1]]],test_graphs[[graphs_pub[3,1]]], left = "PIPP score")
-dev.off()
-
 
 
 ##### Study characteristics

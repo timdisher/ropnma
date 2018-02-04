@@ -45,7 +45,7 @@ os_reac_data$pa$gemtc$data = os_reac_data$pa$gemtc$data %>% left_join(rop_data_s
 
 
 
-os_reac_data$pa$mod = set_net(os_reac_data$pa$gemtc$data)
+os_reac_data$pa$mod = set_net(os_reac_data$pa$gemtc$data, type = "fixed")
 
 calc_n(data = os_reac_data$pa$gemtc$data,input = os_reac_data$pa$gemtc$input)
 
@@ -53,15 +53,13 @@ calc_n(data = os_reac_data$pa$gemtc$data,input = os_reac_data$pa$gemtc$input)
 
 gemtc_diag(os_reac_data$pa$mod$results)
 
-summary(os_reac_data$pa$mod$results)
-
 
 summary(os_reac_data$pa$mod$results)
 
 
 os_sucra = sucra(os_reac_data$pa$mod$results, direction = 1)
 
-os_sucra = as.data.frame(os_sucra) %>% rownames_to_column("treat") %>% mutate(treat = paste("d.drops.",treat,sep = "")) %>% rename(sucra = os_sucra)
+os_sucra = as.data.frame(os_sucra) %>% rownames_to_column("treat") %>% mutate(treat = paste("d.drops.",treat,sep = "")) %>% rename(sucra = os_sucra) %>% arrange(-sucra)
 
 
 #No closed loops
@@ -72,6 +70,21 @@ forest(relative.effect.table(os_reac_data$pa$results),"drops")
 
 
 
+os_sucra 
+os_reac_panames = c("Sweet taste + \n TA",
+                    "Sweet taste \n multisensory + \n TA",
+                     "NNS + TA",
+                     "Topical \n Anesthetic (TA)"
+                     )
+
+
+recov_basicp = relative.effect(os_reac_data$pa$mod$results,t1 = c("drops"),preserve.extra = FALSE)
+recov_results = as.data.frame(as.matrix(recov_basicp$samples)) %>% mutate(d.drops.drops = 0)
+recov_order = os_reac_data$pa$mod$suc %>% mutate(pub_names = os_reac_panames)
+
+
+windows()
+league_plot(results = as.data.frame(as.matrix(recov_basicp$samples)) %>% mutate(d.drops.drops = 0), order = recov_order, textsize = 3.5)
 
 # #========================================================================================
 # 

@@ -842,14 +842,23 @@ league = function(results = pa_reac_basicp, order = pa_reac_sucra){
 
 # League table plot =========================
 
-league_plot = function(results = pa_reac_basicp, order = pa_reac_sucra, pub = TRUE, colour = "#d2cee3", textsize = 3, exp = FALSE){
+league_plot = function(results = pa_reac_basicp, #Basic parameters (d's)
+                       order = pa_reac_sucra,  #What is to be used for ordering (SUCRA in default)
+                       pub = TRUE, #If using different names for publication
+                       colour = "#d2cee3", #Light purple for NAs
+                       textsize = 3, #Size for text
+                       exp = FALSE, #If d's are on log scale
+                       statsig = 0 #Threshold for statsig (change to 1 if ORs)
+){
   
   t = results %>% select(order$treat)
   
- 
   
+  #Populate required data frame
   df = data.frame(lwr=NA, med=NA, upr=NA, trt1=NA, trt2=NA)
   
+  
+  #Fill will all comparisons
   for(i in 1:length(t)){
     
     cons =  t[,i] - t 
@@ -874,54 +883,60 @@ league_plot = function(results = pa_reac_basicp, order = pa_reac_sucra, pub = TR
     if(exp == TRUE){ 
       df$val = ifelse(is.na(df$lwr),NA,paste(round(exp(df$med), 2), "\n (", round(exp(df$lwr), 2), " to ", round(exp(df$upr), 2),")", sep = ""))
       
-      } else{
-    
-    df$val = ifelse(is.na(df$lwr),NA,paste(round(df$med, 2), "\n (", round(df$lwr, 2), " to ", round(df$upr, 2),")", sep = ""))
+    } else{
+      
+      df$val = ifelse(is.na(df$lwr),NA,paste(round(df$med, 2), "\n (", round(df$lwr, 2), " to ", round(df$upr, 2),")", sep = ""))
     }
     
     df = df %>% mutate(val = ifelse(as.numeric(trt1) > as.numeric(trt2), NA, val)) %>% mutate(trt1 = factor(df$trt1, levels = order[["pub_names"]]),
-                                                                                              trt2 = factor(df$trt2, levels = rev(order[["pub_names"]]))) 
+                                                                                              trt2 = factor(df$trt2, levels = rev(order[["pub_names"]])),
+                                                                                              sig = ifelse(is.na(val),1,ifelse(lwr < statsig & upr < statsig | lwr > statsig & upr > statsig,2,0))) #Identify stat sig results
     
-    ext = data_frame(lwr=NA, med=NA, upr=NA, trt1=order[["pub_names"]], trt2=order[["pub_names"]], val=order[["pub_names"]])
+    ext = data_frame(lwr=NA, med=NA, upr=NA, trt1=order[["pub_names"]], trt2=order[["pub_names"]], val=order[["pub_names"]], sig = NA)
     
     df = rbind(df,ext) %>% slice(-1)
-  }  else{
-  
-  
-  df = df %>% mutate(trt1 = factor(df$trt1, levels = order$treat),
-                     trt2 = factor(df$trt2, levels = order$treat))
-  
-  
-  if(exp == TRUE){ 
-    df$val = ifelse(is.na(df$lwr),NA,paste(round(exp(df$med), 2), "\n (", round(exp(df$lwr), 2), " to ", round(exp(df$upr), 2),")", sep = ""))
     
-  } else{
     
-    df$val = ifelse(is.na(df$lwr),NA,paste(round(df$med, 2), "\n (", round(df$lwr, 2), " to ", round(df$upr, 2),")", sep = ""))
+    
+  }  else if(pub == FALSE){
+    
+    
+    df = df %>% mutate(trt1 = factor(df$trt1, levels = order$treat),
+                       trt2 = factor(df$trt2, levels = order$treat))
+    
+    
+    if(exp == TRUE){ 
+      df$val = ifelse(is.na(df$lwr),NA,paste(round(exp(df$med), 2), "\n (", round(exp(df$lwr), 2), " to ", round(exp(df$upr), 2),")", sep = ""))
+      
+    } else{
+      
+      df$val = ifelse(is.na(df$lwr),NA,paste(round(df$med, 2), "\n (", round(df$lwr, 2), " to ", round(df$upr, 2),")", sep = ""))
     }
-  
-  
-
-  df = df %>% mutate(val = ifelse(as.numeric(trt1) > as.numeric(trt2), NA, val)) %>% mutate(trt1 = factor(df$trt1, levels = order$treat),
-                                                                                            trt2 = factor(df$trt2, levels = rev(order$treat))) 
-  ext <- data.frame(lwr=NA, med=NA, upr=NA, trt1=order$treat, trt2=order$treat, val=order$treat)
-  
-  df = rbind(df,ext) %>% slice(-1)
+    
+    
+    
+    df = df %>% mutate(val = ifelse(as.numeric(trt1) > as.numeric(trt2), NA, val)) %>% mutate(trt1 = factor(df$trt1, levels = order$treat),
+                                                                                              trt2 = factor(df$trt2, levels = rev(order$treat)),
+                                                                                              sig = ifelse(is.na(val),1,ifelse(lwr < statsig & upr < statsig | lwr > statsig & upr > statsig,2,0)))  #Identify stat sig results
+    ext <- data.frame(lwr=NA, med=NA, upr=NA, trt1=order$treat, trt2=order$treat, val=order$treat,sig = NA)
+    
+    df = rbind(df,ext) %>% slice(-1)
   }
   
- 
-  #windows()
- ggplot(df, aes(x = trt1, y = trt2)) +
-    geom_tile(aes(fill = med), colour = ifelse(is.na(df$val),"white","black"), show.legend = F) +
+  
+  
+  windows()
+  ggplot(df, aes(x = trt1, y = trt2)) +
+    geom_tile(aes(fill = sig), colour = ifelse(is.na(df$val),"white","black"), show.legend = F) +
     geom_text(aes(label = df$val), size = textsize) +
     ggtitle("League Table") +
     # add colour scale
     scale_fill_gradient2(name="",
                          # midpoint = 0.5,
                          na.value = colour,
-                         low = NA,
-                         mid = NA,
-                         high = NA) +
+                         low = "white",
+                         mid = "white",
+                         high = ifelse(!is.na(df$val),"lightgrey","white")) +
     # # move x-axis label to top
     # scale_x_discrete(position = "top") + xlab("NMA Model") +
     # use a white background, remove axis borders, labels, tickts
@@ -937,7 +952,7 @@ league_plot = function(results = pa_reac_basicp, order = pa_reac_sucra, pub = TR
           axis.text.x = element_blank(),
           plot.title = element_text(hjust = 0.5)
     )
-
+  
 }
 
 

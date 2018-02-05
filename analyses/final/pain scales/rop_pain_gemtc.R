@@ -367,7 +367,7 @@ dev.off()
 summary(pa_reac_data$sa5$anohe$result.cons)
 
 
-
+windows()
 forest(relative.effect.table(pa_reac_data$sa5$mod$results),"drops")
 
 
@@ -378,45 +378,6 @@ imp_n = pa_reac_data$pa$gemtc$input %>% left_join(pa_reac[c("studlab","imputed_m
   mutate(reason = "imputed mean")
 
 pa_reac_excluded = rbind(pa_reac_excluded,imp_n)
-
-
-
-
-#==========================================================================
-# Power analysis
-# Assumptions:
-# 1 = I2 is 50%
-# 2 = I2 is 70%
-# Effect to detect = 2 points (1 MID)
-
-
-#==========================================================================
-
-#
-pa_reac_sa1_power = power_table(data = pa_reac_data$sa1$mod$results)
-
-chars_sa5 = netmeta_xl_chars(data = pa_reac %>% filter(!studlab %in% pa_reac_excluded$studlab),outcome = "pa_reac",ref = "drops",treat = "trt_group")
-
-pa_reac_sa5_power = power_table(data = pa_reac_data$sa5$mod$results, direct_comps = chars_sa5$direct_zeros)
-
-# Forest plot vs ref======
-
-
-comp_names_sa1 = c("Sweet taste multisensory + TA","NNS + TA","Sweet taste + TA", "Placebo",
-          "EBM multisensory + TA","Acetaminophen 30min + TA","Acetaminophen 60min + TA",
-          "Sweet taste + N2O + TA","WFDRI + TA","Sweet taste alone","Repeated sweet taste",
-          "Sweet taste + singing")
-
-
-comp_names_sa5 = c("Sweet taste multisensory + TA","NNS + TA","Sweet taste + TA", "Placebo",
-                   "EBM multisensory + TA","Acetaminophen 30min + TA",
-                   "Sweet taste + N2O + TA","WFDRI + TA","Sweet taste alone","Repeated sweet taste",
-                   "Sweet taste + singing")
-
-
-
-
-momlinc_fp_p(data = pa_reac_sa5_power, names = comp_names_sa5, width = 7.5)
 
 
 
@@ -446,8 +407,17 @@ reac_heatplot$plot
 #============================================== =
 ####League table
 #============================================== =
-pa_reac_sa5names = c("Sweet taste \n multisensory + \n TA","Sweet taste + \n TA","EBM \n multisensory + \n TA","Sweet taste + \n N2O + TA",
-                     "NNS + TA","Sweet taste \n alone","Repeated \n sweet taste","WFDRI + TA","Sweet taste + \n singing","Topical \n Anesthetic (TA)","Acetaminophen \n 30min + TA",
+pa_reac_sa5names = c("Sweet taste \n multisensory + \n TA",
+                     "Sweet taste + \n TA",
+                     "Sweet taste + \n N2O + TA",
+                     "EBM \n multisensory + \n TA",
+                     "NNS + TA",
+                     "Sweet taste \n alone",
+                     "Repeated \n sweet taste",
+                     "WFDRI + TA",
+                     "Acetaminophen \n 30min + TA",
+                     "Sweet taste + \n singing",
+                     "Topical \n Anesthetic (TA)",
                      "No treatment")
 reac_basicp = relative.effect(pa_reac_data$sa5$mod$results,t1 = c("drops"),preserve.extra = FALSE)
 reac_results = as.data.frame(as.matrix(reac_basicp$samples)) %>% mutate(d.drops.drops = 0)

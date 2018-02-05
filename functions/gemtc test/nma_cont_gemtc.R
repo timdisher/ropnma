@@ -843,7 +843,7 @@ league = function(results = pa_reac_basicp, order = pa_reac_sucra){
 # League table plot =========================
 
 league_plot = function(results = pa_reac_basicp, #Basic parameters (d's)
-                       order = pa_reac_sucra,  #What is to be used for ordering (SUCRA in default)
+                       order = pa_reac_sucra,  #What is to be used for ordering (also used for pub names, needs a column labeled treat and pub_names, depending on if pub is true)
                        pub = TRUE, #If using different names for publication
                        colour = "#d2cee3", #Light purple for NAs
                        textsize = 3, #Size for text

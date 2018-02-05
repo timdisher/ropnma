@@ -426,7 +426,7 @@ reac_order = pa_reac_data$sa5$mod$suc %>% mutate(pub_names = pa_reac_sa5names)
 order = reac_order
 
 windows()
-league_plot(results = as.data.frame(as.matrix(reac_basicp$samples)) %>% mutate(d.drops.drops = 0), order = reac_order, textsize = 3.5)
+league_plot(results = as.data.frame(as.matrix(reac_basicp$samples)) %>% mutate(d.drops.drops = 0), order = reac_order, textsize = 5)
 
 #================================================
 #Probability of 2 point or greater difference====

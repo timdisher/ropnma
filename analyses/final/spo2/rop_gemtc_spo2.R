@@ -43,6 +43,7 @@ os_reac_data$pa$gemtc$data = os_reac_data$pa$gemtc$data %>% left_join(rop_data_s
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
+summary(os_reac_data$pa$mod$results)
 
 
 os_reac_data$pa$mod = set_net(os_reac_data$pa$gemtc$data, type = "fixed")
@@ -66,7 +67,7 @@ os_sucra = as.data.frame(os_sucra) %>% rownames_to_column("treat") %>% mutate(tr
 
 plot(os_reac_data$pa$mod$network)
 
-forest(relative.effect.table(os_reac_data$pa$results),"drops")
+forest(relative.effect.table(os_reac_data$pa$mod$results),"drops")
 
 
 
@@ -80,7 +81,7 @@ os_reac_panames = c("Sweet taste + \n TA",
 
 recov_basicp = relative.effect(os_reac_data$pa$mod$results,t1 = c("drops"),preserve.extra = FALSE)
 recov_results = as.data.frame(as.matrix(recov_basicp$samples)) %>% mutate(d.drops.drops = 0)
-recov_order = os_reac_data$pa$mod$suc %>% mutate(pub_names = os_reac_panames)
+recov_order = os_sucra %>% mutate(pub_names = os_reac_panames)
 
 
 windows()
